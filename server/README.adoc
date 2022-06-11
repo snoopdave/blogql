@@ -1,0 +1,17 @@
+= README
+
+This is the BlogQL server. It is written in TypeScript and uses Express and the Apollo Server.
+
+== Building server
+
+    yarn install
+    yarn run build
+
+== Testing server
+
+    yarn run test
+
+== Running server
+
+    yarn run start
+

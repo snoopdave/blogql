@@ -95,16 +95,16 @@ export default class UserStore implements DataSource<User> {
         return { rows, count: await User.count() };
     }
 
-    async update(id: string, username: string, email: string, picture: string) : Promise<User> {
+    async update(id: string, username: string, email: string, picture: string) : Promise<User | null> {
         const now = new Date();
-        const [ number, users ] = await User.update({ username, email, picture, updated: now },
+        const [ number ] = await User.update({ username, email, picture, updated: now },
             { where: { id } });
         if (number === 0) {
             throw Error('User not found');
         } else if (number > 1) {
             throw Error('Unexpected outcome: multiple users updated');
         }
-        return users[0].get();
+        return this.retrieveByEmail(email);
     }
 
     async upsert(username: string, email: string, picture: string) {

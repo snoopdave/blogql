@@ -1,0 +1,4 @@
+*.js
+*.db
+client/__generated__
+client/src/graphql/__generated__

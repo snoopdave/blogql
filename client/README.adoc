@@ -1,0 +1,19 @@
+= README
+
+This is the client for BlogQL. It's written in TypeScript and uses React.js.
+
+Use Yarn to build, test and run this client.
+
+== Building the client
+
+Before you can build the client you need to build and run the server because the client build process needs to introspect the server's GraphQL Schema.
+
+    yarn run build
+
+== Testing the client
+
+    yarn run test
+
+== Running the client
+
+    yarn run start
