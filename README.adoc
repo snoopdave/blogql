@@ -1,0 +1,47 @@
+= BlogQL: Simple Blog Server with GraphQL API
+
+This is a learning project; something I started to help me learn React, TypeScript and modern JavaScript.
+
+BlogQL is a simple blog server.
+It's really just a learning exercise and an example of a web app implemented as a server, written in JavaScript and a web-browser client written in TypeScript.
+The server provides a GraphQL API, which is used by the client.
+I made these choices because I want to learn how to learn about both modern JavaScript and TypeScript, back-end and front.
+
+Here are some more details about the technologies in use:
+
+Server
+
+* Node.JS
+* Express GraphQL
+* Graphql.js
+* SQLLite
+* Jest
+
+Client
+
+* TypeScript
+* React
+* React Router
+* React Bootstrap
+* Relay (GraphQL client)
+* Quill (rich text editor)
+
+== Server
+
+The server provides a GraphQL API for creating, retrieving, updating and deleting blog entries.
+
+=== To run the server
+
+    cd server
+    yarn start
+
+Then you can access the GraphQL playground here: http://localhost:4000/graphql
+
+=== To run the client
+
+    cd client
+    yarn start
+
+Then you can access the web-browser client here: http://localhost:8000
+
+

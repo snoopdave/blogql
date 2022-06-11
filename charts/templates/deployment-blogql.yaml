@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blogql
+spec:
+  selector:
+    matchLabels:
+      app: blogql
+  replicas: 1
+  template:
+    metadata:
+      name: blogql
+      labels:
+        app: blogql
+    spec:
+      containers:
+        - name: blogql
+          image: "snoopdave/blogql:1.0.0"
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "500Mi"
+            requests:
+              cpu: "500m"
+              memory: "500Mi"
+          ports:
+            - containerPort: 4000
+          env:
+            - name: DATABASE_USERNAME
+              value: {{ .Values.blogql.databaseJdbcUsername }}
+            - name: DATABASE_HOSTANDPORT
+              value: {{ .Values.blogql.databaseHostandport }}
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pg-user-pass
+                  key: postgresql-password
+
+

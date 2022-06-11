@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "isolatedModules": true,
+    "noImplicitAny": false,
+    "lib": ["ES2020"],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "target": "ESNext",
+    "typeRoots": ["./src/types", "./node_modules/@types"]
+  },
+  "include": [
+    "src"
+  ]
+}

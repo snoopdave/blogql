@@ -1,0 +1,5 @@
+= Helm Charts
+
+The Helm chart here is *incomplete and will not work*.
+When I started writing it, I assumed BlogQL would use Postgres but currently the BlogQL server uses SQLite.
+I will return to this at some point...
