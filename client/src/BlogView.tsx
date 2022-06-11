@@ -14,7 +14,7 @@ export interface EntryCardListProps {
     loggedIn: boolean;
 }
 
-function EntryCardList(props: EntryCardListProps) {
+function BlogView(props: EntryCardListProps) {
     const { loading, error, data } = useQuery(ENTRIES_QUERY);
 
     if (loading) {
@@ -74,4 +74,4 @@ function DateTime(props: DateTimeProps) {
     return <span>{rtf.format(daysAgo, "day")}</span>;
 }
 
-export default EntryCardList;
+export default BlogView;

@@ -8,8 +8,8 @@ import Container from 'react-bootstrap/Container';
 import {Col, Jumbotron, Nav, Navbar, Row} from "react-bootstrap";
 import "./App.css";
 import {EditorForm, EditorFormViaId, EditorWelcome} from "./EntryEditor";
-import EntryCardList from "./EntryCardList";
-import EntryTable from "./EntryTable";
+import BlogView from "./BlogView";
+import DraftsTable from "./DraftsTable";
 import {BrowserRouter as Router, Link, Redirect, Route} from 'react-router-dom';
 import Switch from "react-bootstrap/Switch";
 import dotenv from "dotenv";
@@ -93,7 +93,7 @@ function App() {
                                             <p>This is where you can find your entries, whether they be blog posts,
                                                 events, memories or what not.</p>
                                         </Jumbotron>
-                                        <EntryCardList loggedIn={loggedIn}/>
+                                        <BlogView loggedIn={loggedIn}/>
                                     </Route>
 
                                     <PrivateRoute path="/:handle/table">
@@ -102,7 +102,7 @@ function App() {
                                             <p>This is where you can find your entries, whether they be blog posts,
                                                 events, memories or what not.</p>
                                         </Jumbotron>
-                                        <EntryTable/>
+                                        <DraftsTable/>
                                     </PrivateRoute>
 
                                     <PrivateRoute path="/:handle/edit/:id">

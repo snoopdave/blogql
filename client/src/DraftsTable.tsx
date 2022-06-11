@@ -10,7 +10,7 @@ import {useQuery} from "@apollo/client";
 import {ENTRIES_QUERY} from "./graphql/queries";
 
 
-function EntryTable() {
+function DraftsTable() {
     const { loading, error, data } = useQuery(ENTRIES_QUERY);
 
     if (loading) {
@@ -46,4 +46,4 @@ function EntryTable() {
     );
 }
 
-export default EntryTable;
+export default DraftsTable;

@@ -67,9 +67,9 @@ export default class BlogQL {
                 });
                 const {name, email, picture} = ticket.getPayload()!;
                 const user: User = await userStore.upsert(name!, email!, picture!);
-                req.session.userId = user.get().id;
+                req.session.userId = user.id;
                 log(LogLevel.DEBUG, `Logged in as username 
-                    ${user.get().username}/${req.session.userId} in session.id=${req.session.id}`);
+                    ${user.username}/${req.session.userId} in session.id=${req.session.id}`);
                 res.status(201)
                 res.json(user);
                 log(LogLevel.DEBUG, `POST ${req.originalUrl} ${res.statusCode}`);
