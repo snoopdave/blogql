@@ -5,7 +5,7 @@ This is a learning project; something I started to help me learn React, TypeScri
 BlogQL is a simple blog server.
 It's really just a learning exercise and an example of a web app implemented as a server and a web-browser client written in TypeScript.
 The server provides a GraphQL API, which is used by the client.
-I made these choices because I want to learn how to learn about both modern JavaScript and TypeScript, back-end and front.
+I made these choices because I want to learn about how React, GraphQL and TypeScript can work together.
 
 Here are some more details about the technologies in use:
 
