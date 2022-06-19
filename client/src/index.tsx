@@ -9,8 +9,8 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {checkLoginStatus} from "./Authentication";
-import {ApolloClient, ApolloProvider, InMemoryCache} from "@apollo/client";
+import {checkLoginStatus} from './Authentication';
+import {ApolloClient, ApolloProvider, InMemoryCache} from '@apollo/client';
 
 checkLoginStatus( user => {
     if (user) {
@@ -21,7 +21,7 @@ checkLoginStatus( user => {
 const client = new ApolloClient({
     uri: 'http://localhost:4000/graphql',
     cache: new InMemoryCache(),
-    credentials: "include"
+    credentials: 'include'
 });
 
 ReactDOM.render(

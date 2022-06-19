@@ -26,6 +26,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "compile": "yarn run gentypes && tsc",
     "build": "tsc && yarn run gentypes && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",

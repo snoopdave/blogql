@@ -8,15 +8,15 @@ import React, {useState} from 'react';
 import {useMutation} from '@apollo/client';
 import {Entry} from './graphql/schema';
 import {BLOG_CREATE_MUTATION} from './graphql/mutations';
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {Link, useHistory} from "react-router-dom";
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {Link, useHistory} from 'react-router-dom';
 
 
-export interface CreateBlogProps {
+export interface BlogCreateProps {
     onBlogCreated: () => void;
 }
 
-export function CreateBlog(props: CreateBlogProps) {
+export function BlogCreate(props: BlogCreateProps) {
     const [handle, setHandle] = useState('');
     const [name, setName] = useState('');
     const [valid, setValid] = useState(false);
@@ -26,7 +26,7 @@ export function CreateBlog(props: CreateBlogProps) {
 
     const history = useHistory();
 
-    const [createBlogMutation] = useMutation<Entry, { handle: string | undefined, name: string | undefined }>(
+    const [blogCreateMutation] = useMutation<Entry, { handle: string | undefined, name: string | undefined }>(
         BLOG_CREATE_MUTATION, { variables: { handle, name } });
 
     function onHandleChange(event) {
@@ -48,11 +48,11 @@ export function CreateBlog(props: CreateBlogProps) {
         }
     }
 
-    function createBlog() {
-        createBlogMutation()
+    function save() {
+        blogCreateMutation()
             .then(() => {
                 setSuccess(true);
-                setToast("New blog created");
+                setToast('New blog created');
                 setTimeout(() => {
                     props.onBlogCreated();
                     history.push('/blogs');
@@ -60,17 +60,16 @@ export function CreateBlog(props: CreateBlogProps) {
             })
             .catch(() => {
                 setFailure(true);
-                setToast("Failed to create blog");
+                setToast('Failed to create blog');
             });
     }
 
     function clearToast() {
-        setToast("");
+        setToast('');
         setSuccess(false);
         setFailure(false);
         setValid(false); // to disable the save button
     }
-
 
     return (
         <>
@@ -105,9 +104,9 @@ export function CreateBlog(props: CreateBlogProps) {
 
                 <Form.Group>
                     <Button disabled={!valid} onClick={() => {
-                        createBlog();
+                        save();
                     }}>Save</Button>
-                    <Link to="/entries">
+                    <Link to='/entries'>
                         <Button>Cancel</Button>
                     </Link>
                 </Form.Group>

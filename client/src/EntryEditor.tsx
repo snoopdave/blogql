@@ -4,21 +4,21 @@
  */
 
 import React, {useState} from 'react';
-import {Button, Form, Jumbotron, Modal, Toast} from "react-bootstrap";
-import "./EntryEditor.css";
-import {Link, useHistory, useParams} from "react-router-dom";
+import {Button, Form, Jumbotron, Modal, Toast} from 'react-bootstrap';
+import './EntryEditor.css';
+import {Link, useHistory, useParams} from 'react-router-dom';
 import 'react-quill/dist/quill.snow.css';
-import ReactQuill from "react-quill";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {useMutation, useQuery} from "@apollo/client";
-import {Entry} from "./graphql/schema";
-import {ENTRY_CREATE_MUTATION, ENTRY_DELETE_MUTATION, ENTRY_UPDATE_MUTATION} from "./graphql/mutations";
-import {ENTRY_QUERY, EntryQueryVars} from "./graphql/queries";
+import ReactQuill from 'react-quill';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {useMutation, useQuery} from '@apollo/client';
+import {Entry} from './graphql/schema';
+import {ENTRY_CREATE_MUTATION, ENTRY_DELETE_MUTATION, ENTRY_UPDATE_MUTATION} from './graphql/mutations';
+import {BLOG_BY_HANDLE_QUERY, ENTRY_QUERY} from './graphql/queries';
 
 
 function randomString(length: number) {
-    const allLowerAlpha = [..."abcdefghijklmnopqrstuvwxyz"];
-    const allNumbers = [..."0123456789"];
+    const allLowerAlpha = [...'abcdefghijklmnopqrstuvwxyz'];
+    const allNumbers = [...'0123456789'];
     const base = [...allNumbers, ...allLowerAlpha];
     return [...Array(length)].map(i => base[Math.random() * base.length | 0]).join('');
 }
@@ -30,54 +30,72 @@ export function EditorWelcome() {
     </Jumbotron>;
 }
 
-export function EditorFormViaId() {
+export function EditorFormViaEntryId() {
     const { handle } = useParams<{handle : string}>(); // get handle param from router route
     const { id } = useParams<{id : string}>(); // get id param from router route
-    const {loading, error, data} = useQuery<Entry, EntryQueryVars>(ENTRY_QUERY, {variables: {handle, id}});
-    if (error) {
-        return (<p>An unexpected error has occured: ${error}</p>)
+    const {loading, error, data} = useQuery(ENTRY_QUERY, {variables: {handle, id}});
+    if (!error && data?.blog.id) {
+        return (loading ? <p>Loading...</p> :
+            <EditorForm blogId={data.blog.id}
+                        id={id}
+                        title={data.blog.entry.title}
+                        content={data.blog.entry.content}
+            />);
     }
-    return (loading ? <p>Loading...</p> : <EditorForm id={id} title={data!['entry'].title} content={data!['entry'].content} />);
+    return (<p>An unexpected error has occurred: {error}</p>)
+}
+
+export function EditorFormViaBlogHandle() {
+    const { handle } = useParams<{handle : string}>(); // get handle param from router route
+    const {loading, error, data} = useQuery(BLOG_BY_HANDLE_QUERY, { variables: { handle } });
+    if (!error && data?.blog.id) {
+        return (loading ? <p>Loading...</p> :
+            <EditorForm blogId={data.blog.id} id='' title='' content='' />);
+    }
+    return (<p>An unexpected error has occurred: {error}</p>)
 }
 
 interface EditorFormProps {
     id: string;
     title: string;
     content: string;
+    blogId: string
 }
 
 export function EditorForm(props: EditorFormProps) {
+    const history = useHistory();
+
     const id = props.id;
+    const { handle } = useParams<{handle : string}>(); // get handle param from router route
+
     const instance = randomString(5);
     const [title, setTitle] = useState(props.title);
     const [content, setContent] = useState(props.content);
     const [valid, setValid] = useState(false);
     const [success, setSuccess] = useState(false);
     const [failure, setFailure] = useState(false);
-    const [toast, setToast] = useState("");
+    const [toast, setToast] = useState('');
     const [deleting, setDeleting] = useState(false);
 
     let editor: any = null;
 
     console.log(`${instance} - State: title='${title}' content='${content}' valid=${valid}`);
 
-    const history = useHistory();
-
-    const [createEntryMutation] = useMutation<Entry, { title: string | undefined, content: string | undefined }>(
-        ENTRY_CREATE_MUTATION, {variables: {title, content}});
+    const [createEntryMutation] = useMutation<Entry, { blogId: string, title: string, content: string }>(
+        ENTRY_CREATE_MUTATION, {variables: {blogId: props.blogId, title, content}});
 
     function createEntry() {
         createEntryMutation()
             .then(() => {
                 setSuccess(true);
-                setToast("New entry created");
+                setToast('New entry created');
                 setTimeout(() => {
                     history.push('/entries');
                 }, 500);
             })
             .catch(() => {
                 setFailure(true);
-                setToast("Failed to save new entry");
+                setToast('Failed to save new entry');
             });
     }
 
@@ -88,14 +106,14 @@ export function EditorForm(props: EditorFormProps) {
         updateEntryMutation()
             .then(() => {
                 setSuccess(true);
-                setToast("Entry updated");
+                setToast('Entry updated');
                 setTimeout(() => {
-                    history.push('/entries');
+                    history.push(`/blogs/${handle}`);
                 }, 500);
             })
             .catch(() => {
                 setFailure(true);
-                setToast("Failed to update entry");
+                setToast('Failed to update entry');
             });
     }
 
@@ -106,14 +124,14 @@ export function EditorForm(props: EditorFormProps) {
         deleteEntryMutation()
             .then(() => {
                 setSuccess(true);
-                setToast("Entry deleted");
+                setToast('Entry deleted');
                 setTimeout(() => {
-                    history.push('/entries');
+                    history.push(`/blogs/${handle}`);
                 }, 1000);
             })
             .catch(() => {
                 setFailure(true);
-                setToast("Failed to delete entry");
+                setToast('Failed to delete entry');
             });
     }
 
@@ -143,7 +161,7 @@ export function EditorForm(props: EditorFormProps) {
     }
 
     function clearToast() {
-        setToast("");
+        setToast('');
         setSuccess(false);
         setFailure(false);
         setDeleting(false);
@@ -171,13 +189,13 @@ export function EditorForm(props: EditorFormProps) {
             </Toast>
 
             <Form>
-                <Form.Group controlId="formTitle">
+                <Form.Group controlId='formTitle'>
                     <Form.Label>Title</Form.Label>
-                    <Form.Control type="text" value={title} placeholder="Title..." onChange={ onTitleChange} />
+                    <Form.Control type='text' value={title} placeholder='Title...' onChange={ onTitleChange} />
                 </Form.Group>
-                <Form.Group controlId="formContent">
+                <Form.Group controlId='formContent'>
                     <Form.Label>Content</Form.Label>
-                    <ReactQuill theme='snow' value={content} placeholder="Content..."
+                    <ReactQuill theme='snow' value={content} placeholder='Content...'
                                 onChange={onContentChange} onFocus={handleContentFocus} />
                 </Form.Group>
                 <Form.Group>
@@ -187,8 +205,9 @@ export function EditorForm(props: EditorFormProps) {
                         } else {
                             createEntry();
                         }
-                    }}>Save</Button>
-                    <Link to="/entries">
+                    }}>Save
+                    </Button>
+                    <Link to={`/blogs/${handle}`}>
                         <Button>Cancel</Button>
                     </Link>
                 </Form.Group>
@@ -207,10 +226,10 @@ export function EditorForm(props: EditorFormProps) {
                     <p>Are you sure you want to do this?</p>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => {
+                    <Button variant='secondary' onClick={() => {
                         setDeleting(false);
                     }}>Cancel</Button>
-                    <Button variant="danger" onClick={() => {
+                    <Button variant='danger' onClick={() => {
                         deleteEntry();
                     }}>Yes - Delete</Button>
                 </Modal.Footer>

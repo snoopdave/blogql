@@ -31,7 +31,7 @@ export function PrivateRoute({ children, ...rest }) {
                 }
                 return auth.user ? (children) : (
                     <Redirect to={{
-                        pathname: "/login",
+                        pathname: '/login',
                         state: {from: location}
                     }}
                     />);
@@ -61,10 +61,10 @@ interface ProvideAuthProps {
 }
 
 export function checkLoginStatus(callback: (user) => void) {
-    fetch("http://localhost:4000/me", {
-        method: "GET",
-        credentials: "include",
-        headers: {"Content-Type": "application/json"}
+    fetch('http://localhost:4000/me', {
+        method: 'GET',
+        credentials: 'include',
+        headers: {'Content-Type': 'application/json'}
     })
         .then(response => response.json())
         .then(user => {
@@ -102,10 +102,10 @@ export function LoginButton(props : LoginProps) {
         console.log('Google data: ' + googleData);
         console.log('Google data token: ' + googleData.tokenId);
         if (googleData.tokenId) {
-            const res = await fetch("http://localhost:4000/auth", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                credentials: "include",
+            const res = await fetch('http://localhost:4000/auth', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                credentials: 'include',
                 body: JSON.stringify({
                     token: googleData.tokenId
                 }),
@@ -118,7 +118,7 @@ export function LoginButton(props : LoginProps) {
 
     return (
         <GoogleLogin clientId={process.env.REACT_APP_CLIENT_ID as string}
-                     buttonText="Log in with Google"
+                     buttonText='Log in with Google'
                      onSuccess={login}
                      onFailure={login}
                      cookiePolicy={'single_host_origin'}
@@ -127,10 +127,10 @@ export function LoginButton(props : LoginProps) {
 }
 
 export function logout(cb: (message: string) => void) {
-    fetch("http://localhost:4000/logout", {
-        method: "DELETE",
-        credentials: "include",
-        headers: {"Content-Type": "application/json"}
+    fetch('http://localhost:4000/logout', {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: {'Content-Type': 'application/json'}
     })
         .then(response => response.json())
         .then(data => {

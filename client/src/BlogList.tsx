@@ -1,7 +1,8 @@
-import {useQuery} from "@apollo/client";
-import {BLOGS_QUERY} from "./graphql/queries";
-import React from "react";
-import {Table} from "react-bootstrap";
+import {useQuery} from '@apollo/client';
+import {BLOGS_QUERY} from './graphql/queries';
+import React from 'react';
+import {Table} from 'react-bootstrap';
+import {Link} from "react-router-dom";
 
 
 export function BlogList() {
@@ -22,8 +23,8 @@ export function BlogList() {
             </thead>
             <tbody>{ data.blogs?.nodes.map((blog) => blog ? (
                 <tr key={blog.id}>
-                    <td>{blog.handle}</td>
-                    <td>TODO</td>
+                    <td><Link className='nav-link' to={`/blogs/${blog.handle}`}>{blog.handle}</Link></td>
+                    <td><Link className='nav-link' to={`/blogs/${blog.handle}`}>TODO</Link></td>
                 </tr> ) : null)
             }</tbody>
         </Table>

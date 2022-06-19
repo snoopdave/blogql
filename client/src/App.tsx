@@ -5,19 +5,20 @@
 
 import React, {useState} from 'react';
 import Container from 'react-bootstrap/Container';
-import {Col, Jumbotron, Nav, Navbar, Row} from "react-bootstrap";
-import "./App.css";
-import {EditorForm, EditorFormViaId, EditorWelcome} from "./EntryEditor";
-import BlogView from "./BlogView";
-import DraftsTable from "./DraftsTable";
-import {BrowserRouter as Router, Link, Redirect, Route, useHistory} from 'react-router-dom';
-import Switch from "react-bootstrap/Switch";
-import dotenv from "dotenv";
-import {LoginButton, logout, PrivateRoute, ProvideAuth, useAuth, User} from "./Authentication";
-import {BlogList} from "./BlogList";
-import {useQuery} from "@apollo/client";
-import {USER_BLOG_QUERY} from "./graphql/queries";
-import {CreateBlog} from "./CreateBlog";
+import {Col, Jumbotron, Nav, Navbar, Row} from 'react-bootstrap';
+import './App.css';
+import {EditorFormViaBlogHandle, EditorFormViaEntryId, EditorWelcome} from './EntryEditor';
+import BlogView from './BlogView';
+import Drafts from './Drafts';
+import {BrowserRouter as Router, Link, Redirect, Route} from 'react-router-dom';
+import Switch from 'react-bootstrap/Switch';
+import dotenv from 'dotenv';
+import {LoginButton, logout, PrivateRoute, ProvideAuth, useAuth, User} from './Authentication';
+import {BlogList} from './BlogList';
+import {useQuery} from '@apollo/client';
+import {USER_BLOG_QUERY} from './graphql/queries';
+import {BlogCreate} from './BlogCreate';
+import BlogSettings from './BlogSettings';
 
 
 function App() {
@@ -32,7 +33,7 @@ function App() {
             console.log(`User ${user.email} (${user.id}) logged in`);
             return;
         }
-        throw new Error("Login failed");
+        throw new Error('Login failed');
     };
 
     const onLogout = () => {
@@ -62,15 +63,15 @@ function App() {
                             <Col xs={10}>
                                 <Switch>
 
-                                    <Route exact path="/">
-                                        <Redirect to={{pathname: "/blogs"}}/>
+                                    <Route exact path='/'>
+                                        <Redirect to={{pathname: '/blogs'}}/>
                                     </Route>
 
-                                    <Route exact path="/logout">
-                                        <Redirect to={{pathname: "/blogs"}}/>
+                                    <Route exact path='/logout'>
+                                        <Redirect to={{pathname: '/blogs'}}/>
                                     </Route>
 
-                                    <Route exact path="/login">
+                                    <Route exact path='/login'>
                                         <Jumbotron>
                                             <h1>Welcome to BlogQL!</h1>
                                             <p>Please login via your favorite Google Account</p>
@@ -78,49 +79,57 @@ function App() {
                                         </Jumbotron>
                                     </Route>
 
-                                    <Route path="/blogs">
+                                    <PrivateRoute exact path='/create-blog'>
+                                        <Jumbotron>
+                                            <h1>Create your blog</h1>
+                                            <p>All you need is a name and a simple text handle that be used in the blog's URL.</p>
+                                        </Jumbotron>
+
+                                        <BlogCreate onBlogCreated={onBlogCreated}/>
+                                    </PrivateRoute>
+
+                                    <PrivateRoute exact path='/blogs/:handle/settings'>
+                                        <Jumbotron>
+                                            <h1>Settings</h1>
+                                            <p>This is where you configure your blog</p>
+                                        </Jumbotron>
+                                        <BlogSettings/>
+                                    </PrivateRoute>
+
+                                    <PrivateRoute exact path='/blogs/:handle/drafts'>
+                                        <Jumbotron>
+                                            <h1>Drafts</h1>
+                                            <p>This is where you find your unpublished draft blog entries.</p>
+                                        </Jumbotron>
+                                        <Drafts/>
+                                    </PrivateRoute>
+
+                                    <PrivateRoute exact path='/blogs/:handle/edit'> { /* create new entry */ }
+                                        <EditorWelcome/>
+                                        <EditorFormViaBlogHandle />
+                                    </PrivateRoute>
+
+                                    <PrivateRoute exact path='/blogs/:handle/edit/:id'>  { /* edit existing entry */ }
+                                        <EditorWelcome />
+                                        <EditorFormViaEntryId />
+                                    </PrivateRoute>
+
+                                    <Route exact path='/blogs/:handle'>
+                                        <Jumbotron>
+                                            <h1>BlogQL Entries page</h1>
+                                            <p>This is where you can find your entries, whether they be blog posts,
+                                                events, memories or what not.</p>
+                                        </Jumbotron>
+                                        <BlogView loggedIn={loggedIn} />
+                                    </Route>
+
+                                    <Route exact path='/blogs'>
                                         <Jumbotron>
                                             <h1>BlogQL Blogs page</h1>
                                             <p>This is where you can find a list of all the blogs in the system.</p>
                                         </Jumbotron>
                                         <BlogList />
                                     </Route>
-
-                                    <Route path="/blogs/:handle">
-                                        <Jumbotron>
-                                            <h1>BlogQL Entries page</h1>
-                                            <p>This is where you can find your entries, whether they be blog posts,
-                                                events, memories or what not.</p>
-                                        </Jumbotron>
-                                        <BlogView loggedIn={loggedIn}/>
-                                    </Route>
-
-                                    <PrivateRoute path="/create-blog">
-                                        <Jumbotron>
-                                            <h1>Create your blog</h1>
-                                            <p>All you need is a name and a simple text handle that be used in the blog's URL.</p>
-                                        </Jumbotron>
-                                        <CreateBlog onBlogCreated={onBlogCreated}/>
-                                    </PrivateRoute>
-
-                                    <PrivateRoute path="/blogs/:handle/table">
-                                        <Jumbotron>
-                                            <h1>BlogQL Entries table</h1>
-                                            <p>This is where you can find your entries, whether they be blog posts,
-                                                events, memories or what not.</p>
-                                        </Jumbotron>
-                                        <DraftsTable/>
-                                    </PrivateRoute>
-
-                                    <PrivateRoute path="/blogs/:handle/edit/:id">  { /* edit existing entry */ }
-                                        <EditorWelcome/>
-                                        <EditorFormViaId/>
-                                    </PrivateRoute>
-
-                                    <PrivateRoute exact path="/blog/:handle/edit"> { /* create new entry */ }
-                                        <EditorWelcome/>
-                                        <EditorForm id='' title='' content=''/>
-                                    </PrivateRoute>
 
                                 </Switch>
                             </Col>
@@ -144,22 +153,20 @@ function App() {
             return (<img src='/loading-buffering.gif' alt='Loading...' />);
         }
 
-        console.log(`-------------> NavBar data: ${data?.blogForUser}`);
-
         if (!error && data?.blogForUser) { // logged-in user with a blog (one blog per user for now)
             const handle: string = data.blogForUser.handle;
             return (
 
-                <Navbar bg="light" expand="lg">
+                <Navbar bg='light' expand='lg'>
                     <Container>
-                        <Navbar.Brand href="/">BlogQL</Navbar.Brand>
-                        <Navbar.Toggle aria-controls="basic-navbar-nav"/>
-                        <Navbar.Collapse id="basic-navbar-nav">
-                            <Nav className="mr-auto">
-                                <Link className="nav-link" to={`/blogs/${handle}`}>Blog</Link>
-                                <Link className="nav-link" to={`/blogs/${handle}/drafts`}>Drafts</Link>
-                                <Link className="nav-link" to={`/blogs/${handle}settings`}>Settings</Link>
-                                <Link className="nav-link" onClick={onLogout} to={`/logout`}>Logout</Link>
+                        <Navbar.Brand href='/'>BlogQL</Navbar.Brand>
+                        <Navbar.Toggle aria-controls='basic-navbar-nav'/>
+                        <Navbar.Collapse id='basic-navbar-nav'>
+                            <Nav className='mr-auto'>
+                                <Link className='nav-link' to={`/blogs/${handle}`}>Blog</Link>
+                                <Link className='nav-link' to={`/blogs/${handle}/drafts`}>Drafts</Link>
+                                <Link className='nav-link' to={`/blogs/${handle}/settings`}>Settings</Link>
+                                <Link className='nav-link' onClick={onLogout} to={`/logout`}>Logout</Link>
                             </Nav>
                         </Navbar.Collapse>
                     </Container>
@@ -168,14 +175,14 @@ function App() {
         } else if (auth?.user?.id) { // logged-in user without a blog
             return (
 
-                <Navbar bg="light" expand="lg">
+                <Navbar bg='light' expand='lg'>
                     <Container>
-                        <Navbar.Brand href="/">BlogQL</Navbar.Brand>
-                        <Navbar.Toggle aria-controls="basic-navbar-nav"/>
-                        <Navbar.Collapse id="basic-navbar-nav">
-                            <Nav className="mr-auto">
-                                <Link className="nav-link" to={'/create-blog'}>Create a blog</Link>
-                                <Link className="nav-link" onClick={onLogout} to={`/logout`}>Logout</Link>
+                        <Navbar.Brand href='/'>BlogQL</Navbar.Brand>
+                        <Navbar.Toggle aria-controls='basic-navbar-nav'/>
+                        <Navbar.Collapse id='basic-navbar-nav'>
+                            <Nav className='mr-auto'>
+                                <Link className='nav-link' to={'/create-blog'}>Create a blog</Link>
+                                <Link className='nav-link' onClick={onLogout} to={`/logout`}>Logout</Link>
                             </Nav>
                         </Navbar.Collapse>
                     </Container>
@@ -184,14 +191,14 @@ function App() {
         } else { // not logged-in
             return (
 
-                <Navbar bg="light" expand="lg">
+                <Navbar bg='light' expand='lg'>
                     <Container>
-                        <Navbar.Brand href="/">BlogQL</Navbar.Brand>
-                        <Navbar.Toggle aria-controls="basic-navbar-nav"/>
-                        <Navbar.Collapse id="basic-navbar-nav">
-                            <Nav className="mr-auto">
-                                <Link className="nav-link" to={`/blogs`}>Blogs</Link>
-                                <Link className="nav-link" to="/login">Login</Link>
+                        <Navbar.Brand href='/'>BlogQL</Navbar.Brand>
+                        <Navbar.Toggle aria-controls='basic-navbar-nav'/>
+                        <Navbar.Collapse id='basic-navbar-nav'>
+                            <Nav className='mr-auto'>
+                                <Link className='nav-link' to={`/blogs`}>Blogs</Link>
+                                <Link className='nav-link' to='/login'>Login</Link>
                             </Nav>
                         </Navbar.Collapse>
                     </Container>

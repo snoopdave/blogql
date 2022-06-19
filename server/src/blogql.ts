@@ -22,7 +22,7 @@ export default class BlogQL {
         dotenv.config();
 
         this.app.use('*', function(req, res, next) {
-            // Unfortunately, there is also some CORS setup in index.ts
+            // There is also some CORS setup in index.ts
             log(LogLevel.DEBUG, `Setting CORs headers ${req.method} ${req.originalUrl}`);
             res.setHeader('Access-Control-Allow-Origin', config.corsOrigin);
             res.setHeader('Access-Control-Allow-Methods', 'POST, GET, DELETE, OPTIONS');

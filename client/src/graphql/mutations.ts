@@ -3,7 +3,7 @@
  * Licensed under Apache Software License v2.
  */
 
-import {gql} from "@apollo/client";
+import {gql} from '@apollo/client';
 
 
 export const BLOG_CREATE_MUTATION = gql`mutation BlogCreateMutation($handle: String!, $name: String!) {

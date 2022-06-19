@@ -41,7 +41,7 @@ const server = new ApolloServer({
                 const user = await userStore.retrieve(req.session.userId);
                 if (user) {
                     log(LogLevel.DEBUG, `Logged in as ${req.session.userId}`);
-                    return { user }; // adds user to the context
+                    return { user }; // Adds user to the context
                 }
                 throw new AuthenticationError('User not found');
             }
@@ -49,6 +49,7 @@ const server = new ApolloServer({
     }
 });
 
+// This oddness is working around the lack of top-level await
 (async () => {
     await blogStore.init();
     await entryStore.init();
@@ -56,11 +57,11 @@ const server = new ApolloServer({
     await server.start();
 })();
 
-// wait a sec for the server.start() to be called
+// Wait a sec for the server.start() to be called
 setTimeout(function() {
     server.applyMiddleware({
         app: blogQL.app,
-        cors: { // there is also some CORS setup in blogql.ts
+        cors: { // There is also some CORS setup in blogql.ts
             origin: config.corsOrigin,
             credentials: true
         },
