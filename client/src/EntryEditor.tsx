@@ -117,13 +117,13 @@ export function EditorForm(props: EditorFormProps) {
             });
     }
 
-    function handleTitleChange(event) {
+    function onTitleChange(event) {
         console.log(`set title = ${event.target.value}`);
         setTitle(event.target.value);
         validateForm();
     }
 
-    function handleContentChange(event) {
+    function onContentChange(event) {
         console.log(`set content = ${event}`);
         setContent(event);
         validateForm();
@@ -173,12 +173,12 @@ export function EditorForm(props: EditorFormProps) {
             <Form>
                 <Form.Group controlId="formTitle">
                     <Form.Label>Title</Form.Label>
-                    <Form.Control type="text" value={title} placeholder="Title..." onChange={handleTitleChange} />
+                    <Form.Control type="text" value={title} placeholder="Title..." onChange={ onTitleChange} />
                 </Form.Group>
                 <Form.Group controlId="formContent">
                     <Form.Label>Content</Form.Label>
                     <ReactQuill theme='snow' value={content} placeholder="Content..."
-                                onChange={handleContentChange} onFocus={handleContentFocus} />
+                                onChange={onContentChange} onFocus={handleContentFocus} />
                 </Form.Group>
                 <Form.Group>
                     <Button disabled={!valid} onClick={() => {

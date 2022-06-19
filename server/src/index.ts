@@ -3,17 +3,16 @@
  * Licensed under Apache Software License v2.
  */
 
-import {ApolloServer} from "apollo-server-express";
-import DBConnection from "./dbconnection.js";
-import EntryStore from "./entrystore.js";
-import resolvers from "./resolvers.js";
-import {typeDefs} from "./schema.js";
-import UserStore from "./userstore.js";
-import BlogQL from "./blogql.js";
-import {AuthenticationError} from "apollo-server";
-import {config, log, LogLevel} from "./utils.js";
-import BlogStore from "./blogstore.js";
-
+import {ApolloServer} from 'apollo-server-express';
+import DBConnection from './dbconnection.js';
+import EntryStore from './entrystore.js';
+import resolvers from './resolvers.js';
+import UserStore from './userstore.js';
+import BlogQL from './blogql.js';
+import {AuthenticationError, gql} from 'apollo-server';
+import {config, log, LogLevel} from './utils.js';
+import BlogStore from './blogstore.js';
+import {readFileSync} from "fs";
 
 // Data sources
 let conn = new DBConnection('./db-test1.db');
@@ -23,6 +22,8 @@ const userStore = new UserStore(conn);
 
 // Express app provides REST API for authentication
 let blogQL = new BlogQL(entryStore, userStore);
+
+const typeDefs = gql(readFileSync('schema.graphql', 'utf8'));
 
 // ApolloServer provides GraphQL API for blogging
 const server = new ApolloServer({

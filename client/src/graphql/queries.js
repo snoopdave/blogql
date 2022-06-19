@@ -1,6 +1,6 @@
 /**
  * Copyright David M. Johnson (snoopdave@gmail.com).
- * All rights reserved.
+ * Licensed under Apache Software License v2.
  */
 import { gql } from "@apollo/client";
 export const ENTRY_QUERY = gql `query EntryQuery($handle: String!, $id: ID!) {

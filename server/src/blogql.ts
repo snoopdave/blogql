@@ -4,13 +4,13 @@
  */
 
 import express from 'express';
-import {OAuth2Client} from "google-auth-library";
-import dotenv from "dotenv";
-import bodyParser from "body-parser";
-import session from "express-session";
-import EntryStore from "./entrystore.js";
-import UserStore, {User} from "./userstore.js";
-import {config, log, LogLevel} from "./utils.js";
+import {OAuth2Client} from 'google-auth-library';
+import dotenv from 'dotenv';
+import bodyParser from 'body-parser';
+import session from 'express-session';
+import EntryStore from './entrystore.js';
+import UserStore, {User} from './userstore.js';
+import {config, log, LogLevel} from './utils.js';
 
 
 export default class BlogQL {
@@ -24,10 +24,10 @@ export default class BlogQL {
         this.app.use('*', function(req, res, next) {
             // Unfortunately, there is also some CORS setup in index.ts
             log(LogLevel.DEBUG, `Setting CORs headers ${req.method} ${req.originalUrl}`);
-            res.setHeader("Access-Control-Allow-Origin", config.corsOrigin);
-            res.setHeader("Access-Control-Allow-Methods", "POST, GET, DELETE, OPTIONS");
-            res.setHeader("Access-Control-Allow-Credentials", "true");
-            res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+            res.setHeader('Access-Control-Allow-Origin', config.corsOrigin);
+            res.setHeader('Access-Control-Allow-Methods', 'POST, GET, DELETE, OPTIONS');
+            res.setHeader('Access-Control-Allow-Credentials', 'true');
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
             next();
         });
 
@@ -37,7 +37,7 @@ export default class BlogQL {
             resave: false
         }));
 
-        this.app.get("/me",
+        this.app.get('/me',
             async (req, res) => {
                 //console.log(JSON.stringify(req.session, null, 4));
                 if (req.session?.userId) {
@@ -76,14 +76,14 @@ export default class BlogQL {
                 res.end();
             });
 
-        this.app.delete("/logout",
+        this.app.delete('/logout',
             async (req, res) => {
                 await req.session.destroy(() => {
-                    log(LogLevel.DEBUG, "Logged out");
+                    log(LogLevel.DEBUG, 'Logged out');
                 });
                 res.status(200)
                 res.json({
-                    message: "Logged out successfully"
+                    message: 'Logged out successfully'
                 });
                 log(LogLevel.DEBUG, `DELETE ${req.originalUrl} ${res.statusCode}`);
                 res.end();

@@ -20,10 +20,10 @@
     "jsx": "react-jsx",
     "noImplicitAny": false,
     "downlevelIteration": true,
-    "noEmit": true
   },
   "include": [
-    "src",
-    "src/graphql"
+    "src/*.ts",
+    "src/*.tsx",
+    "src/graphql/*.ts"
   ]
 }

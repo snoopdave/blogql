@@ -3,12 +3,12 @@
  * Licensed under Apache Software License v2.
  */
 
-import EntryStore, {Entry} from "./entrystore.js";
-import {Cursor, resolveCollection, Response} from "./pagination.js";
-import {Node} from "./node.js";
-import {AuthenticationError} from "apollo-server-express";
-import BlogStore, {Blog} from "./blogstore";
-import {User} from "./userstore";
+import EntryStore, {Entry} from './entrystore.js';
+import {Cursor, resolveCollection, Response} from './pagination.js';
+import {Node} from './node.js';
+import {AuthenticationError, ForbiddenError} from 'apollo-server-express';
+import BlogStore, {Blog} from './blogstore';
+import {User} from './userstore';
 
 
 const resolvers = {
@@ -67,7 +67,7 @@ const resolvers = {
                 await dataSources.entryStore.init();
                 return await dataSources.entryStore.create(args.blogId, args.title, args.content);
             }
-            throw new AuthenticationError("Must be logged in to createEntry");
+            throw new AuthenticationError('Must be logged in to createEntry');
         },
         updateEntry: async (_, args: { id: string, title: string, content: string }, {dataSources, user}):
             Promise<Entry | null> => {
@@ -82,7 +82,7 @@ const resolvers = {
                 }
                 return await entryStore.update(args.id, args.title, args.content);
             }
-            throw new AuthenticationError("Must be logged in to updateEntry");
+            throw new AuthenticationError('Must be logged in to updateEntry');
         },
         deleteEntry: async (_, args: { id: string }, {dataSources, user}): Promise<Node> => {
             if (user) {
@@ -97,15 +97,18 @@ const resolvers = {
                 await entryStore.delete(args.id);
                 return {id: args.id};
             }
-            throw new AuthenticationError("Must be logged in to deleteEntry");
+            throw new AuthenticationError('Must be logged in to deleteEntry');
         },
         createBlog: async (_, args: { handle: string, name: string }, {dataSources, user}): Promise<Blog> => {
             if (user) {
                 const blogStore: BlogStore = dataSources.blogStore;
                 await blogStore.init();
+                if (await blogStore.retrieveByUserId(user.id)) {
+                    throw new ForbiddenError('Currently only one blog per user is supported.');
+                }
                 return await blogStore.create(user.id, args.name, args.handle);
             }
-            throw new AuthenticationError("Must be logged in to createBlog");
+            throw new AuthenticationError('Must be logged in to createBlog');
         },
         updateBlog: async (_, args: { id: string, name: string }, {dataSources, user}): Promise<Blog | null> => {
             if (user) {
@@ -117,7 +120,7 @@ const resolvers = {
                 }
                 return await blogStore.update(args.id, args.name);
             }
-            throw new AuthenticationError("Must be logged in to createBlog");
+            throw new AuthenticationError('Must be logged in to createBlog');
         },
         deleteBlog: async (_, args: { id: string }, {dataSources, user}): Promise<Node> => {
             if (user) {
@@ -130,7 +133,7 @@ const resolvers = {
                 await blogStore.delete(args.id);
                 return {id: args.id};
             }
-            throw new AuthenticationError("Must be logged in to deleteBlog");
+            throw new AuthenticationError('Must be logged in to deleteBlog');
         },
     }
 }

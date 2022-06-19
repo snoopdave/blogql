@@ -3,12 +3,8 @@ import {BLOGS_QUERY} from "./graphql/queries";
 import React from "react";
 import {Table} from "react-bootstrap";
 
-export interface BlogListProps {
-    loggedIn: boolean;
-}
 
-
-export function BlogList(props: BlogListProps) {
+export function BlogList() {
     const { loading, error, data } = useQuery(BLOGS_QUERY);
     if (loading) {
         return (<img src='/loading-buffering.gif' alt='Loading...' />);

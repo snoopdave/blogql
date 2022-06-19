@@ -5,6 +5,16 @@
 
 import {gql} from "@apollo/client";
 
+
+export const BLOG_CREATE_MUTATION = gql`mutation BlogCreateMutation($handle: String!, $name: String!) {
+    createBlog(handle: $handle, name: $name) {
+        id
+        name
+        handle
+        created
+    }
+}`;
+
 export const ENTRY_CREATE_MUTATION = gql`mutation EntryCreateMutation($blogId: ID!, $title: String!, $content: String!) {
     createEntry(blogId: $blogId, title: $title, content: $content) {
         id

@@ -13,7 +13,9 @@ import {checkLoginStatus} from "./Authentication";
 import {ApolloClient, ApolloProvider, InMemoryCache} from "@apollo/client";
 
 checkLoginStatus( user => {
-    localStorage.setItem('BlogQlUser', JSON.stringify(user));
+    if (user) {
+        localStorage.setItem('BlogQlUser', JSON.stringify(user));
+    }
 });
 
 const client = new ApolloClient({

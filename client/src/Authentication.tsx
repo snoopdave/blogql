@@ -90,12 +90,13 @@ export function ProvideAuth(props: ProvideAuthProps) {
 }
 
 interface LoginProps {
+    destination: string
     onLogin: (user: User | null | undefined) => void;
 }
 
 export function LoginButton(props : LoginProps) {
-    const history = useHistory();
     let auth = useAuth();
+    const history = useHistory();
 
     let login = async googleData => {
         console.log('Google data: ' + googleData);
@@ -111,7 +112,7 @@ export function LoginButton(props : LoginProps) {
             })
             auth.user = await res.json();
             props.onLogin(auth.user);
-            history.replace('/entries');
+            history.push(props.destination);
         }
     };
 

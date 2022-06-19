@@ -1,5 +1,5 @@
 /**
  * Copyright David M. Johnson (snoopdave@gmail.com).
- * All rights reserved.
+ * Licensed under Apache Software License v2.
  */
 export {};
