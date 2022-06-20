@@ -13,7 +13,7 @@ import {Link, useHistory} from 'react-router-dom';
 
 
 export interface BlogCreateProps {
-    onBlogCreated: () => void;
+    onBlogUpdated: (hasBlog) => void;
 }
 
 export function BlogCreate(props: BlogCreateProps) {
@@ -54,7 +54,7 @@ export function BlogCreate(props: BlogCreateProps) {
                 setSuccess(true);
                 setToast('New blog created');
                 setTimeout(() => {
-                    props.onBlogCreated();
+                    props.onBlogUpdated(true);
                     history.push('/blogs');
                 }, 500);
             })

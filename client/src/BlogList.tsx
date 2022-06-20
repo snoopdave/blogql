@@ -8,7 +8,7 @@ import {Link} from "react-router-dom";
 export function BlogList() {
     const { loading, error, data } = useQuery(BLOGS_QUERY);
     if (loading) {
-        return (<img src='/loading-buffering.gif' alt='Loading...' />);
+        return (<img className='spinner' src='/loading-buffering.gif' alt='Loading...' />);
     }
     if (error) {
         return (<p>${error}</p>);

@@ -4,11 +4,17 @@
  */
 
 import React, {CSSProperties} from 'react';
-import {Button, Card, CardColumns} from 'react-bootstrap';
+import {Button, Card, CardColumns, Jumbotron} from 'react-bootstrap';
 import {Link, useParams} from 'react-router-dom';
 import {useQuery} from '@apollo/client';
 import {ENTRIES_QUERY} from './graphql/queries';
 import {DateTime, DateTimeProps} from "./DateTime";
+
+
+function BlogViewJumbotron() {
+    const { handle } = useParams<{handle : string}>(); // get handle param from router route
+
+}
 
 
 export interface BlogViewProps {
@@ -25,7 +31,7 @@ function BlogView(props: BlogViewProps) {
     });
 
     if (loading) {
-        return (<img src='/loading-buffering.gif' alt='Loading...' />);
+        return (<img className='spinner' src='/loading-buffering.gif' alt='Loading...' />);
     }
     if (error) {
         return (<p>error!</p>);
@@ -33,7 +39,6 @@ function BlogView(props: BlogViewProps) {
     if (!data) {
         return (<p>no data!</p>);
     }
-    //console.log('GOT DATA: ' + JSON.stringify(data, null, 4));
 
     const showIfLoggedIn = () : CSSProperties => {
         if (props.loggedIn) {
@@ -47,24 +52,29 @@ function BlogView(props: BlogViewProps) {
     // TODO: show date of each entry
     // TODO: show a generic document icon
     return (
-        <CardColumns> {
-            data.blog.entries?.nodes.map((entry) => entry ? (
-                <Card style={{width: '18em'}} key={entry.id}>
-                    <Card.Img variant='top' src={`https://picsum.photos/seed/picsum/215/160?random=${entry.id}`} />
-                    <Card.Body>
-                        <Card.Title>{entry.title}</Card.Title>
+        <>
+            <Jumbotron>
+            <h1>{data.blog.name}</h1>
+            </Jumbotron>
+            <CardColumns> {
+                data.blog.entries?.nodes.map((entry) => entry ? (
+                    <Card style={{width: '18em'}} key={entry.id}>
+                        <Card.Img variant='top' src={`https://picsum.photos/seed/picsum/215/160?random=${entry.id}`} />
                         <Card.Body>
-                            <div dangerouslySetInnerHTML={{__html: entry.content}}/>
-                            <DateTime updated={entry.updated as Date} />
+                            <Card.Title>{entry.title}</Card.Title>
+                            <Card.Body>
+                                <div dangerouslySetInnerHTML={{__html: entry.content}}/>
+                                <DateTime updated={entry.updated as Date} />
+                            </Card.Body>
+                            <Link style={showIfLoggedIn()} to={`/blogs/${handle}/edit/${entry.id}`}>
+                                <Button variant='primary'>Edit</Button>
+                            </Link>
                         </Card.Body>
-                        <Link style={showIfLoggedIn()} to={`/blogs/${handle}/edit/${entry.id}`}>
-                            <Button variant='primary'>Edit</Button>
-                        </Link>
-                    </Card.Body>
-                </Card>
-            ) : null)
-        }
+                    </Card>
+                ) : null)
+            }
         </CardColumns>
+        </>
     );
 }
 

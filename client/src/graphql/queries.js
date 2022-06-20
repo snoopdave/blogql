@@ -17,6 +17,8 @@ export const ENTRY_QUERY = gql `query EntryQuery($handle: String!, $id: ID!) {
 }`;
 export const ENTRIES_QUERY = gql `query EntriesQuery($handle: String!, $limit: Int, $cursor: String) {
     blog(handle: $handle) {
+        id
+        name
         entries(limit: $limit, cursor: $cursor) {
             nodes {
                 id
@@ -56,5 +58,6 @@ export const BLOGS_QUERY = gql `query Blogs($cursor: String, $limit: Int) {
 export const BLOG_BY_HANDLE_QUERY = gql `query BlogQuery($handle: String!) {
     blog(handle: $handle) {
         id
+        name
     }
 }`;

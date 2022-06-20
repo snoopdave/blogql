@@ -10,10 +10,10 @@ import UserStore, {User} from "../userstore.js";
 import DBConnection from "../dbconnection.js";
 import {ApolloServer} from "apollo-server";
 import resolvers from "../resolvers";
-import {typeDefs} from "../schema";
 import {randomString} from "./userstore.test";
 import BlogStore, {Blog} from "../blogstore";
 import type {GraphQLResponse} from 'apollo-server-types';
+import {typeDefs} from "../index";
 
 describe("Test the GraphQL API integration", () => {
 

@@ -23,7 +23,7 @@ const userStore = new UserStore(conn);
 // Express app provides REST API for authentication
 let blogQL = new BlogQL(entryStore, userStore);
 
-const typeDefs = gql(readFileSync('schema.graphql', 'utf8'));
+export const typeDefs = gql(readFileSync('schema.graphql', 'utf8'));
 
 // ApolloServer provides GraphQL API for blogging
 const server = new ApolloServer({

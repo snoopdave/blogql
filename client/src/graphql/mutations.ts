@@ -15,6 +15,18 @@ export const BLOG_CREATE_MUTATION = gql`mutation BlogCreateMutation($handle: Str
     }
 }`;
 
+export const BLOG_UPDATE_MUTATION = gql`mutation BlogUpdateMutation($id: ID!, $name: String!) {
+    updateBlog(id: $id, name: $name) {
+        id 
+    }
+}`;
+
+export const BLOG_DELETE_MUTATION = gql`mutation BlogDeleteMutation($id: ID!) {
+    deleteBlog(id: $id) {
+        id
+    }
+}`;
+
 export const ENTRY_CREATE_MUTATION = gql`mutation EntryCreateMutation($blogId: ID!, $title: String!, $content: String!) {
     createEntry(blogId: $blogId, title: $title, content: $content) {
         id

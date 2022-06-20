@@ -1,4 +1,10 @@
 
 .ql-editor {
-    height: 15em;
+    min-height: 20em;
+}
+
+img.spinner {
+   display: flex;
+   justify-content: center;
+   align-items: center;
 }

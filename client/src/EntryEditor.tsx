@@ -193,7 +193,7 @@ export function EditorForm(props: EditorFormProps) {
                     <Form.Label>Title</Form.Label>
                     <Form.Control type='text' value={title} placeholder='Title...' onChange={ onTitleChange} />
                 </Form.Group>
-                <Form.Group controlId='formContent'>
+                <Form.Group controlId='formContent' className='form-group-quill'>
                     <Form.Label>Content</Form.Label>
                     <ReactQuill theme='snow' value={content} placeholder='Content...'
                                 onChange={onContentChange} onFocus={handleContentFocus} />
@@ -212,7 +212,7 @@ export function EditorForm(props: EditorFormProps) {
                     </Link>
                 </Form.Group>
                 <Form.Group>
-                    <Button disabled={!id} onClick={() => {
+                    <Button variant='danger' disabled={!id} onClick={() => {
                         setDeleting(true);
                     }}>Delete</Button>
                 </Form.Group>

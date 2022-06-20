@@ -18,7 +18,7 @@ import {BlogList} from './BlogList';
 import {useQuery} from '@apollo/client';
 import {USER_BLOG_QUERY} from './graphql/queries';
 import {BlogCreate} from './BlogCreate';
-import BlogSettings from './BlogSettings';
+import {BlogSettings} from './BlogSettings';
 
 
 function App() {
@@ -42,8 +42,8 @@ function App() {
         });
     };
 
-    const onBlogCreated = () => {
-       setHasBlog(true);
+    const onBlogUpdated = (hasBlog) => {
+        setHasBlog(hasBlog);
     }
 
     return (
@@ -84,8 +84,7 @@ function App() {
                                             <h1>Create your blog</h1>
                                             <p>All you need is a name and a simple text handle that be used in the blog's URL.</p>
                                         </Jumbotron>
-
-                                        <BlogCreate onBlogCreated={onBlogCreated}/>
+                                        <BlogCreate onBlogUpdated={onBlogUpdated}/>
                                     </PrivateRoute>
 
                                     <PrivateRoute exact path='/blogs/:handle/settings'>
@@ -93,7 +92,7 @@ function App() {
                                             <h1>Settings</h1>
                                             <p>This is where you configure your blog</p>
                                         </Jumbotron>
-                                        <BlogSettings/>
+                                        <BlogSettings onBlogUpdated={onBlogUpdated}/>
                                     </PrivateRoute>
 
                                     <PrivateRoute exact path='/blogs/:handle/drafts'>
@@ -115,11 +114,6 @@ function App() {
                                     </PrivateRoute>
 
                                     <Route exact path='/blogs/:handle'>
-                                        <Jumbotron>
-                                            <h1>BlogQL Entries page</h1>
-                                            <p>This is where you can find your entries, whether they be blog posts,
-                                                events, memories or what not.</p>
-                                        </Jumbotron>
                                         <BlogView loggedIn={loggedIn} />
                                     </Route>
 
@@ -150,7 +144,7 @@ function App() {
             }
         });
         if (loading) {
-            return (<img src='/loading-buffering.gif' alt='Loading...' />);
+            return (<img className='spinner' src='/loading-buffering.gif' alt='Loading...' />);
         }
 
         if (!error && data?.blogForUser) { // logged-in user with a blog (one blog per user for now)

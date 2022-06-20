@@ -21,7 +21,7 @@ function Drafts() {
     });
 
     if (loading) {
-        return (<img src='/loading-buffering.gif' alt='Loading...' />);
+        return (<img className='spinner' src='/loading-buffering.gif' alt='Loading...' />);
     }
     if (error) {
         return (<p>error!</p>);
