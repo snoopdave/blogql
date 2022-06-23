@@ -13,7 +13,7 @@ export interface Config {
 
 export const config: Config = {
     auth: false,
-    corsOrigin: "http://localhost:3000",
+    corsOrigin: "https://studio.apollographql.com",
     logLevel: LogLevel.DEBUG
 }
 

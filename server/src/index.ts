@@ -13,6 +13,7 @@ import {AuthenticationError, gql} from 'apollo-server';
 import {config, log, LogLevel} from './utils.js';
 import BlogStore from './blogstore.js';
 import {readFileSync} from "fs";
+import { ApolloServerPluginSchemaReporting } from "apollo-server-core";
 
 // Data sources
 let conn = new DBConnection('./db-test1.db');
@@ -46,7 +47,12 @@ const server = new ApolloServer({
                 throw new AuthenticationError('User not found');
             }
         }
-    }
+    },
+    plugins: [
+        ApolloServerPluginSchemaReporting({
+            endpointUrl: "https://schema-reporting.api.staging.c0.gql.zone/api/graphql"
+        }),
+    ],
 });
 
 // This oddness is working around the lack of top-level await

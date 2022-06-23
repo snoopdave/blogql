@@ -11,17 +11,14 @@ import {Link, useHistory, useParams} from "react-router-dom";
 
 
 function Drafts() {
-
-    // TODO: query get only DRAFT entries here
-
     const history = useHistory();
     const { handle } = useParams<{handle : string}>(); // get handle param from router route
     const { loading, error, data } = useQuery(ENTRIES_QUERY, {
-        variables: { handle, limit: 50 } // TODO: pagination!
+        variables: { handle, limit: 50 }
     });
 
     if (loading) {
-        return (<img className='spinner' src='/loading-buffering.gif' alt='Loading...' />);
+        return (<p>Loading...</p>);
     }
     if (error) {
         return (<p>error!</p>);
@@ -34,10 +31,6 @@ function Drafts() {
         history.push(`/blogs/${handle}/edit`);
     }
 
-    // TODO: need to truncate long entry titles and content with ellipsis...
-    // TODO: show in reverse chrono order
-    // TODO: show date of each entry
-    // TODO: show a generic document icon
     return (
         <>
             <Form>

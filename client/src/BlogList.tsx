@@ -8,11 +8,15 @@ import {Link} from "react-router-dom";
 export function BlogList() {
     const { loading, error, data } = useQuery(BLOGS_QUERY);
     if (loading) {
-        return (<img className='spinner' src='/loading-buffering.gif' alt='Loading...' />);
+        return (<p>Loading...</p>);
     }
     if (error) {
-        return (<p>${error}</p>);
+        return (<p>error!</p>);
     }
+    if (!data) {
+        return (<p>no data!</p>);
+    }
+
     return (
         <Table striped bordered hover>
             <thead>

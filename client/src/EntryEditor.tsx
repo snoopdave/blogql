@@ -40,6 +40,8 @@ export function EditorFormViaEntryId() {
                         id={id}
                         title={data.blog.entry.title}
                         content={data.blog.entry.content}
+                        created={data.blog.entry.created}
+                        updated={data.blog.entry.updated}
             />);
     }
     return (<p>An unexpected error has occurred: {error}</p>)
@@ -50,7 +52,7 @@ export function EditorFormViaBlogHandle() {
     const {loading, error, data} = useQuery(BLOG_BY_HANDLE_QUERY, { variables: { handle } });
     if (!error && data?.blog.id) {
         return (loading ? <p>Loading...</p> :
-            <EditorForm blogId={data.blog.id} id='' title='' content='' />);
+            <EditorForm blogId={data.blog.id} id='' title='' content='' created={new Date()} updated={new Date()}/>);
     }
     return (<p>An unexpected error has occurred: {error}</p>)
 }
@@ -59,7 +61,9 @@ interface EditorFormProps {
     id: string;
     title: string;
     content: string;
-    blogId: string
+    blogId: string;
+    created: Date;
+    updated: Date;
 }
 
 export function EditorForm(props: EditorFormProps) {
@@ -193,6 +197,16 @@ export function EditorForm(props: EditorFormProps) {
                     <Form.Label>Title</Form.Label>
                     <Form.Control type='text' value={title} placeholder='Title...' onChange={ onTitleChange} />
                 </Form.Group>
+                { props.id.length > 0 && props.created &&
+                    <Form.Group controlId='formCreated'>
+                        <Form.Label>{`Created: ${props.created}`}</Form.Label>
+                    </Form.Group>
+                }
+                { props.id.length > 0 && props.updated &&
+                    <Form.Group controlId='formUpdated'>
+                        <Form.Label>{`Updated: ${props.updated}`}</Form.Label>
+                    </Form.Group>
+                }
                 <Form.Group controlId='formContent' className='form-group-quill'>
                     <Form.Label>Content</Form.Label>
                     <ReactQuill theme='snow' value={content} placeholder='Content...'

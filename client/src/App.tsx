@@ -19,6 +19,7 @@ import {useQuery} from '@apollo/client';
 import {USER_BLOG_QUERY} from './graphql/queries';
 import {BlogCreate} from './BlogCreate';
 import {BlogSettings} from './BlogSettings';
+import ErrorBoundary from "./ErrorBoundary";
 
 
 function App() {
@@ -49,89 +50,91 @@ function App() {
     return (
         <>
             <Container>
-                <ProvideAuth onLogin={onLogin}>
-                    <Router forceRefresh={true}>
+                <ErrorBoundary>
+                    <ProvideAuth onLogin={onLogin}>
+                        <Router forceRefresh={true}>
 
-                        <Row>
-                            <Col>
-                                <BlogNav />
-                            </Col>
-                        </Row>
+                            <Row>
+                                <Col>
+                                    <BlogNav />
+                                </Col>
+                            </Row>
 
-                        <Row>
-                            <Col/>
-                            <Col xs={10}>
-                                <Switch>
+                            <Row>
+                                <Col/>
+                                <Col xs={10}>
+                                    <Switch>
 
-                                    <Route exact path='/'>
-                                        <Redirect to={{pathname: '/blogs'}}/>
-                                    </Route>
+                                        <Route exact path='/'>
+                                            <Redirect to={{pathname: '/blogs'}}/>
+                                        </Route>
 
-                                    <Route exact path='/logout'>
-                                        <Redirect to={{pathname: '/blogs'}}/>
-                                    </Route>
+                                        <Route exact path='/logout'>
+                                            <Redirect to={{pathname: '/blogs'}}/>
+                                        </Route>
 
-                                    <Route exact path='/login'>
-                                        <Jumbotron>
-                                            <h1>Welcome to BlogQL!</h1>
-                                            <p>Please login via your favorite Google Account</p>
-                                            <LoginButton onLogin={onLogin} destination='/blogs' />
-                                        </Jumbotron>
-                                    </Route>
+                                        <Route exact path='/login'>
+                                            <Jumbotron>
+                                                <h1>Welcome to BlogQL!</h1>
+                                                <p>Please login via your favorite Google Account</p>
+                                                <LoginButton onLogin={onLogin} destination='/blogs' />
+                                            </Jumbotron>
+                                        </Route>
 
-                                    <PrivateRoute exact path='/create-blog'>
-                                        <Jumbotron>
-                                            <h1>Create your blog</h1>
-                                            <p>All you need is a name and a simple text handle that be used in the blog's URL.</p>
-                                        </Jumbotron>
-                                        <BlogCreate onBlogUpdated={onBlogUpdated}/>
-                                    </PrivateRoute>
+                                        <PrivateRoute exact path='/create-blog'>
+                                            <Jumbotron>
+                                                <h1>Create your blog</h1>
+                                                <p>All you need is a name and a simple text handle that be used in the blog's URL.</p>
+                                            </Jumbotron>
+                                            <BlogCreate onBlogUpdated={onBlogUpdated}/>
+                                        </PrivateRoute>
 
-                                    <PrivateRoute exact path='/blogs/:handle/settings'>
-                                        <Jumbotron>
-                                            <h1>Settings</h1>
-                                            <p>This is where you configure your blog</p>
-                                        </Jumbotron>
-                                        <BlogSettings onBlogUpdated={onBlogUpdated}/>
-                                    </PrivateRoute>
+                                        <PrivateRoute exact path='/blogs/:handle/settings'>
+                                            <Jumbotron>
+                                                <h1>Settings</h1>
+                                                <p>This is where you configure your blog</p>
+                                            </Jumbotron>
+                                            <BlogSettings onBlogUpdated={onBlogUpdated}/>
+                                        </PrivateRoute>
 
-                                    <PrivateRoute exact path='/blogs/:handle/drafts'>
-                                        <Jumbotron>
-                                            <h1>Drafts</h1>
-                                            <p>This is where you find your unpublished draft blog entries.</p>
-                                        </Jumbotron>
-                                        <Drafts/>
-                                    </PrivateRoute>
+                                        <PrivateRoute exact path='/blogs/:handle/drafts'>
+                                            <Jumbotron>
+                                                <h1>Drafts</h1>
+                                                <p>This is where you find your unpublished draft blog entries.</p>
+                                            </Jumbotron>
+                                            <Drafts/>
+                                        </PrivateRoute>
 
-                                    <PrivateRoute exact path='/blogs/:handle/edit'> { /* create new entry */ }
-                                        <EditorWelcome/>
-                                        <EditorFormViaBlogHandle />
-                                    </PrivateRoute>
+                                        <PrivateRoute exact path='/blogs/:handle/edit'> { /* create new entry */ }
+                                            <EditorWelcome/>
+                                            <EditorFormViaBlogHandle />
+                                        </PrivateRoute>
 
-                                    <PrivateRoute exact path='/blogs/:handle/edit/:id'>  { /* edit existing entry */ }
-                                        <EditorWelcome />
-                                        <EditorFormViaEntryId />
-                                    </PrivateRoute>
+                                        <PrivateRoute exact path='/blogs/:handle/edit/:id'>  { /* edit existing entry */ }
+                                            <EditorWelcome />
+                                            <EditorFormViaEntryId />
+                                        </PrivateRoute>
 
-                                    <Route exact path='/blogs/:handle'>
-                                        <BlogView loggedIn={loggedIn} />
-                                    </Route>
+                                        <Route exact path='/blogs/:handle'>
+                                            <BlogView loggedIn={loggedIn} />
+                                        </Route>
 
-                                    <Route exact path='/blogs'>
-                                        <Jumbotron>
-                                            <h1>BlogQL Blogs page</h1>
-                                            <p>This is where you can find a list of all the blogs in the system.</p>
-                                        </Jumbotron>
-                                        <BlogList />
-                                    </Route>
+                                        <Route exact path='/blogs'>
+                                            <Jumbotron>
+                                                <h1>BlogQL Blogs page</h1>
+                                                <p>This is where you can find a list of all the blogs in the system.</p>
+                                            </Jumbotron>
+                                            <BlogList />
+                                        </Route>
 
-                                </Switch>
-                            </Col>
-                            <Col/>
-                        </Row>
+                                    </Switch>
+                                </Col>
+                                <Col/>
+                            </Row>
 
-                    </Router>
-                </ProvideAuth>
+                        </Router>
+                    </ProvideAuth>
+                </ErrorBoundary>
             </Container>
         </>
     );
@@ -143,8 +146,14 @@ function App() {
                 userId: auth?.user?.id ? auth?.user?.id : ''
             }
         });
-        if (loading) {
-            return (<img className='spinner' src='/loading-buffering.gif' alt='Loading...' />);
+        if (!(auth?.user?.id) || loading) {
+            return (<p>Loading...</p>);
+        }
+        if (error) {
+            return (<p>error!</p>);
+        }
+        if (!data) {
+            return (<p>no data!</p>);
         }
 
         if (!error && data?.blogForUser) { // logged-in user with a blog (one blog per user for now)

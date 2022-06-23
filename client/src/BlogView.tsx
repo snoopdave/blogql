@@ -8,7 +8,7 @@ import {Button, Card, CardColumns, Jumbotron} from 'react-bootstrap';
 import {Link, useParams} from 'react-router-dom';
 import {useQuery} from '@apollo/client';
 import {ENTRIES_QUERY} from './graphql/queries';
-import {DateTime, DateTimeProps} from "./DateTime";
+import {RelativeDateTime, DateTimeProps} from "./RelativeDateTime";
 
 
 function BlogViewJumbotron() {
@@ -22,16 +22,13 @@ export interface BlogViewProps {
 }
 
 function BlogView(props: BlogViewProps) {
-
-    // TODO: query to get only PUBLISHED entries here
-
     const { handle } = useParams<{handle : string}>(); // get handle param from router route
     const { loading, error, data } = useQuery(ENTRIES_QUERY, {
         variables: { handle, limit: 50 } // TODO: pagination!
     });
 
     if (loading) {
-        return (<img className='spinner' src='/loading-buffering.gif' alt='Loading...' />);
+        return (<p>Loading...</p>);
     }
     if (error) {
         return (<p>error!</p>);
@@ -47,10 +44,6 @@ function BlogView(props: BlogViewProps) {
         return { ['display' as any]: 'none' };
     };
 
-    // TODO: need to truncate long entry titles and content with ellipsis...
-    // TODO: show in reverse chrono order
-    // TODO: show date of each entry
-    // TODO: show a generic document icon
     return (
         <>
             <Jumbotron>
@@ -64,7 +57,7 @@ function BlogView(props: BlogViewProps) {
                             <Card.Title>{entry.title}</Card.Title>
                             <Card.Body>
                                 <div dangerouslySetInnerHTML={{__html: entry.content}}/>
-                                <DateTime updated={entry.updated as Date} />
+                                <RelativeDateTime updated={entry.updated as Date} />
                             </Card.Body>
                             <Link style={showIfLoggedIn()} to={`/blogs/${handle}/edit/${entry.id}`}>
                                 <Button variant='primary'>Edit</Button>

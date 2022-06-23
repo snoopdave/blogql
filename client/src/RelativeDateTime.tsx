@@ -9,7 +9,7 @@ export type DateTimeProps = {
     updated: Date,
 }
 
-export function DateTime(props: DateTimeProps) {
+export function RelativeDateTime(props: DateTimeProps) {
     let updated = new Date(props.updated).getTime();
     let span = Date.now() - updated;
     let daysAgo = -1 * Math.round(span / (24 * 60 * 60 * 1000));

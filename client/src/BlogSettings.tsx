@@ -29,7 +29,7 @@ export function BlogSettings(props: BlogSettingsProps) {
     const { loading, error, data } = useQuery(BLOG_BY_HANDLE_QUERY, { variables: { handle } });
 
     if (loading) {
-        return (<img className='spinner' src='/loading-buffering.gif' alt='Loading...' />);
+        return (<p>Loading...</p>);
     }
     if (error) {
         return (<p>error!</p>);
@@ -37,6 +37,7 @@ export function BlogSettings(props: BlogSettingsProps) {
     if (!data) {
         return (<p>no data!</p>);
     }
+
     return (<BlogSettingsById id={data.blog.id} name={data.blog.name} onBlogUpdated={props.onBlogUpdated} />);
 }
 
