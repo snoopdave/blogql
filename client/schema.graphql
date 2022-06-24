@@ -19,6 +19,7 @@ type Blog implements Node {
     updated: DateTime!
     user: User!
     userId: ID!
+    foo: String!
 }
 
 type BlogResponse {
