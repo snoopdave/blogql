@@ -36,10 +36,11 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        cache-dependency-path: './server/yarn.lock'
 
-    - run: npm run build --if-present
+    - run: yarn run build --if-present
+      working-directory: server
+
+    - run: yarn run build --if-present
       working-directory: server
 
     - name: Install Rover
@@ -51,5 +52,5 @@ jobs:
 
     - name: Check schema
       run: |
-        rover graph check ${APOLLO_GRAPH_REF} --name BlogQL --schema client/schema.graphql
+        rover graph check ${APOLLO_GRAPH_REF} --name BlogQL --schema ../client/schema.graphql
       working-directory: server
