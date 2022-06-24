@@ -3,22 +3,22 @@
  * Licensed under Apache Software License v2.
  */
 
-import DBConnection from "../dbconnection";
-import UserStore, {User} from "../userstore";
-import {expect, test} from "@jest/globals";
-import EntryStore from "../entrystore";
-import {FindAllResult} from "../pagination";
+import DBConnection from '../dbconnection';
+import UserStore, {User} from '../userstore';
+import {expect, test} from '@jest/globals';
+import EntryStore from '../entrystore';
+import {FindAllResult} from '../pagination';
 
 
 export function randomString(length: number) {
-    const allLowerAlpha = [..."abcdefghijklmnopqrstuvwxyz"];
-    const allNumbers = [..."0123456789"];
+    const allLowerAlpha = [...'abcdefghijklmnopqrstuvwxyz'];
+    const allNumbers = [...'0123456789'];
     const base = [...allNumbers, ...allLowerAlpha];
     return [...Array(length)].map(() => base[Math.random() * base.length | 0]).join('');
 }
 
 
-describe("Test UserStore", () => {
+describe('Test UserStore', () => {
 
     test('It can connect to user store', async () => {
         let slug = randomString(5);
@@ -90,7 +90,7 @@ describe("Test UserStore", () => {
         }
     });
 
-    test("It can upsert a user", async () => {
+    test('It can upsert a user', async () => {
 
         let slug = randomString(5);
         let conn = new DBConnection(`./db-test-${slug}.db`);

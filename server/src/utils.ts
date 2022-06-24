@@ -1,24 +1,18 @@
+/**
+ * Copyright David M. Johnson (snoopdave@gmail.com).
+ * Licensed under Apache Software License v2.
+ */
+
+import {config} from './config.js';
 
 export enum LogLevel {
-    ERROR,
+    DEBUG,
     INFO,
-    DEBUG
-}
-
-export interface Config {
-    corsOrigin: string;
-    logLevel: LogLevel;
-    auth: boolean;
-}
-
-export const config: Config = {
-    auth: false,
-    corsOrigin: "https://studio.apollographql.com",
-    logLevel: LogLevel.DEBUG
+    ERROR,
 }
 
 export function log(logLevel: LogLevel, message: string) {
     if (logLevel <= config.logLevel) {
-        console.log(`${LogLevel[logLevel]}: ${message}`);
+        console.log(`${logLevel}: ${message}`);
     }
 }

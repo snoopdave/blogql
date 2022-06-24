@@ -3,19 +3,19 @@
  * Licensed under Apache Software License v2.
  */
 
-import EntryStore, {Entry} from "../entrystore.js";
-import {describe, expect, test} from "@jest/globals";
+import EntryStore, {Entry} from '../entrystore.js';
+import {describe, expect, test} from '@jest/globals';
 import {v4 as uuid} from 'uuid';
-import UserStore, {User} from "../userstore.js";
-import DBConnection from "../dbconnection.js";
-import {ApolloServer} from "apollo-server";
-import resolvers from "../resolvers";
-import {randomString} from "./userstore.test";
-import BlogStore, {Blog} from "../blogstore";
+import UserStore, {User} from '../userstore.js';
+import DBConnection from '../dbconnection.js';
+import {ApolloServer} from 'apollo-server';
+import resolvers from '../resolvers';
+import {randomString} from './userstore.test';
+import BlogStore, {Blog} from '../blogstore';
 import type {GraphQLResponse} from 'apollo-server-types';
-import {typeDefs} from "../index";
+import {typeDefs} from '../index';
 
-describe("Test the GraphQL API integration", () => {
+describe('Test the GraphQL API integration', () => {
 
     interface TextContext {
         server: ApolloServer;
@@ -102,7 +102,7 @@ describe("Test the GraphQL API integration", () => {
     test('It can retrieve entry by ID', async () => {
         const {server, conn, userStore, blogStore, entryStore} = await initDataStorage();
         const user: User = await userStore.create(
-            "test-user", "test-user@example.com", "dummy.png")
+            'test-user', 'test-user@example.com', 'dummy.png')
         const blog: Blog = await blogStore.create(user.id, 'Blog Name', 'bloghandle');
         const entry = await entryStore.create(blog.id, 'entry 1 title', 'entry 1 content');
         try {
@@ -139,7 +139,7 @@ describe("Test the GraphQL API integration", () => {
         const {server, conn, blogStore, userStore} = await initDataStorage();
         try {
             const user: User = await userStore.create(
-                "test-user", "test-user@example.com", "dummy.png")
+                'test-user', 'test-user@example.com', 'dummy.png')
             const blog: Blog = await blogStore.create(user.id, 'Blog Name', 'bloghandle');
             const entryCreated = await createEntry(server, blog.id, 'First post!', 'LOL');
             expect(entryCreated.errors).toHaveLength(1);
@@ -171,8 +171,8 @@ describe("Test the GraphQL API integration", () => {
             const entryUpdated = await updateEntry(
                 server,
                 entry.id,
-                entry.title + " (EDITED)",
-                entry.content + " (EDITED)");
+                entry.title + ' (EDITED)',
+                entry.content + ' (EDITED)');
             expect(entryUpdated.data?.updateEntry.id).toBe(entry.id);
             expect(entryUpdated.errors).toBeUndefined();
 
@@ -200,7 +200,7 @@ describe("Test the GraphQL API integration", () => {
         }
     });
 
-    test("It can CRUD blogs", async () => {
+    test('It can CRUD blogs', async () => {
         const {server, conn, authUsers} = await initDataStorage();
 
         try {
@@ -285,22 +285,22 @@ describe("Test the GraphQL API integration", () => {
     });
 });
 
-describe("Test random stuff", () => {
+describe('Test random stuff', () => {
 
     test('Understand how dates are parsed', async () => {
 
         // valid RFC-3339 date strings
-        let date1 = Date.parse("2020-07-01T12:16:58Z");
+        let date1 = Date.parse('2020-07-01T12:16:58Z');
         expect(date1).toBeDefined();
 
-        let date2 = Date.parse("2020-07-01T12:16:58-04:00");
+        let date2 = Date.parse('2020-07-01T12:16:58-04:00');
         expect(date2).toBeDefined();
 
-        let date3 = Date.parse("2020-07-01T12:16:58-0400");
+        let date3 = Date.parse('2020-07-01T12:16:58-0400');
         expect(date3).toBeDefined();
 
         // SQLite date string (Date can parse it but GraphQLDateTime does not like this format)
-        // let date4 = Date.parse("2020-07-01 12:16:58 -0400");
+        // let date4 = Date.parse('2020-07-01 12:16:58 -0400');
         // expect(date4).toBeUndefined();
     });
 });

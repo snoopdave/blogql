@@ -3,7 +3,7 @@
  * Licensed under Apache Software License v2.
  */
 
-import {appendFileSync} from "fs";
+import {appendFileSync} from 'fs';
 
 export class Response<T> {
     nodes: T[];

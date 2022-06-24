@@ -19,7 +19,8 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "noImplicitAny": false,
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "noEmit": true
   },
   "include": [
     "src/*.ts",

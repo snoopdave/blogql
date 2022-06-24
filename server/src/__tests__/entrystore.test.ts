@@ -3,14 +3,14 @@
  * Licensed under Apache Software License v2.
  */
 
-import DBConnection from "../dbconnection";
-import EntryStore from "../entrystore";
-import {randomString} from "./userstore.test";
-import BlogStore from "../blogstore";
-import UserStore, {User} from "../userstore";
+import DBConnection from '../dbconnection';
+import EntryStore from '../entrystore';
+import {randomString} from './userstore.test';
+import BlogStore from '../blogstore';
+import UserStore, {User} from '../userstore';
 
 
-describe("Test EntryStore", () => {
+describe('Test EntryStore', () => {
 
     test('It can connect to entry store', async () => {
         let slug = randomString(5);
@@ -34,7 +34,7 @@ describe("Test EntryStore", () => {
         const userStore = new UserStore(conn);
         await userStore.init();
         const user: User = await userStore.create(
-            `test-user-${slug}`, "test-user@example.com", "dummy.png")
+            `test-user-${slug}`, 'test-user@example.com', 'dummy.png')
         try {
             const blog = await blogStore.create(user.id, `Blog ${slug}`, `blog-${slug}`)
             const entryCreated = await entryStore.create(blog.id, 'entry title', 'has content');
@@ -69,7 +69,7 @@ describe("Test EntryStore", () => {
         const userStore = new UserStore(conn);
         await userStore.init();
         const user: User = await userStore.create(
-            `test-user-${slug}`, "test-user@example.com", "dummy.png")
+            `test-user-${slug}`, 'test-user@example.com', 'dummy.png')
         try {
             const blog = await blogStore.create(user.id, `Blog ${slug}`, `blog-${slug}`)
             for (let i = 0; i < 25; i++) {

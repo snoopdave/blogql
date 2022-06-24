@@ -10,7 +10,8 @@ import bodyParser from 'body-parser';
 import session from 'express-session';
 import EntryStore from './entrystore.js';
 import UserStore, {User} from './userstore.js';
-import {config, log, LogLevel} from './utils.js';
+import {log, LogLevel} from './utils.js';
+import {config} from './config.js';
 
 
 export default class BlogQL {

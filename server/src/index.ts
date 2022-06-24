@@ -10,10 +10,11 @@ import resolvers from './resolvers.js';
 import UserStore from './userstore.js';
 import BlogQL from './blogql.js';
 import {AuthenticationError, gql} from 'apollo-server';
-import {config, log, LogLevel} from './utils.js';
+import {log, LogLevel} from './utils.js';
 import BlogStore from './blogstore.js';
-import {readFileSync} from "fs";
-import { ApolloServerPluginSchemaReporting } from "apollo-server-core";
+import {readFileSync} from 'fs';
+import { ApolloServerPluginSchemaReporting } from 'apollo-server-core';
+import {config} from './config.js';
 
 // Data sources
 let conn = new DBConnection('./db-test1.db');
@@ -50,7 +51,7 @@ const server = new ApolloServer({
     },
     plugins: [
         ApolloServerPluginSchemaReporting({
-            endpointUrl: "https://schema-reporting.api.staging.c0.gql.zone/api/graphql"
+            endpointUrl: process.env.APOLLO_SCHEMA_REPORTING_ENDPOINT
         }),
     ],
 });
@@ -73,7 +74,7 @@ setTimeout(function() {
         },
     });
     let port = 4000;
-    log(LogLevel.INFO, `🚀 BlogQL running at http://localhost:${port}`);
+    log(LogLevel.INFO, `🚀 BlogQL running at http://localhost:${port}/graphql`);
     blogQL.start(port);
 }, 1000);
 

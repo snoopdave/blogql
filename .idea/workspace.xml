@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="901c4220-56ba-4f73-94f0-845c155287b7" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/server/src/config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/client/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/__tests__/blogstore.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/__tests__/blogstore.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/__tests__/entrystore.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/__tests__/entrystore.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/__tests__/integration.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/__tests__/integration.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/__tests__/userstore.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/__tests__/userstore.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/blogql.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/blogql.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/blogstore.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/blogstore.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/dbconnection.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/dbconnection.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/entrystore.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/entrystore.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/pagination.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/pagination.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/types/types.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/types/types.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/types/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/types/types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/userstore.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/userstore.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/utils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/utils.ts" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2AtnNDs72YDoZi0TeRiLBGJwHfQ" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/server/src" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_package_manager_path" value="yarn" />
+    <property name="ts.external.directory.path" value="$PROJECT_DIR$/client/node_modules/typescript/lib" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/server/src" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/.github/workflows" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="901c4220-56ba-4f73-94f0-845c155287b7" name="Changes" comment="" />
+      <created>1655837707141</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1655837707141</updated>
+      <workItem from="1655837708373" duration="5839000" />
+      <workItem from="1656002332038" duration="11634000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+    <option name="exactExcludedFiles">
+      <list>
+        <option value="$PROJECT_DIR$/server/src/index.js" />
+        <option value="$PROJECT_DIR$/server/src/node.js" />
+        <option value="$PROJECT_DIR$/server/src/pagination.js" />
+        <option value="$PROJECT_DIR$/server/src/utils.js" />
+        <option value="$PROJECT_DIR$/server/src/resolvers.js" />
+        <option value="$PROJECT_DIR$/client/src/graphql/queries.js" />
+        <option value="$PROJECT_DIR$/server/src/userstore.js" />
+        <option value="$PROJECT_DIR$/server/src/dbconnection.js" />
+        <option value="$PROJECT_DIR$/client/src/graphql/schema.js" />
+        <option value="$PROJECT_DIR$/server/src/__tests__/blogstore.test.js" />
+        <option value="$PROJECT_DIR$/server/src/__tests__/integration.test.js" />
+        <option value="$PROJECT_DIR$/server/src/__tests__/entrystore.test.js" />
+        <option value="$PROJECT_DIR$/server/src/config.js" />
+        <option value="$PROJECT_DIR$/server/src/__tests__/userstore.test.js" />
+        <option value="$PROJECT_DIR$/server/src/types/types.js" />
+        <option value="$PROJECT_DIR$/server/src/entrystore.js" />
+        <option value="$PROJECT_DIR$/server/src/blogql.js" />
+        <option value="$PROJECT_DIR$/server/src/blogstore.js" />
+      </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/server/src/entrystore.js</url>
+          <line>57</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

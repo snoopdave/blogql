@@ -1,12 +1,11 @@
-
-import { v4 as uuid } from "uuid";
+import {v4 as uuid} from 'uuid';
 import sequelize from 'sequelize';
+import {DataSource} from 'apollo-datasource';
+import DBConnection from './dbconnection';
+import {DataSourceConfig} from 'apollo-datasource/src';
+import {FindAllResult} from './pagination';
+
 const { DataTypes, Model } = sequelize; // sequelize is a CommonJS module
-import {DataSource} from "apollo-datasource";
-import DBConnection from "./dbconnection";
-import {DataSourceConfig} from "apollo-datasource/src";
-import {FindAllResult} from "./pagination";
-import {Entry} from "./entrystore";
 
 
 export class Blog extends Model {

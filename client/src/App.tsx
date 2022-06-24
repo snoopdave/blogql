@@ -19,7 +19,6 @@ import {useQuery} from '@apollo/client';
 import {USER_BLOG_QUERY} from './graphql/queries';
 import {BlogCreate} from './BlogCreate';
 import {BlogSettings} from './BlogSettings';
-import ErrorBoundary from "./ErrorBoundary";
 
 
 function App() {
@@ -50,7 +49,6 @@ function App() {
     return (
         <>
             <Container>
-                <ErrorBoundary>
                     <ProvideAuth onLogin={onLogin}>
                         <Router forceRefresh={true}>
 
@@ -134,7 +132,6 @@ function App() {
 
                         </Router>
                     </ProvideAuth>
-                </ErrorBoundary>
             </Container>
         </>
     );
@@ -146,7 +143,7 @@ function App() {
                 userId: auth?.user?.id ? auth?.user?.id : ''
             }
         });
-        if (!(auth?.user?.id) || loading) {
+        if (loading) {
             return (<p>Loading...</p>);
         }
         if (error) {
