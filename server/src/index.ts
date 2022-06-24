@@ -13,8 +13,8 @@ import {AuthenticationError, gql} from 'apollo-server';
 import {log, LogLevel} from './utils.js';
 import BlogStore from './blogstore.js';
 import {readFileSync} from 'fs';
-import { ApolloServerPluginSchemaReporting } from 'apollo-server-core';
 import {config} from './config.js';
+import { ApolloServerPluginUsageReporting } from "apollo-server-core";
 
 // Data sources
 let conn = new DBConnection('./db-test1.db');
@@ -50,8 +50,8 @@ const server = new ApolloServer({
         }
     },
     plugins: [
-        ApolloServerPluginSchemaReporting({
-            endpointUrl: process.env.APOLLO_SCHEMA_REPORTING_ENDPOINT
+        ApolloServerPluginUsageReporting({
+            endpointUrl: "https://usage-reporting.api.staging.c0.gql.zone"
         }),
     ],
 });
