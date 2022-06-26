@@ -53,3 +53,9 @@ export const ENTRY_DELETE_MUTATION = gql`mutation EntryDeleteMutation($id: ID!) 
     }
 }`;
 
+export const ENTRY_PUBLISH_MUTATION = gql`mutation EntryPublishMutation($id: ID!, $published: Boolean!) {
+    publishEntry(id: $id, published: $published) {
+        id
+    }
+}`;
+

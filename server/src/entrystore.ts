@@ -21,6 +21,7 @@ export class Entry extends Model implements Node {
     declare content: string;
     declare created: Date;
     declare updated: Date;
+    declare published: boolean;
 }
 
 export default class EntryStore implements DataSource<Entry> {

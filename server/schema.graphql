@@ -90,6 +90,6 @@ type Mutation {
 
     createEntry(blogId: ID!, title: String!, content: String!): Entry
     updateEntry(id: ID!, title: String!, content: String!): Entry
-    publishEntry(id: ID!, publisged: Boolean!): Entry
+    publishEntry(id: ID!, published: Boolean!): Entry
     deleteEntry(id: ID!): Node
 }

@@ -71,7 +71,7 @@ const resolvers = {
             const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
             return await blogService.deleteEntry(args.id);
         },
-        publshEntry: async (_: undefined, args: { id: string, published: boolean }, ctx: BlogQLContext): Promise<Entry | null> => {
+        publishEntry: async (_: undefined, args: { id: string, published: boolean }, ctx: BlogQLContext): Promise<Entry | null> => {
             const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
             return await blogService.publishEntry(args.id, args.published);
         },

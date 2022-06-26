@@ -13,7 +13,12 @@ import { Sources } from 'quill';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {useMutation, useQuery} from '@apollo/client';
 import {Entry} from './graphql/schema';
-import {ENTRY_CREATE_MUTATION, ENTRY_DELETE_MUTATION, ENTRY_UPDATE_MUTATION} from './graphql/mutations';
+import {
+    ENTRY_CREATE_MUTATION,
+    ENTRY_DELETE_MUTATION,
+    ENTRY_PUBLISH_MUTATION,
+    ENTRY_UPDATE_MUTATION
+} from './graphql/mutations';
 import {BLOG_BY_HANDLE_QUERY, ENTRY_QUERY} from './graphql/queries';
 
 
@@ -38,11 +43,12 @@ export function EditorFormViaEntryId() {
     if (!error && data?.blog.id) {
         return (loading ? <p>Loading...</p> :
             <EditorForm blogId={data.blog.id}
-                        id={id}
-                        title={data.blog.entry.title}
-                        content={data.blog.entry.content}
-                        created={data.blog.entry.created}
-                        updated={data.blog.entry.updated}
+                id={id}
+                title={data.blog.entry.title}
+                content={data.blog.entry.content}
+                created={data.blog.entry.created}
+                updated={data.blog.entry.updated}
+                published={data.blog.entry.published}
             />);
     }
     return (<p>An unexpected error has occurred: {error}</p>)
@@ -53,7 +59,16 @@ export function EditorFormViaBlogHandle() {
     const {loading, error, data} = useQuery(BLOG_BY_HANDLE_QUERY, { variables: { handle } });
     if (!error && data?.blog.id) {
         return (loading ? <p>Loading...</p> :
-            <EditorForm blogId={data.blog.id} id='' title='' content='' created={new Date()} updated={new Date()}/>);
+            <EditorForm
+                blogId={data.blog.id}
+                id=''
+                title=''
+                content=''
+                created={new Date()}
+                updated={new Date()}
+                published={false}
+            />
+        );
     }
     return (<p>An unexpected error has occurred: {error}</p>)
 }
@@ -65,6 +80,7 @@ interface EditorFormProps {
     blogId: string;
     created: Date;
     updated: Date;
+    published: boolean;
 }
 
 export function EditorForm(props: EditorFormProps) {
@@ -81,6 +97,8 @@ export function EditorForm(props: EditorFormProps) {
     const [failure, setFailure] = useState(false);
     const [toast, setToast] = useState('');
     const [deleting, setDeleting] = useState(false);
+    const [saved, setSaved] = useState(id !== null && id !== undefined);
+    const [published, setPublished] = useState(props.published);
 
     // eslint-disable-next-line
     let editor: UnprivilegedEditor | null = null; // assigned a value below in handleContentFocus()
@@ -112,6 +130,7 @@ export function EditorForm(props: EditorFormProps) {
         updateEntryMutation()
             .then(() => {
                 setSuccess(true);
+                setSaved(true);
                 setToast('Entry updated');
                 setTimeout(() => {
                     history.push(`/blogs/${handle}`);
@@ -138,6 +157,25 @@ export function EditorForm(props: EditorFormProps) {
             .catch(() => {
                 setFailure(true);
                 setToast('Failed to delete entry');
+            });
+    }
+
+    const [publishEntryMutation] = useMutation<Entry, { id: string, published: boolean }>(
+        ENTRY_PUBLISH_MUTATION, {variables: {id, published: true}});
+
+    function publishEntry(id: string, published: boolean) {
+        publishEntryMutation()
+            .then(() => {
+                setSuccess(true);
+                setPublished(true);
+                setToast('Entry published');
+                setTimeout(() => {
+                    history.push(`/blogs/${handle}`);
+                }, 1000);
+            })
+            .catch(() => {
+                setFailure(true);
+                setToast('Failed to publish entry');
             });
     }
 
@@ -220,6 +258,10 @@ export function EditorForm(props: EditorFormProps) {
                             createEntry();
                         }
                     }}>Save
+                    </Button>
+                    <Button disabled={!saved || published} onClick={() => {
+                        publishEntry(id, true);
+                    }}>Publish
                     </Button>
                     <Link to={`/blogs/${handle}`}>
                         <Button>Cancel</Button>

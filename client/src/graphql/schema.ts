@@ -9,6 +9,7 @@ export interface Entry {
     content: string;
     created: Date;
     updated: Date;
+    published: Date;
 }
 
 export interface Blog {
