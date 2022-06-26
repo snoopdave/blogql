@@ -8,13 +8,7 @@ import {Button, Card, CardColumns, Jumbotron} from 'react-bootstrap';
 import {Link, useParams} from 'react-router-dom';
 import {useQuery} from '@apollo/client';
 import {ENTRIES_QUERY} from './graphql/queries';
-import {RelativeDateTime, DateTimeProps} from "./RelativeDateTime";
-
-
-function BlogViewJumbotron() {
-    const { handle } = useParams<{handle : string}>(); // get handle param from router route
-
-}
+import {RelativeDateTime} from "./RelativeDateTime";
 
 
 export interface BlogViewProps {
@@ -39,9 +33,9 @@ function BlogView(props: BlogViewProps) {
 
     const showIfLoggedIn = () : CSSProperties => {
         if (props.loggedIn) {
-            return { ['display' as any]: 'block' };
+            return { 'display': 'block' };
         }
-        return { ['display' as any]: 'none' };
+        return { 'display': 'none' };
     };
 
     return (

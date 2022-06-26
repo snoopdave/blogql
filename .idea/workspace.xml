@@ -5,8 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="901c4220-56ba-4f73-94f0-845c155287b7" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/server/src/blogservice.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.github/workflows/node.js.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/node.js.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/BlogView.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/BlogView.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/EntryEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/EntryEditor.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/resolvers.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/resolvers.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,7 +33,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/server/src" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
@@ -55,6 +60,7 @@
       <updated>1655837707141</updated>
       <workItem from="1655837708373" duration="5839000" />
       <workItem from="1656002332038" duration="17226000" />
+      <workItem from="1656251319212" duration="85000" />
     </task>
     <servers />
   </component>
@@ -100,7 +106,6 @@
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/server/src/entrystore.js</url>
           <line>57</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>

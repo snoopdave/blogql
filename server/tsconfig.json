@@ -4,7 +4,7 @@
     "esModuleInterop": true,
     "strict": true,
     "isolatedModules": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "lib": ["ES2020"],
     "module": "esnext",
     "moduleResolution": "node",

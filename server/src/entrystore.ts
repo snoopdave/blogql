@@ -97,7 +97,7 @@ export default class EntryStore implements DataSource<Entry> {
         return { rows, count: await this.countAll(blogId) };
     }
 
-    async update(id, title, content) : Promise<Entry | null> {
+    async update(id: string, title: string, content: string) : Promise<Entry | null> {
         const now = new Date();
         const [ number ] = await Entry.update({ title, content, updated: now },
             { where: { id } });
@@ -109,7 +109,7 @@ export default class EntryStore implements DataSource<Entry> {
         return this.retrieve(id);
     }
 
-    async delete(id): Promise<void> {
+    async delete(id: string): Promise<void> {
         const number = await Entry.destroy({ where: { id } });
         if (number === 0) {
             throw Error('Entry not found');

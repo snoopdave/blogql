@@ -7,14 +7,14 @@ import {ApolloServer} from 'apollo-server-express';
 import DBConnection from './dbconnection.js';
 import EntryStore from './entrystore.js';
 import resolvers from './resolvers.js';
-import UserStore from './userstore.js';
+import UserStore, {User} from './userstore.js';
 import BlogQL from './blogql.js';
 import {AuthenticationError, gql} from 'apollo-server';
 import {log, LogLevel} from './utils.js';
 import BlogStore from './blogstore.js';
 import {readFileSync} from 'fs';
 import {config} from './config.js';
-import { ApolloServerPluginUsageReporting } from "apollo-server-core";
+import { ApolloServerPluginUsageReporting } from 'apollo-server-core';
 
 // Data sources
 let conn = new DBConnection('./db-test1.db');
@@ -26,6 +26,17 @@ const userStore = new UserStore(conn);
 let blogQL = new BlogQL(entryStore, userStore);
 
 export const typeDefs = gql(readFileSync('schema.graphql', 'utf8'));
+
+export interface BlogQLDataSources {
+    readonly blogStore: BlogStore;
+    readonly entryStore: EntryStore;
+    readonly userStore: UserStore;
+}
+
+export interface BlogQLContext {
+    readonly dataSources: BlogQLDataSources;
+    readonly user: User | undefined;
+}
 
 // ApolloServer provides GraphQL API for blogging
 const server = new ApolloServer({
@@ -51,7 +62,7 @@ const server = new ApolloServer({
     },
     plugins: [
         ApolloServerPluginUsageReporting({
-            endpointUrl: "https://usage-reporting.api.staging.c0.gql.zone"
+            endpointUrl: 'https://usage-reporting.api.staging.c0.gql.zone'
         }),
     ],
 });

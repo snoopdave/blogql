@@ -81,7 +81,8 @@ export function EditorForm(props: EditorFormProps) {
     const [toast, setToast] = useState('');
     const [deleting, setDeleting] = useState(false);
 
-    let editor: any = null;
+    // eslint-disable-next-line
+    let editor: any = null; // assigned a value below in handleContentFocus()
 
     console.log(`${instance} - State: title='${title}' content='${content}' valid=${valid}`);
 
@@ -94,7 +95,7 @@ export function EditorForm(props: EditorFormProps) {
                 setSuccess(true);
                 setToast('New entry created');
                 setTimeout(() => {
-                    history.push('/entries');
+                    history.push(`/blogs/${handle}`);
                 }, 500);
             })
             .catch(() => {

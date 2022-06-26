@@ -3,137 +3,77 @@
  * Licensed under Apache Software License v2.
  */
 
-import EntryStore, {Entry} from './entrystore.js';
-import {Cursor, resolveCollection, Response} from './pagination.js';
+import {Entry} from './entrystore.js';
+import {Response} from './pagination.js';
 import {Node} from './node.js';
-import {AuthenticationError, ForbiddenError} from 'apollo-server-express';
-import BlogStore, {Blog} from './blogstore';
-import {User} from './userstore';
+import {Blog} from './blogstore.js';
+import {User} from './userstore.js';
+import {BlogServiceSQLiteImpl} from './blogservice.js';
+import {BlogQLContext, BlogQLDataSources} from './index.js';
 
 
 const resolvers = {
     Node: {
-        __resolveType: (node) => {
+        __resolveType: (node: Node) => {
             const type = node.id.split('-')[5];
             return type[0].toUpperCase() + type.slice(1);
         }
     },
     Query: {
-        blogForUser: async (_, args: { userId: string }, {dataSources}): Promise<Blog | null> => {
-            let blogStore: BlogStore = dataSources.blogStore;
-            await blogStore.init();
-            return await blogStore.retrieveByUserId(args.userId);
+        blogForUser: async (_: undefined, args: { userId: string }, ctx: BlogQLContext): Promise<Blog | null> => {
+            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
+            return await blogService.getBlogForUser(args.userId);
         },
-        blog: async (_, args: { handle: string }, {dataSources}): Promise<Blog | null> => {
-            let blogStore: BlogStore = dataSources.blogStore;
-            await blogStore.init();
-            return await blogStore.retrieve(args.handle);
+        blog: async (_: undefined, args: { handle: string }, ctx: BlogQLContext): Promise<Blog | null> => {
+            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
+            return await blogService.getBlog(args.handle);
         },
-        blogs: async (_, args: { limit: number, offset: number, cursor: string }, {dataSources}):
+        blogs: async (_: undefined, args: { limit: number, offset: number, cursor: string }, ctx: BlogQLContext):
             Promise<Response<Blog>> => {
-                await dataSources.blogStore.init();
-                return resolveCollection<Blog>(args, async (cursor: Cursor) => {
-                    return await dataSources.blogStore.retrieveAll(cursor.limit + 1, cursor.offset);
-                });
-            },
+            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
+                return await blogService.getBlogs(args.limit, args.offset, args.cursor);
+        },
     },
     Blog: {
-        entry: async (_, args: { id: string }, {dataSources}): Promise<Entry | null> => {
-            return await dataSources.entryStore.retrieve(args.id);
+        entry: async (blog: Blog, args: { id: string }, ctx: BlogQLContext): Promise<Entry | null> => {
+            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
+            return await blogService.getEntry(blog, args.id);
         },
-        user: async (blog, args: {}, {dataSources}): Promise<User | null> => {
-            return await dataSources.userStore.retrieve(blog.userId);
+        user: async (blog: Blog, args: { id: string}, ctx: BlogQLContext): Promise<User | null> => {
+            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
+            return await blogService.getUser(blog, args.id)
         },
-        entries: async (blog, args: { limit: number, offset: number, cursor: string }, {dataSources}):
+        entries: async (blog: Blog, args: { limit: number, offset: number, cursor: string }, ctx: BlogQLContext):
             Promise<Response<Entry>> => {
-                let entryStore: EntryStore = dataSources.entryStore;
-                await entryStore.init();
-                return resolveCollection<Entry>(args, async (cursor: Cursor) => {
-                    return await entryStore.retrieveAll(blog.id, cursor.limit + 1, cursor.offset);
-                });
+            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
+                return await blogService.getEntries(blog, args.limit, args.offset, args.cursor);
             },
     },
     Mutation: {
-        createEntry: async (_, args: { blogId: string, title: string, content: string }, {
-            dataSources,
-            user
-        }): Promise<Entry> => {
-            if (user) {
-                await dataSources.blogStore.init();
-                const blog = await dataSources.blogStore.retrieveById(args.blogId);
-                if (blog.userId !== user.id) {
-                    throw new AuthenticationError('You are not authorized to create entries for this blog.');
-                }
-                await dataSources.entryStore.init();
-                return await dataSources.entryStore.create(args.blogId, args.title, args.content);
-            }
-            throw new AuthenticationError('Must be logged in to createEntry');
+        createEntry: async (_: undefined, args: { blogId: string, title: string, content: string }, ctx: BlogQLContext): Promise<Entry> => {
+            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
+            return await blogService.createEntry(args.blogId, args.title, args.content);
         },
-        updateEntry: async (_, args: { id: string, title: string, content: string }, {dataSources, user}):
+        updateEntry: async (_: undefined, args: { id: string, title: string, content: string }, ctx: BlogQLContext):
             Promise<Entry | null> => {
-            if (user) {
-                let entryStore: EntryStore = dataSources.entryStore;
-                await entryStore.init();
-                const entry = await entryStore.retrieve(args.id);
-                await dataSources.blogStore.init();
-                const blog = await dataSources.blogStore.retrieveById(entry?.blogId);
-                if (blog?.userId !== user.id) {
-                    throw new AuthenticationError('You are not authorized to update entries for this blog.');
-                }
-                return await entryStore.update(args.id, args.title, args.content);
-            }
-            throw new AuthenticationError('Must be logged in to updateEntry');
+            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
+            return await blogService.updateEntry(args.id, args.title, args.content);
         },
-        deleteEntry: async (_, args: { id: string }, {dataSources, user}): Promise<Node> => {
-            if (user) {
-                let entryStore: EntryStore = dataSources.entryStore;
-                await entryStore.init();
-                const entry = await entryStore.retrieve(args.id);
-                await dataSources.blogStore.init();
-                const blog = await dataSources.blogStore.retrieveById(entry?.blogId);
-                if (blog?.userId !== user.id) {
-                    throw new AuthenticationError('You are not authorized to delete entries for this blog.');
-                }
-                await entryStore.delete(args.id);
-                return {id: args.id};
-            }
-            throw new AuthenticationError('Must be logged in to deleteEntry');
+        deleteEntry: async (_: undefined, args: { id: string }, ctx: BlogQLContext): Promise<Node> => {
+            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
+            return await blogService.deleteEntry(args.id);
         },
-        createBlog: async (_, args: { handle: string, name: string }, {dataSources, user}): Promise<Blog> => {
-            if (user) {
-                const blogStore: BlogStore = dataSources.blogStore;
-                await blogStore.init();
-                if (await blogStore.retrieveByUserId(user.id)) {
-                    throw new ForbiddenError('Currently only one blog per user is supported.');
-                }
-                return await blogStore.create(user.id, args.name, args.handle);
-            }
-            throw new AuthenticationError('Must be logged in to createBlog');
+        createBlog: async (_: undefined, args: { handle: string, name: string }, ctx: BlogQLContext): Promise<Blog> => {
+            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
+            return await blogService.createBlog(args.name, args.handle);
         },
-        updateBlog: async (_, args: { id: string, name: string }, {dataSources, user}): Promise<Blog | null> => {
-            if (user) {
-                const blogStore: BlogStore = dataSources.blogStore;
-                await blogStore.init();
-                const blog = await blogStore.retrieveById(args.id);
-                if (blog?.userId !== user.id) {
-                    throw new AuthenticationError('You are not authorized to update this blog.');
-                }
-                return await blogStore.update(args.id, args.name);
-            }
-            throw new AuthenticationError('Must be logged in to createBlog');
+        updateBlog: async (_: undefined, args: { id: string, name: string }, ctx: BlogQLContext): Promise<Blog | null> => {
+            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
+            return await blogService.updateBlog(args.id, args.name);
         },
-        deleteBlog: async (_, args: { id: string }, {dataSources, user}): Promise<Node> => {
-            if (user) {
-                const blogStore: BlogStore = dataSources.blogStore;
-                await blogStore.init();
-                const blog = await blogStore.retrieveById(args.id);
-                if (blog?.userId !== user.id) {
-                    throw new AuthenticationError('You are not authorized to delete this blog.');
-                }
-                await blogStore.delete(args.id);
-                return {id: args.id};
-            }
-            throw new AuthenticationError('Must be logged in to deleteBlog');
+        deleteBlog: async (_: undefined, args: { id: string }, ctx: BlogQLContext): Promise<Node> => {
+            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
+            return await blogService.deleteBlog(args.id);
         },
     }
 }

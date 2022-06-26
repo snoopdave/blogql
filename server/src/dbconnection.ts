@@ -13,7 +13,7 @@ export default class DBConnection {
     path: string;
     db: sequelize.Sequelize;
 
-    constructor(path) {
+    constructor(path: string) {
         this.path = path;
         this.db = new sequelize.Sequelize({
             dialect: 'sqlite',

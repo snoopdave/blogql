@@ -62,7 +62,7 @@ export default class BlogStore implements DataSource<Blog> {
         await Blog.sync();
     }
 
-    async create(userId, name, handle): Promise<Blog> {
+    async create(userId: string, name: string, handle: string): Promise<Blog> {
         let blog = await this.retrieveByUserId(userId);
         if (!blog) {
             const now = new Date();
@@ -80,8 +80,7 @@ export default class BlogStore implements DataSource<Blog> {
         } else if (number > 1) {
             throw Error('Unexpected outcome: multiple blogs updated');
         }
-        const blog = this.retrieveById(id);
-        return blog;
+        return this.retrieveById(id);
     }
 
     async retrieve(handle: string): Promise<Blog | null> {
@@ -113,7 +112,7 @@ export default class BlogStore implements DataSource<Blog> {
         return {rows, count: await Blog.count()};
     }
 
-    async delete(id): Promise<void> {
+    async delete(id: string): Promise<void> {
         const number = await Blog.destroy({where: {id}});
         if (number === 0) {
             throw Error('Blog not found');

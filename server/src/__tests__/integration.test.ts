@@ -89,7 +89,7 @@ describe('Test the GraphQL API integration', () => {
         const {server, conn, blogStore, entryStore, authUsers} = await initDataStorage();
         const blog = await createBlogAndTestEntriesViaSql(authUsers[0], blogStore, entryStore);
         const payload = {query: getEntriesQuery, variables: {handle: blog.handle, limit: 2}};
-        const dataRetrieved = [];
+        const dataRetrieved: Entry[] = [];
         try {
             await getAllEntries(server, payload, dataRetrieved);
             expect(dataRetrieved).toHaveLength(authUsers.length);
@@ -260,7 +260,7 @@ describe('Test the GraphQL API integration', () => {
         const {server, conn, blogStore, authUsers} = await initDataStorage();
         await createTestBlogsViaSql(authUsers, blogStore);
         const payload = {query: getBlogsQuery, variables: {limit: 2}};
-        const dataRetrieved = [];
+        const dataRetrieved: Entry[] = [];
         try {
             await getAllBlogs(server, payload, dataRetrieved);
             expect(dataRetrieved).toHaveLength(authUsers.length);
@@ -306,11 +306,11 @@ describe('Test random stuff', () => {
 });
 
 // use cursor to recursively page through and fetch all entries
-async function getAllEntries(server: ApolloServer, payload: any, dataRetrieved) {
+async function getAllEntries(server: ApolloServer, payload: any, dataRetrieved: Entry[]) {
     const result = await server.executeOperation(payload);
     expect(result?.errors).toBeUndefined();
 
-    result.data?.blog.entries.nodes.forEach(item => {
+    result.data?.blog.entries.nodes.forEach((item: Entry) => {
         dataRetrieved.push(item);
     });
 
@@ -328,11 +328,11 @@ async function getAllEntries(server: ApolloServer, payload: any, dataRetrieved) 
 }
 
 // use cursor to recursively page through and fetch all blogs
-async function getAllBlogs(server: ApolloServer, payload: any, dataRetrieved) {
+async function getAllBlogs(server: ApolloServer, payload: any, dataRetrieved: Entry[]) {
     const result = await server.executeOperation(payload);
     expect(result?.errors).toBeUndefined();
 
-    result.data?.blogs.nodes.forEach(item => {
+    result.data?.blogs.nodes.forEach((item: Entry) => {
         dataRetrieved.push(item);
     });
 
@@ -368,7 +368,7 @@ async function createTestBlogsViaSql(users: User[], bs: BlogStore): Promise<Blog
     return blogs;
 }
 
-function verifyDate(dateString) {
+function verifyDate(dateString: string) {
     expect(dateString).toBeDefined();
     const date = new Date();
     date.setTime(Date.parse(dateString));
@@ -379,11 +379,11 @@ function verifyDate(dateString) {
 // GraphQL CRUD methods
 //
 
-async function createEntry(server: ApolloServer, blogId, title, content): Promise<GraphQLResponse> {
+async function createEntry(server: ApolloServer, blogId: string, title: string, content: string): Promise<GraphQLResponse> {
     return server.executeOperation({query: createEntryMutation, variables: {blogId, title, content}});
 }
 
-async function updateEntry(server, id, title, content): Promise<GraphQLResponse> {
+async function updateEntry(server: ApolloServer, id: string, title: string, content: string): Promise<GraphQLResponse> {
     return server.executeOperation({query: updateEntryMutation, variables: {id, title, content}});
 }
 
@@ -395,7 +395,7 @@ async function deleteEntry(server: ApolloServer, id: string): Promise<GraphQLRes
     return server.executeOperation({query: deleteEntryMutation, variables: {id}});
 }
 
-async function createBlog(server: ApolloServer, name, handle): Promise<GraphQLResponse> {
+async function createBlog(server: ApolloServer, name: string, handle: string): Promise<GraphQLResponse> {
     return server.executeOperation({query: createBlogMutation, variables: {handle, name}});
 }
 
