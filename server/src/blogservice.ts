@@ -122,6 +122,13 @@ export class BlogServiceSQLiteImpl implements BlogService {
         });
     }
 
+    async getDrafts(blog: Blog, limit: number, offset: number, cursor: string): Promise<Response<Entry>> {
+        await this.initDataSources();
+        return resolveCollection<Entry>({limit, cursor}, async (cursor: Cursor) => {
+            return await this.dataSources.entryStore.retrieveAllDrafts(blog.id, cursor.limit + 1, cursor.offset);
+        });
+    }
+
     async getEntries(blog: Blog, limit: number, offset: number, cursor: string): Promise<Response<Entry>> {
         await this.initDataSources();
         return resolveCollection<Entry>({limit, cursor}, async (cursor: Cursor) => {
@@ -137,6 +144,11 @@ export class BlogServiceSQLiteImpl implements BlogService {
     async getUser(blog: Blog, id: string): Promise<User | null> {
         await this.initDataSources();
         return await this.dataSources.userStore.retrieve(blog.userId);
+    }
+
+    async publishEntry(id: string, published: boolean): Promise<Entry | null> {
+        await this.initDataSources();
+        return await this.dataSources.entryStore.publish(id, published);
     }
 
     async updateBlog(id: string, name: string): Promise<Blog | null> {

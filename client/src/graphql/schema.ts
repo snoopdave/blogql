@@ -10,3 +10,9 @@ export interface Entry {
     created: Date;
     updated: Date;
 }
+
+export interface Blog {
+    id: string;
+    name: string;
+    handle: string;
+}

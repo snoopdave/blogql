@@ -8,6 +8,7 @@ import {Button, Form, Table} from "react-bootstrap";
 import {useQuery} from "@apollo/client";
 import {ENTRIES_QUERY} from "./graphql/queries";
 import {Link, useHistory, useParams} from "react-router-dom";
+import {Entry} from "./graphql/schema";
 
 
 function Drafts() {
@@ -48,7 +49,7 @@ function Drafts() {
                     <th>Created</th>
                 </tr>
                 </thead>
-                <tbody>{ data.blog?.entries?.nodes.map((entry) => entry ? (
+                <tbody>{ data.blog?.entries?.nodes.map((entry: Entry) => entry ? (
                     <tr key={entry.id}>
                         <td><Link className='nav-link' to={`/blogs/${handle}/edit/${entry.id}`}>{entry.title}</Link></td>
                         <td><Link className='nav-link' to={`/blogs/${handle}/edit/${entry.id}`}>TODO</Link></td>

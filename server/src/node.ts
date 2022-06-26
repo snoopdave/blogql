@@ -3,7 +3,6 @@
  * Licensed under Apache Software License v2.
  */
 
-
 export interface Node {
    id: string;
 }

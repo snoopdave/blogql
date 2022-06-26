@@ -41,7 +41,7 @@ function App() {
         });
     };
 
-    const onBlogUpdated = (hasBlog) => {
+    const onBlogUpdated = (hasBlog: boolean) => {
         // no op
     }
 

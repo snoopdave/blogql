@@ -3,12 +3,13 @@
  * Licensed under Apache Software License v2.
  */
 
-import React, {useState} from 'react';
+import React, {ChangeEvent, useState} from 'react';
 import {Button, Form, Jumbotron, Modal, Toast} from 'react-bootstrap';
 import './EntryEditor.css';
 import {Link, useHistory, useParams} from 'react-router-dom';
 import 'react-quill/dist/quill.snow.css';
-import ReactQuill from 'react-quill';
+import ReactQuill, {UnprivilegedEditor} from 'react-quill';
+import { Sources } from 'quill';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {useMutation, useQuery} from '@apollo/client';
 import {Entry} from './graphql/schema';
@@ -82,7 +83,7 @@ export function EditorForm(props: EditorFormProps) {
     const [deleting, setDeleting] = useState(false);
 
     // eslint-disable-next-line
-    let editor: any = null; // assigned a value below in handleContentFocus()
+    let editor: UnprivilegedEditor | null = null; // assigned a value below in handleContentFocus()
 
     console.log(`${instance} - State: title='${title}' content='${content}' valid=${valid}`);
 
@@ -140,15 +141,13 @@ export function EditorForm(props: EditorFormProps) {
             });
     }
 
-    function onTitleChange(event) {
-        console.log(`set title = ${event.target.value}`);
+    function onTitleChange(event: ChangeEvent<HTMLInputElement>) {
         setTitle(event.target.value);
         validateForm();
     }
 
-    function onContentChange(event) {
-        console.log(`set content = ${event}`);
-        setContent(event);
+    function onContentChange(value: string) {
+        setContent(value);
         validateForm();
     }
 
@@ -160,7 +159,7 @@ export function EditorForm(props: EditorFormProps) {
         }
     }
 
-    let handleContentFocus = (range, source, theEditor) => {
+    let handleContentFocus = (range: ReactQuill.Range, source: Sources, theEditor: UnprivilegedEditor) => {
         // TODO: there must be a better way to obtain a reference to the editor
         editor = theEditor;
     }
@@ -196,7 +195,7 @@ export function EditorForm(props: EditorFormProps) {
             <Form>
                 <Form.Group controlId='formTitle'>
                     <Form.Label>Title</Form.Label>
-                    <Form.Control type='text' value={title} placeholder='Title...' onChange={ onTitleChange} />
+                    <Form.Control type='text' value={title} placeholder='Title...' onChange={onTitleChange} />
                 </Form.Group>
                 { props.id.length > 0 && props.created &&
                     <Form.Group controlId='formCreated'>

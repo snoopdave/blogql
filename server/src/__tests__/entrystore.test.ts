@@ -59,6 +59,39 @@ describe('Test EntryStore', () => {
         }
     });
 
+    test('It can publish an entry', async () => {
+        let slug = randomString(5);
+        let conn = new DBConnection(`./db-test-${slug}.db`);
+        let blogStore = new BlogStore(conn);
+        await blogStore.init();
+        let entryStore = new EntryStore(conn);
+        await entryStore.init();
+        const userStore = new UserStore(conn);
+        await userStore.init();
+        const user: User = await userStore.create(
+            `test-user-${slug}`, 'test-user@example.com', 'dummy.png')
+        try {
+            const blog = await blogStore.create(user.id, `Blog ${slug}`, `blog-${slug}`)
+            const entryCreated = await entryStore.create(blog.id, 'entry title', 'has content');
+
+            expect(await entryStore.retrieveAll(blog.id, 10, 0)).toBe(0);
+            expect(await entryStore.retrieveAllDrafts(blog.id, 10, 0)).toBe(1);
+
+            await entryStore.publish(entryCreated.id, true);
+
+            expect(await entryStore.retrieveAll(blog.id, 10, 0)).toBe(1);
+            expect(await entryStore.retrieveAllDrafts(blog.id, 10, 0)).toBe(0);
+
+            await entryStore.publish(entryCreated.id, false);
+
+            expect(await entryStore.retrieveAll(blog.id, 10, 0)).toBe(0);
+            expect(await entryStore.retrieveAllDrafts(blog.id, 10, 0)).toBe(1);
+
+        } finally {
+            await conn.destroy();
+        }
+    });
+
     test('It can page through entries', async () => {
         let slug = randomString(5);
         let conn = new DBConnection(`./db-test-${slug}.db`);

@@ -47,33 +47,42 @@ const resolvers = {
             Promise<Response<Entry>> => {
             const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
                 return await blogService.getEntries(blog, args.limit, args.offset, args.cursor);
-            },
+        },
+        drafts: async (blog: Blog, args: { limit: number, offset: number, cursor: string }, ctx: BlogQLContext):
+            Promise<Response<Entry>> => {
+            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
+            return await blogService.getDrafts(blog, args.limit, args.offset, args.cursor);
+        },
     },
     Mutation: {
+        createBlog: async (_: undefined, args: { handle: string, name: string }, ctx: BlogQLContext): Promise<Blog> => {
+            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
+            return await blogService.createBlog(args.name, args.handle);
+        },
         createEntry: async (_: undefined, args: { blogId: string, title: string, content: string }, ctx: BlogQLContext): Promise<Entry> => {
             const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
             return await blogService.createEntry(args.blogId, args.title, args.content);
         },
-        updateEntry: async (_: undefined, args: { id: string, title: string, content: string }, ctx: BlogQLContext):
-            Promise<Entry | null> => {
+        deleteBlog: async (_: undefined, args: { id: string }, ctx: BlogQLContext): Promise<Node> => {
             const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
-            return await blogService.updateEntry(args.id, args.title, args.content);
+            return await blogService.deleteBlog(args.id);
         },
         deleteEntry: async (_: undefined, args: { id: string }, ctx: BlogQLContext): Promise<Node> => {
             const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
             return await blogService.deleteEntry(args.id);
         },
-        createBlog: async (_: undefined, args: { handle: string, name: string }, ctx: BlogQLContext): Promise<Blog> => {
+        publshEntry: async (_: undefined, args: { id: string, published: boolean }, ctx: BlogQLContext): Promise<Entry | null> => {
             const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
-            return await blogService.createBlog(args.name, args.handle);
+            return await blogService.publishEntry(args.id, args.published);
         },
         updateBlog: async (_: undefined, args: { id: string, name: string }, ctx: BlogQLContext): Promise<Blog | null> => {
             const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
             return await blogService.updateBlog(args.id, args.name);
         },
-        deleteBlog: async (_: undefined, args: { id: string }, ctx: BlogQLContext): Promise<Node> => {
+        updateEntry: async (_: undefined, args: { id: string, title: string, content: string }, ctx: BlogQLContext):
+            Promise<Entry | null> => {
             const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
-            return await blogService.deleteBlog(args.id);
+            return await blogService.updateEntry(args.id, args.title, args.content);
         },
     }
 }

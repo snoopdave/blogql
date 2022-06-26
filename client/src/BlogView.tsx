@@ -9,6 +9,7 @@ import {Link, useParams} from 'react-router-dom';
 import {useQuery} from '@apollo/client';
 import {ENTRIES_QUERY} from './graphql/queries';
 import {RelativeDateTime} from "./RelativeDateTime";
+import {Entry} from "./graphql/schema";
 
 
 export interface BlogViewProps {
@@ -44,7 +45,7 @@ function BlogView(props: BlogViewProps) {
             <h1>{data.blog.name}</h1>
             </Jumbotron>
             <CardColumns> {
-                data.blog.entries?.nodes.map((entry) => entry ? (
+                data.blog.entries?.nodes.map((entry: Entry) => entry ? (
                     <Card style={{width: '18em'}} key={entry.id}>
                         <Card.Img variant='top' src={`https://picsum.photos/seed/picsum/215/160?random=${entry.id}`} />
                         <Card.Body>

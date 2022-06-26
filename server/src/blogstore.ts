@@ -1,3 +1,8 @@
+/**
+ * Copyright David M. Johnson (snoopdave@gmail.com).
+ * Licensed under Apache Software License v2.
+ */
+
 import {v4 as uuid} from 'uuid';
 import sequelize from 'sequelize';
 import {DataSource} from 'apollo-datasource';
@@ -50,6 +55,10 @@ export default class BlogStore implements DataSource<Blog> {
             updated: {
                 type: DataTypes.DATE,
                 allowNull: false
+            },
+            published: {
+                type: DataTypes.DATE,
+                allowNull: true
             },
             userId: {
                 type: DataTypes.STRING,

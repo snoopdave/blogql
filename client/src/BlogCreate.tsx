@@ -4,7 +4,7 @@
  */
 
 import {Button, Form, Toast} from 'react-bootstrap';
-import React, {useState} from 'react';
+import React, {ChangeEvent, useState} from 'react';
 import {useMutation} from '@apollo/client';
 import {Entry} from './graphql/schema';
 import {BLOG_CREATE_MUTATION} from './graphql/mutations';
@@ -13,7 +13,7 @@ import {Link, useHistory} from 'react-router-dom';
 
 
 export interface BlogCreateProps {
-    onBlogUpdated: (hasBlog) => void;
+    onBlogUpdated: (hasBlog: boolean) => void;
 }
 
 export function BlogCreate(props: BlogCreateProps) {
@@ -29,12 +29,12 @@ export function BlogCreate(props: BlogCreateProps) {
     const [blogCreateMutation] = useMutation<Entry, { handle: string | undefined, name: string | undefined }>(
         BLOG_CREATE_MUTATION, { variables: { handle, name } });
 
-    function onHandleChange(event) {
+    function onHandleChange(event: ChangeEvent<HTMLInputElement>) {
         setHandle(event.target.value.toLowerCase());
         validateForm();
     }
 
-    function onNameChange(event) {
+    function onNameChange(event: ChangeEvent<HTMLInputElement>) {
         setName(event.target.value);
         validateForm();
     }

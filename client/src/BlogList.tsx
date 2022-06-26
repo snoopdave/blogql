@@ -3,6 +3,7 @@ import {BLOGS_QUERY} from './graphql/queries';
 import React from 'react';
 import {Table} from 'react-bootstrap';
 import {Link} from "react-router-dom";
+import {Blog} from "./graphql/schema";
 
 
 export function BlogList() {
@@ -25,7 +26,7 @@ export function BlogList() {
                 <th>Name</th>
             </tr>
             </thead>
-            <tbody>{ data.blogs?.nodes.map((blog) => blog ? (
+            <tbody>{ data.blogs?.nodes.map((blog: Blog) => blog ? (
                 <tr key={blog.id}>
                     <td><Link className='nav-link' to={`/blogs/${blog.handle}`}>{blog.handle}</Link></td>
                     <td><Link className='nav-link' to={`/blogs/${blog.handle}`}>TODO</Link></td>
