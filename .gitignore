@@ -4,3 +4,5 @@ client/__generated__
 client/src/graphql/__generated__
 server/node_modules
 env.sh
+server/.gradle
+badschema.graphql
