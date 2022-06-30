@@ -10,6 +10,7 @@ type Entry implements Node {
     content: String!
     created: DateTime!
     updated: DateTime!
+    bogus: String!
 }
 
 type EntryResponse {
