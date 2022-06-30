@@ -9,7 +9,8 @@ import {DataSourceConfig} from 'apollo-datasource/src';
 import DBConnection from './dbconnection.js';
 import {FindAllResult} from './pagination.js';
 import {Node} from './node.js';
-import sequelize from 'sequelize';
+import sequelize, {Op} from 'sequelize';
+import {WhereOptions} from "sequelize/types/model";
 const { DataTypes, Model } = sequelize; // sequelize is a CommonJS module
 
 
@@ -20,6 +21,7 @@ export class Entry extends Model implements Node {
     declare content: string;
     declare created: Date;
     declare updated: Date;
+    declare published: boolean;
 }
 
 export default class EntryStore implements DataSource<Entry> {
@@ -59,6 +61,10 @@ export default class EntryStore implements DataSource<Entry> {
                 type: DataTypes.DATE,
                 allowNull: false
             },
+            published: {
+                type: DataTypes.DATE,
+                allowNull: true
+            },
         }, {
             sequelize: this.db,
             modelName: 'entry'
@@ -78,15 +84,15 @@ export default class EntryStore implements DataSource<Entry> {
         return entry?.get();
     }
 
-    async countAll(blogId: string | null): Promise<number> {
-        return blogId ? await Entry.count({ where: { blogId } }) : await Entry.count();
+    async countAll(where: WhereOptions): Promise<number> {
+        return await Entry.count({ where });
     }
 
-    async retrieveAll(blogId: string, limit: number, offset: number) : Promise<FindAllResult<Entry>> {
+    async retrieveAllWhere(limit: number, offset: number, where: WhereOptions) : Promise<FindAllResult<Entry>> {
         const result = await Entry.findAndCountAll({
-            where: { blogId },
-            limit: limit,
-            offset: offset,
+            where,
+            limit,
+            offset,
             order: [['updated', 'DESC']]
             //,logging: console.log
         });
@@ -94,10 +100,18 @@ export default class EntryStore implements DataSource<Entry> {
         result.rows.map(entry => {
             rows.push(entry.get());
         });
-        return { rows, count: await this.countAll(blogId) };
+        return { rows, count: await this.countAll(where) }; // TODO: why is countAll necessary
     }
 
-    async update(id, title, content) : Promise<Entry | null> {
+    async retrieveAll(blogId: string, limit: number, offset: number) : Promise<FindAllResult<Entry>> {
+        return this.retrieveAllWhere(limit, offset, { blogId, [Op.not]: { published: null }} );
+    }
+
+    async retrieveAllDrafts(blogId: string, limit: number, offset: number) : Promise<FindAllResult<Entry>> {
+        return this.retrieveAllWhere(limit, offset, { blogId, published: null });
+    }
+
+    async update(id: string, title: string, content: string) : Promise<Entry | null> {
         const now = new Date();
         const [ number ] = await Entry.update({ title, content, updated: now },
             { where: { id } });
@@ -109,7 +123,19 @@ export default class EntryStore implements DataSource<Entry> {
         return this.retrieve(id);
     }
 
-    async delete(id): Promise<void> {
+    async publish(id: string, published: boolean) : Promise<Entry | null> {
+        const now = new Date();
+        const [ number ] = await Entry.update({ published: published ? now : null },
+            { where: { id } });
+        if (number === 0) {
+            throw Error('Entry not found');
+        } else if (number > 1) {
+            throw Error('Unexpected outcome: multiple entries updated');
+        }
+        return this.retrieve(id);
+    }
+
+    async delete(id: string): Promise<void> {
         const number = await Entry.destroy({ where: { id } });
         if (number === 0) {
             throw Error('Entry not found');

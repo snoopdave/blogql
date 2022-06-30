@@ -26,6 +26,27 @@ export const ENTRIES_QUERY = gql `query EntriesQuery($handle: String!, $limit: I
                 content
                 created
                 updated
+                published
+            }
+            pageInfo {
+                totalCount
+                cursor
+            }
+        }
+    }
+}`;
+export const DRAFTS_QUERY = gql `query DraftsQuery($handle: String!, $limit: Int, $cursor: String) {
+    blog(handle: $handle) {
+        id
+        name
+        drafts(limit: $limit, cursor: $cursor) {
+            nodes {
+                id
+                title
+                content
+                created
+                updated
+                published
             }
             pageInfo {
                 totalCount

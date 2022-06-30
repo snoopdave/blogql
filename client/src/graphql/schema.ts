@@ -9,4 +9,11 @@ export interface Entry {
     content: string;
     created: Date;
     updated: Date;
+    published: Date;
+}
+
+export interface Blog {
+    id: string;
+    name: string;
+    handle: string;
 }

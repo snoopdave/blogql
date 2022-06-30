@@ -52,5 +52,5 @@ jobs:
 
     - name: Check schema
       run: |
-        rover graph check ${APOLLO_GRAPH_REF} --name BlogQL --schema ../client/schema.graphql
+        rover graph check ${APOLLO_GRAPH_REF} --name BlogQL --schema schema.graphql
       working-directory: server

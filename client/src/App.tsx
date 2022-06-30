@@ -24,7 +24,6 @@ import {BlogSettings} from './BlogSettings';
 function App() {
     dotenv.config();
     const [loggedIn, setLoggedIn] = useState(false);
-    const [hasBlog, setHasBlog] = useState(false);
 
     const onLogin = (user: User | null | undefined) => {
         if (user) {
@@ -42,8 +41,8 @@ function App() {
         });
     };
 
-    const onBlogUpdated = (hasBlog) => {
-        setHasBlog(hasBlog);
+    const onBlogUpdated = (hasBlog: boolean) => {
+        // no op
     }
 
     return (

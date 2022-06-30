@@ -60,7 +60,7 @@ export function encodeCursor(cursor: Cursor): string {
     return Buffer.from(cursorJson, 'binary').toString('base64');
 }
 
-function log(msg) {
+function log(msg: string) {
     appendFileSync('/tmp/jest.log.txt', msg + '\n', {'encoding': 'utf8'});
 }
 

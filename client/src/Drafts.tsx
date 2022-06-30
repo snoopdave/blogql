@@ -6,14 +6,15 @@
 import React from 'react';
 import {Button, Form, Table} from "react-bootstrap";
 import {useQuery} from "@apollo/client";
-import {ENTRIES_QUERY} from "./graphql/queries";
+import {DRAFTS_QUERY} from "./graphql/queries";
 import {Link, useHistory, useParams} from "react-router-dom";
+import {Entry} from "./graphql/schema";
 
 
 function Drafts() {
     const history = useHistory();
     const { handle } = useParams<{handle : string}>(); // get handle param from router route
-    const { loading, error, data } = useQuery(ENTRIES_QUERY, {
+    const { loading, error, data } = useQuery(DRAFTS_QUERY, {
         variables: { handle, limit: 50 }
     });
 
@@ -48,7 +49,7 @@ function Drafts() {
                     <th>Created</th>
                 </tr>
                 </thead>
-                <tbody>{ data.blog?.entries?.nodes.map((entry) => entry ? (
+                <tbody>{ data.blog?.drafts?.nodes.map((entry: Entry) => entry ? (
                     <tr key={entry.id}>
                         <td><Link className='nav-link' to={`/blogs/${handle}/edit/${entry.id}`}>{entry.title}</Link></td>
                         <td><Link className='nav-link' to={`/blogs/${handle}/edit/${entry.id}`}>TODO</Link></td>

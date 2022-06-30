@@ -4,7 +4,7 @@
  */
 
 import {Button, Form, Modal, Toast} from 'react-bootstrap';
-import React, {useState} from 'react';
+import React, {ChangeEvent, useState} from 'react';
 import {useMutation, useQuery} from '@apollo/client';
 import {Entry} from './graphql/schema';
 import {BLOG_DELETE_MUTATION, BLOG_UPDATE_MUTATION} from './graphql/mutations';
@@ -57,7 +57,7 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
     const [blogDeleteMutation] = useMutation<Entry, { id: string }>(
         BLOG_DELETE_MUTATION, { variables: { id: props.id } });
 
-    function onNameChange(event) {
+    function onNameChange(event: ChangeEvent<HTMLInputElement>) {
         setName(event.target.value);
         validateForm();
     }

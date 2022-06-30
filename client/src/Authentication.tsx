@@ -5,7 +5,8 @@
 
 import {Redirect, Route, useHistory} from 'react-router-dom';
 import React, {Context, createContext, useContext} from 'react';
-import GoogleLogin from 'react-google-login';
+import GoogleLogin, {GoogleLoginResponse, GoogleLoginResponseOffline} from 'react-google-login';
+import {RouteProps} from "react-router";
 
 
 export interface User {
@@ -17,12 +18,13 @@ export interface User {
 
 // A wrapper for <Route> that redirects to the login
 // screen if you're not yet authenticated.
-export function PrivateRoute({ children, ...rest }) {
+export function PrivateRoute({ children, ...rest }: RouteProps ) {
     const auth = useAuth();
     return (
         <Route
             {...rest}
-            render={({ location }) => {
+            // @ts-ignore
+            render = { (props) => {
                 const storedUser = localStorage.getItem('BlogQlUser');
                 if (storedUser) {
                     auth.user = JSON.parse(storedUser);
@@ -32,7 +34,7 @@ export function PrivateRoute({ children, ...rest }) {
                 return auth.user ? (children) : (
                     <Redirect to={{
                         pathname: '/login',
-                        state: {from: location}
+                        state: {from: props.location}
                     }}
                     />);
                 }
@@ -60,7 +62,7 @@ interface ProvideAuthProps {
     children?: React.ReactNode;
 }
 
-export function checkLoginStatus(callback: (user) => void) {
+export function checkLoginStatus(callback: (user: User | null) => void) {
     fetch('http://localhost:4000/me', {
         method: 'GET',
         credentials: 'include',
@@ -98,10 +100,8 @@ export function LoginButton(props : LoginProps) {
     let auth = useAuth();
     const history = useHistory();
 
-    let login = async googleData => {
-        console.log('Google data: ' + googleData);
-        console.log('Google data token: ' + googleData.tokenId);
-        if (googleData.tokenId) {
+    let login = async (googleData: GoogleLoginResponse | GoogleLoginResponseOffline) => {
+        if ('tokenId' in googleData) {
             const res = await fetch('http://localhost:4000/auth', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -112,6 +112,9 @@ export function LoginButton(props : LoginProps) {
             })
             auth.user = await res.json();
             props.onLogin(auth.user);
+            history.push(props.destination);
+        } else {
+            props.onLogin(null);
             history.push(props.destination);
         }
     };

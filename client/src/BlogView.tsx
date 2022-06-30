@@ -8,13 +8,8 @@ import {Button, Card, CardColumns, Jumbotron} from 'react-bootstrap';
 import {Link, useParams} from 'react-router-dom';
 import {useQuery} from '@apollo/client';
 import {ENTRIES_QUERY} from './graphql/queries';
-import {RelativeDateTime, DateTimeProps} from "./RelativeDateTime";
-
-
-function BlogViewJumbotron() {
-    const { handle } = useParams<{handle : string}>(); // get handle param from router route
-
-}
+import {RelativeDateTime} from "./RelativeDateTime";
+import {Entry} from "./graphql/schema";
 
 
 export interface BlogViewProps {
@@ -39,9 +34,9 @@ function BlogView(props: BlogViewProps) {
 
     const showIfLoggedIn = () : CSSProperties => {
         if (props.loggedIn) {
-            return { ['display' as any]: 'block' };
+            return { 'display': 'block' };
         }
-        return { ['display' as any]: 'none' };
+        return { 'display': 'none' };
     };
 
     return (
@@ -50,7 +45,7 @@ function BlogView(props: BlogViewProps) {
             <h1>{data.blog.name}</h1>
             </Jumbotron>
             <CardColumns> {
-                data.blog.entries?.nodes.map((entry) => entry ? (
+                data.blog.entries?.nodes.map((entry: Entry) => entry ? (
                     <Card style={{width: '18em'}} key={entry.id}>
                         <Card.Img variant='top' src={`https://picsum.photos/seed/picsum/215/160?random=${entry.id}`} />
                         <Card.Body>

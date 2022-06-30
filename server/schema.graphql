@@ -4,13 +4,37 @@ interface Node {
     id: ID!
 }
 
+"""
+Represents a single entry in a blog which is considered a draft if published is not defined.
+"""
 type Entry implements Node {
+    """
+    Unique identifier of the entry.
+    """
     id: ID!
+    """
+    Title of the entry, a plain-text string with no HTML markup.
+    """
     title: String!
+    """
+    Content of the entry which can include HTML markup.
+    """
     content: String!
+    """
+    Date that the entry was created.
+    """
     created: DateTime!
+    """
+    Date that the entry was updated.
+    """
     updated: DateTime!
+
     bogus: String!
+
+    """
+    Date that the entry was published or undefined if entry is a draft.
+    """
+    published: DateTime
 }
 
 type EntryResponse {
@@ -44,7 +68,8 @@ type Blog implements Node {
     created: DateTime!
     updated: DateTime!
     entry(id: ID!): Entry
-    entries(limit: Int, cursor: String): EntryResponse
+    entries(limit: Int, cursor: String): EntryResponse!
+    drafts(limit: Int, cursor: String): EntryResponse!
     userId: ID!
     user: User!
 }
@@ -68,5 +93,6 @@ type Mutation {
 
     createEntry(blogId: ID!, title: String!, content: String!): Entry
     updateEntry(id: ID!, title: String!, content: String!): Entry
+    publishEntry(id: ID!, published: Boolean!): Entry
     deleteEntry(id: ID!): Node
 }

@@ -5,8 +5,41 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="901c4220-56ba-4f73-94f0-845c155287b7" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/package-lock.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/src/blogservice.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.github/workflows/node.js.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/node.js.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/schema.graphql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/Authentication.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/Authentication.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/BlogCreate.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/BlogCreate.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/BlogList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/BlogList.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/BlogSettings.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/BlogSettings.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/BlogView.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/BlogView.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/Drafts.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/Drafts.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/EntryEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/EntryEditor.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/graphql/mutations.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/graphql/mutations.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/graphql/queries.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/graphql/queries.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/graphql/queries.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/graphql/queries.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/graphql/schema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/graphql/schema.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/client/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/server/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/schema.graphql" beforeDir="false" afterPath="$PROJECT_DIR$/server/schema.graphql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/__tests__/entrystore.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/__tests__/entrystore.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/__tests__/integration.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/__tests__/integration.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/blogql.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/blogql.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/blogstore.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/blogstore.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/dbconnection.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/dbconnection.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/entrystore.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/entrystore.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/node.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/node.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/pagination.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/pagination.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/resolvers.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/resolvers.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/userstore.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/userstore.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/server/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/server/yarn.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,7 +61,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/server/src" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
@@ -55,6 +88,8 @@
       <updated>1655837707141</updated>
       <workItem from="1655837708373" duration="5839000" />
       <workItem from="1656002332038" duration="17226000" />
+      <workItem from="1656251319212" duration="85000" />
+      <workItem from="1656594791966" duration="93000" />
     </task>
     <servers />
   </component>
@@ -100,7 +135,6 @@
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/server/src/entrystore.js</url>
           <line>57</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
