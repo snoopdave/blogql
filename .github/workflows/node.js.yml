@@ -39,11 +39,11 @@ jobs:
         cache: 'npm'
         cache-dependency-path: './server/yarn.lock'
 
-    - run: npm ci
+    - run: yarn run build
       working-directory: server
 
-    - run: npm run build --if-present
-      working-directory: server
+    - run: yarn run build
+      working-directory: client
 
     - name: Install Rover
       run: |
