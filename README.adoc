@@ -11,9 +11,9 @@ Here are some more details about the technologies in use:
 
 Server
 
-* Node.JS
 * TypeScript
-* Express 
+* Node.JS
+* Express
 * Apollo GraphQL server
 * SQLLite
 * Jest
@@ -21,8 +21,12 @@ Server
 Client
 
 * TypeScript
-* React
+* React via Create React App
 * React Router
 * React Bootstrap
 * Apollo GraphQL client
 * Quill (rich text editor)
+
+Infrastructure
+
+* Github Action triggered by PR update that builds and checks the GraphQL schema via the Apollo Rover CLI.
