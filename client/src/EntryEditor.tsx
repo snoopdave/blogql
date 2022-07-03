@@ -20,6 +20,7 @@ import {
     ENTRY_UPDATE_MUTATION
 } from './graphql/mutations';
 import {BLOG_BY_HANDLE_QUERY, ENTRY_QUERY} from './graphql/queries';
+import {SimpleDateTime} from "./DateTime";
 
 
 function randomString(length: number) {
@@ -132,9 +133,9 @@ export function EditorForm(props: EditorFormProps) {
                 setSuccess(true);
                 setSaved(true);
                 setToast('Entry updated');
-                setTimeout(() => {
-                    history.push(`/blogs/${handle}`);
-                }, 500);
+                // setTimeout(() => {
+                //     history.push(`/blogs/${handle}`);
+                // }, 500);
             })
             .catch(() => {
                 setFailure(true);
@@ -150,9 +151,9 @@ export function EditorForm(props: EditorFormProps) {
             .then(() => {
                 setSuccess(true);
                 setToast('Entry deleted');
-                setTimeout(() => {
-                    history.push(`/blogs/${handle}`);
-                }, 1000);
+                // setTimeout(() => {
+                //     history.push(`/blogs/${handle}`);
+                // }, 1000);
             })
             .catch(() => {
                 setFailure(true);
@@ -237,12 +238,12 @@ export function EditorForm(props: EditorFormProps) {
                 </Form.Group>
                 { props.id.length > 0 && props.created &&
                     <Form.Group controlId='formCreated'>
-                        <Form.Label>{`Created: ${props.created}`}</Form.Label>
+                        <Form.Label><span className="form-label">Created: <SimpleDateTime when={props.created}/></span></Form.Label>
                     </Form.Group>
                 }
                 { props.id.length > 0 && props.updated &&
                     <Form.Group controlId='formUpdated'>
-                        <Form.Label>{`Updated: ${props.updated}`}</Form.Label>
+                        <Form.Label><span className="form-label">Updated: <SimpleDateTime when={props.updated}/></span></Form.Label>
                     </Form.Group>
                 }
                 <Form.Group controlId='formContent' className='form-group-quill'>

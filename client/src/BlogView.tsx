@@ -8,7 +8,7 @@ import {Button, Card, CardColumns, Jumbotron} from 'react-bootstrap';
 import {Link, useParams} from 'react-router-dom';
 import {useQuery} from '@apollo/client';
 import {ENTRIES_QUERY} from './graphql/queries';
-import {RelativeDateTime} from "./RelativeDateTime";
+import {RelativeDateTime} from "./DateTime";
 import {Entry} from "./graphql/schema";
 
 
@@ -52,7 +52,7 @@ function BlogView(props: BlogViewProps) {
                             <Card.Title>{entry.title}</Card.Title>
                             <Card.Body>
                                 <div dangerouslySetInnerHTML={{__html: entry.content}}/>
-                                <RelativeDateTime updated={entry.updated as Date} />
+                                <RelativeDateTime when={entry.updated as Date} />
                             </Card.Body>
                             <Link style={showIfLoggedIn()} to={`/blogs/${handle}/edit/${entry.id}`}>
                                 <Button variant='primary'>Edit</Button>

@@ -34,62 +34,180 @@ type Entry implements Node {
     published: DateTime
 }
 
+"""
+Represents a pageable list of entries.
+"""
 type EntryResponse {
+    """
+    Entries returned in this response.
+    """
     nodes: [Entry]!
+    """
+    Information about the pagination of the entries.
+    """
     pageInfo: PageInfo!
 }
 
+"""
+Represents a user of BlogQL.
+"""
 type User implements Node {
+    """
+    User's and unchangeable unique identifier.
+    """
     id: ID!
+    """
+    User's unique username.
+    """
     username: String!
+    """
+    User's email address.
+    """
     email: String!
+    """
+    URL of user's avatar.
+    """
     picture: String
+    """
+    Date user was created.
+    """
     created: DateTime!
+    """
+    Date user was updated.
+    """
     updated: DateTime!
 }
 
+"""
+TBD
+"""
 type UserResponse {
+    """
+    TBD
+    """
     nodes: [User]!
+    """
+    TBD
+    """
     pageInfo: PageInfo!
 }
 
+"""
+TBD
+"""
 type PageInfo {
+    """
+    TBD
+    """
     cursor: String
+    """
+    TBD
+    """
     totalCount: Int!
 }
 
+"""
+TBD
+"""
 type Blog implements Node {
+    """
+    TBD
+    """
     id: ID!
+    """
+    TBD
+    """
     name: String!
+    """
+    TBD
+    """
     handle: String!
+    """
+    TBD
+    """
     created: DateTime!
+    """
+    TBD
+    """
     updated: DateTime!
+    """
+    TBD
+    """
     entry(id: ID!): Entry
+    """
+    TBD
+    """
     entries(limit: Int, cursor: String): EntryResponse!
+    """
+    TBD
+    """
     drafts(limit: Int, cursor: String): EntryResponse!
+    """
+    TBD
+    """
     userId: ID!
+    """
+    TBD
+    """
     user: User!
 }
 
+"""
+TBD
+"""
 type BlogResponse {
+    """
+    TBD
+    """
     nodes: [Blog]!
+    """
+    TBD
+    """
     pageInfo: PageInfo!
 }
 
 type Query {
-    # node(id: ID!): Node
+    """
+    TBD
+    """
     blogForUser(userId: ID!): Blog
+    """
+    TBD
+    """
     blog(handle: String!): Blog
+    """
+    TBD
+    """
     blogs(limit: Int, cursor: String): BlogResponse
 }
 
 type Mutation {
+    """
+    TBD
+    """
     createBlog(handle: String!, name: String!): Blog
+    """
+    TBD
+    """
     updateBlog(id: ID!, name: String!): Blog
+    """
+    TBD
+    """
     deleteBlog(id: ID!): Node
-
+    """
+    TBD
+    """
     createEntry(blogId: ID!, title: String!, content: String!): Entry
+    """
+    TBD
+    """
     updateEntry(id: ID!, title: String!, content: String!): Entry
+    """
+    TBD
+    """
     publishEntry(id: ID!, published: Boolean!): Entry
+    """
+    TBD
+    """
     deleteEntry(id: ID!): Node
 }

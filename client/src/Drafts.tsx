@@ -9,6 +9,7 @@ import {useQuery} from "@apollo/client";
 import {DRAFTS_QUERY} from "./graphql/queries";
 import {Link, useHistory, useParams} from "react-router-dom";
 import {Entry} from "./graphql/schema";
+import {SimpleDateTime} from "./DateTime";
 
 
 function Drafts() {
@@ -32,8 +33,7 @@ function Drafts() {
         history.push(`/blogs/${handle}/edit`);
     }
 
-    return (
-        <>
+    return (<>
             <Form>
                 <Form.Group>
                     <Button onClick={() => {
@@ -46,19 +46,17 @@ function Drafts() {
                 <thead>
                 <tr>
                     <th>Title</th>
-                    <th>Created</th>
+                    <th>Updated</th>
                 </tr>
                 </thead>
                 <tbody>{ data.blog?.drafts?.nodes.map((entry: Entry) => entry ? (
                     <tr key={entry.id}>
                         <td><Link className='nav-link' to={`/blogs/${handle}/edit/${entry.id}`}>{entry.title}</Link></td>
-                        <td><Link className='nav-link' to={`/blogs/${handle}/edit/${entry.id}`}>TODO</Link></td>
+                        <td><span className="nav-link"><SimpleDateTime when={entry.updated}/></span></td>
                     </tr> ) : null)
                 }</tbody>
             </Table>
-        </>
-
-    );
+        </>);
 }
 
 export default Drafts;
