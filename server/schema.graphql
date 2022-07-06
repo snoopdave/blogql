@@ -201,7 +201,7 @@ type Mutation {
     """
     TBD
     """
-    updateEntry(id: ID!, title: String!, content: String!): Entry
+    #updateEntry(id: ID!, title: String!, content: String!): Entry
     """
     TBD
     """
