@@ -197,15 +197,11 @@ type Mutation {
     """
     TBD
     """
-    createEntry(blogId: ID!, title: String!, content: String!): Entry
+    createEntry(blogId: ID!, title: String!, content: String!, publish: Boolean): Entry
     """
     TBD
     """
-    updateEntry(id: ID!, title: String!, content: String!): Entry
-    """
-    TBD
-    """
-    publishEntry(id: ID!, published: Boolean!): Entry
+    updateEntry(id: ID!, title: String!, content: String!, publish: Boolean): Entry
     """
     TBD
     """

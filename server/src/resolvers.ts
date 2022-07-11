@@ -59,9 +59,9 @@ const resolvers = {
             const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
             return await blogService.createBlog(args.name, args.handle);
         },
-        createEntry: async (_: undefined, args: { blogId: string, title: string, content: string }, ctx: BlogQLContext): Promise<Entry> => {
+        createEntry: async (_: undefined, args: { blogId: string, title: string, content: string, publish: boolean }, ctx: BlogQLContext): Promise<Entry> => {
             const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
-            return await blogService.createEntry(args.blogId, args.title, args.content);
+            return await blogService.createEntry(args.blogId, args.title, args.content, args.publish);
         },
         deleteBlog: async (_: undefined, args: { id: string }, ctx: BlogQLContext): Promise<Node> => {
             const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
@@ -71,18 +71,14 @@ const resolvers = {
             const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
             return await blogService.deleteEntry(args.id);
         },
-        publishEntry: async (_: undefined, args: { id: string, published: boolean }, ctx: BlogQLContext): Promise<Entry | null> => {
-            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
-            return await blogService.publishEntry(args.id, args.published);
-        },
         updateBlog: async (_: undefined, args: { id: string, name: string }, ctx: BlogQLContext): Promise<Blog | null> => {
             const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
             return await blogService.updateBlog(args.id, args.name);
         },
-        updateEntry: async (_: undefined, args: { id: string, title: string, content: string }, ctx: BlogQLContext):
+        updateEntry: async (_: undefined, args: { id: string, title: string, content: string, published: boolean }, ctx: BlogQLContext):
             Promise<Entry | null> => {
             const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
-            return await blogService.updateEntry(args.id, args.title, args.content);
+            return await blogService.updateEntry(args.id, args.title, args.content, args.published);
         },
     }
 }
