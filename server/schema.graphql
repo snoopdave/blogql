@@ -1,213 +1,218 @@
 scalar DateTime
 
 interface Node {
-    id: ID!
+  id: ID!
 }
 
 """
 Represents a single entry in a blog which is considered a draft if published is not defined.
 """
 type Entry implements Node {
-    """
-    Unique identifier of the entry.
-    """
-    id: ID!
-    """
-    Title of the entry, a plain-text string with no HTML markup.
-    """
-    title: String!
-    """
-    Content of the entry which can include HTML markup.
-    """
-    content: String!
-    """
-    Date that the entry was created.
-    """
-    created: DateTime!
-    """
-    Date that the entry was updated.
-    """
-    updated: DateTime!
-    """
-    Date that the entry was published or undefined if entry is a draft.
-    """
-    published: DateTime
+  """
+  Unique identifier of the entry.
+  """
+  id: ID!
+  """
+  Title of the entry, a plain-text string with no HTML markup.
+  """
+  title: String!
+  """
+  Content of the entry which can include HTML markup.
+  """
+  content: String!
+  """
+  Date that the entry was created.
+  """
+  created: DateTime!
+  """
+  Date that the entry was updated.
+  """
+  updated: DateTime!
+  """
+  Date that the entry was published or undefined if entry is a draft.
+  """
+  published: DateTime
 }
 
 """
 Represents a pageable list of entries.
 """
 type EntryResponse {
-    """
-    Entries returned in this response.
-    """
-    nodes: [Entry]!
-    """
-    Information about the pagination of the entries.
-    """
-    pageInfo: PageInfo!
+  """
+  Entries returned in this response.
+  """
+  nodes: [Entry]!
+  """
+  Information about the pagination of the entries.
+  """
+  pageInfo: PageInfo!
 }
 
 """
 Represents a user of BlogQL.
 """
 type User implements Node {
-    """
-    User's and unchangeable unique identifier.
-    """
-    id: ID!
-    """
-    User's unique username.
-    """
-    username: String!
-    """
-    User's email address.
-    """
-    email: String!
-    """
-    URL of user's avatar.
-    """
-    picture: String
-    """
-    Date user was created.
-    """
-    created: DateTime!
-    """
-    Date user was updated.
-    """
-    updated: DateTime!
+  """
+  User's and unchangeable unique identifier.
+  """
+  id: ID!
+  """
+  User's unique username.
+  """
+  username: String!
+  """
+  User's email address.
+  """
+  email: String!
+  """
+  URL of user's avatar.
+  """
+  picture: String
+  """
+  Date user was created.
+  """
+  created: DateTime!
+  """
+  Date user was updated.
+  """
+  updated: DateTime!
 }
 
 """
 TBD
 """
 type UserResponse {
-    """
-    TBD
-    """
-    nodes: [User]!
-    """
-    TBD
-    """
-    pageInfo: PageInfo!
+  """
+  TBD
+  """
+  nodes: [User]!
+  """
+  TBD
+  """
+  pageInfo: PageInfo!
 }
 
 """
 TBD
 """
 type PageInfo {
-    """
-    TBD
-    """
-    cursor: String
-    """
-    TBD
-    """
-    totalCount: Int!
+  """
+  TBD
+  """
+  cursor: String
+  """
+  TBD
+  """
+  totalCount: Int!
 }
 
 """
 TBD
 """
 type Blog implements Node {
-    """
-    TBD
-    """
-    id: ID!
-    """
-    TBD
-    """
-    name: String!
-    """
-    TBD
-    """
-    handle: String!
-    """
-    TBD
-    """
-    created: DateTime!
-    """
-    TBD
-    """
-    updated: DateTime!
-    """
-    TBD
-    """
-    entry(id: ID!): Entry
-    """
-    TBD
-    """
-    entries(limit: Int, cursor: String): EntryResponse!
-    """
-    TBD
-    """
-    drafts(limit: Int, cursor: String): EntryResponse!
-    """
-    TBD
-    """
-    userId: ID!
-    """
-    TBD
-    """
-    user: User!
+  """
+  TBD
+  """
+  id: ID!
+  """
+  TBD
+  """
+  name: String!
+  """
+  TBD
+  """
+  handle: String!
+  """
+  TBD
+  """
+  created: DateTime!
+  """
+  TBD
+  """
+  updated: DateTime!
+  """
+  TBD
+  """
+  entry(id: ID!): Entry
+  """
+  TBD
+  """
+  entries(limit: Int, cursor: String): EntryResponse!
+  """
+  TBD
+  """
+  drafts(limit: Int, cursor: String): EntryResponse!
+  """
+  TBD
+  """
+  userId: ID!
+  """
+  TBD
+  """
+  user: User!
 }
 
 """
 TBD
 """
 type BlogResponse {
-    """
-    TBD
-    """
-    nodes: [Blog]!
-    """
-    TBD
-    """
-    pageInfo: PageInfo!
+  """
+  TBD
+  """
+  nodes: [Blog]!
+  """
+  TBD
+  """
+  pageInfo: PageInfo!
 }
 
 type Query {
-    """
-    TBD
-    """
-    blogForUser(userId: ID!): Blog
-    """
-    TBD
-    """
-    blog(handle: String!): Blog
-    """
-    TBD
-    """
-    blogs(limit: Int, cursor: String): BlogResponse
+  """
+  TBD
+  """
+  blogForUser(userId: ID!): Blog
+  """
+  TBD
+  """
+  blog(handle: String!): Blog
+  """
+  TBD
+  """
+  blogs(limit: Int, cursor: String): BlogResponse
 }
 
 type Mutation {
-    """
-    TBD
-    """
-    createBlog(handle: String!, name: String!): Blog
-    """
-    TBD
-    """
-    updateBlog(id: ID!, name: String!): Blog
-    """
-    TBD
-    """
-    deleteBlog(id: ID!): Node
-    """
-    TBD
-    """
-    createEntry(blogId: ID!, title: String!, content: String!): Entry
-    """
-    TBD
-    """
-    updateEntry(id: ID!, title: String!, content: String!): Entry
-    """
-    TBD
-    """
-    publishEntry(id: ID!, published: Boolean!): Entry
-    """
-    TBD
-    """
-    deleteEntry(id: ID!): Node
+  """
+  TBD
+  """
+  createBlog(handle: String!, name: String!): Blog
+  """
+  TBD
+  """
+  updateBlog(id: ID!, name: String!): Blog
+  """
+  TBD
+  """
+  deleteBlog(id: ID!): Node
+  """
+  TBD
+  """
+  createEntry(blogId: ID!, title: String!, content: String!): Entry
+  """
+  TBD
+  """
+  updateEntry(id: ID!, title: String!, content: String!): Entry
+  """
+  TBD
+  """
+  publishEntry(id: ID!, published: Boolean!): Entry
+  """
+  TBD
+  """
+  deleteEntry(id: ID!): Node
+}
+
+type Test {
+  id: ID!
+  name: String
 }
