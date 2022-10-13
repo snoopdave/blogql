@@ -16,7 +16,6 @@ import {Entry} from './graphql/schema';
 import {
     ENTRY_CREATE_MUTATION,
     ENTRY_DELETE_MUTATION,
-    ENTRY_PUBLISH_MUTATION,
     ENTRY_UPDATE_MUTATION
 } from './graphql/mutations';
 import {BLOG_BY_HANDLE_QUERY, ENTRY_QUERY} from './graphql/queries';
@@ -50,6 +49,7 @@ export function EditorFormViaEntryId() {
                 created={data.blog.entry.created}
                 updated={data.blog.entry.updated}
                 published={data.blog.entry.published}
+                publish={!!data.blog.entry.published}
             />);
     }
     return (<p>An unexpected error has occurred: {error}</p>)
@@ -67,7 +67,8 @@ export function EditorFormViaBlogHandle() {
                 content=''
                 created={new Date()}
                 updated={new Date()}
-                published={false}
+                published={null}
+                publish={false}
             />
         );
     }
@@ -81,7 +82,8 @@ interface EditorFormProps {
     blogId: string;
     created: Date;
     updated: Date;
-    published: boolean;
+    published: Date | null;
+    publish: boolean;
 }
 
 export function EditorForm(props: EditorFormProps) {
@@ -93,27 +95,29 @@ export function EditorForm(props: EditorFormProps) {
     const instance = randomString(5);
     const [title, setTitle] = useState(props.title);
     const [content, setContent] = useState(props.content);
-    const [valid, setValid] = useState(false);
     const [success, setSuccess] = useState(false);
     const [failure, setFailure] = useState(false);
     const [toast, setToast] = useState('');
     const [deleting, setDeleting] = useState(false);
-    const [saved, setSaved] = useState(id !== null && id !== undefined);
+    const [publish, setPublish] = useState(!!props.published);
     const [published, setPublished] = useState(props.published);
+    const [saved, setSaved] = useState(id !== null && id !== undefined);
+    const [valid, setValid] = useState(isValid());
 
     // eslint-disable-next-line
     let editor: UnprivilegedEditor | null = null; // assigned a value below in handleContentFocus()
 
     console.log(`${instance} - State: title='${title}' content='${content}' valid=${valid}`);
 
-    const [createEntryMutation] = useMutation<Entry, { blogId: string, title: string, content: string }>(
-        ENTRY_CREATE_MUTATION, {variables: {blogId: props.blogId, title, content}});
+    const [createEntryMutation] = useMutation<Entry, { blogId: string, title: string, content: string, publish: boolean }>(
+        ENTRY_CREATE_MUTATION, {variables: {blogId: props.blogId, title, content, publish}});
 
     function createEntry() {
         createEntryMutation()
             .then(() => {
                 setSuccess(true);
                 setToast('New entry created');
+                validateForm();
                 setTimeout(() => {
                     history.push(`/blogs/${handle}`);
                 }, 500);
@@ -124,15 +128,17 @@ export function EditorForm(props: EditorFormProps) {
             });
     }
 
-    const [updateEntryMutation] = useMutation<Entry, { id: string, title: string, content: string }>(
-        ENTRY_UPDATE_MUTATION, {variables: {id: id!, title: title, content: content}});
+    const [updateEntryMutation] = useMutation<Entry, { id: string, title: string, content: string, publish: boolean }>(
+        ENTRY_UPDATE_MUTATION, {variables: {id: id!, title: title, content: content, publish}});
 
     function updateEntry() {
         updateEntryMutation()
             .then(() => {
                 setSuccess(true);
                 setSaved(true);
+                setPublished(new Date());
                 setToast('Entry updated');
+                validateForm();
                 // setTimeout(() => {
                 //     history.push(`/blogs/${handle}`);
                 // }, 500);
@@ -151,9 +157,9 @@ export function EditorForm(props: EditorFormProps) {
             .then(() => {
                 setSuccess(true);
                 setToast('Entry deleted');
-                // setTimeout(() => {
-                //     history.push(`/blogs/${handle}`);
-                // }, 1000);
+                setTimeout(() => {
+                    history.push(`/blogs/${handle}`);
+                }, 1000);
             })
             .catch(() => {
                 setFailure(true);
@@ -161,37 +167,24 @@ export function EditorForm(props: EditorFormProps) {
             });
     }
 
-    const [publishEntryMutation] = useMutation<Entry, { id: string, published: boolean }>(
-        ENTRY_PUBLISH_MUTATION, {variables: {id, published: true}});
-
-    function publishEntry(id: string, published: boolean) {
-        publishEntryMutation()
-            .then(() => {
-                setSuccess(true);
-                setPublished(true);
-                setToast('Entry published');
-                setTimeout(() => {
-                    history.push(`/blogs/${handle}`);
-                }, 1000);
-            })
-            .catch(() => {
-                setFailure(true);
-                setToast('Failed to publish entry');
-            });
-    }
-
     function onTitleChange(event: ChangeEvent<HTMLInputElement>) {
         setTitle(event.target.value);
+        setSaved(false);
         validateForm();
     }
 
     function onContentChange(value: string) {
         setContent(value);
+        setSaved(false);
         validateForm();
     }
 
+    function isValid() {
+        return title && content && title.length > 0 && content.length > 0;
+    }
+
     function validateForm() {
-        if (title && content && title.length > 0 && content.length > 0) {
+        if (isValid()) {
             setValid(true);
         } else {
             setValid(false);
@@ -208,7 +201,6 @@ export function EditorForm(props: EditorFormProps) {
         setSuccess(false);
         setFailure(false);
         setDeleting(false);
-        setValid(false); // to disable the save button
     }
 
     return (
@@ -246,24 +238,43 @@ export function EditorForm(props: EditorFormProps) {
                         <Form.Label><span className="form-label">Updated: <SimpleDateTime when={props.updated}/></span></Form.Label>
                     </Form.Group>
                 }
+                { props.published &&
+                    <Form.Group controlId='formUpdated'>
+                    <Form.Label><span className="form-label">Published: <SimpleDateTime when={props.published}/></span></Form.Label>
+                    </Form.Group>
+                }
                 <Form.Group controlId='formContent' className='form-group-quill'>
                     <Form.Label>Content</Form.Label>
                     <ReactQuill theme='snow' value={content} placeholder='Content...'
                                 onChange={onContentChange} onFocus={handleContentFocus} />
                 </Form.Group>
                 <Form.Group>
-                    <Button disabled={!valid} onClick={() => {
+
+                    <Button disabled={!valid || saved} onClick={() => {
                         if (id) {
                             updateEntry();
                         } else {
                             createEntry();
                         }
-                    }}>Save
+                    }}>Save as Draft
                     </Button>
-                    <Button disabled={!saved || published} onClick={() => {
-                        publishEntry(id, true);
-                    }}>Publish
-                    </Button>
+
+                    { published &&
+                        <Button disabled={!valid || saved} onClick={() => {
+                            setPublish(true);
+                            updateEntry();
+                        }}>Save
+                        </Button>
+                    }
+
+                    { !published &&
+                        <Button disabled={!valid} onClick={() => {
+                            setPublish(true);
+                            updateEntry();
+                        }}>Publish
+                        </Button>
+                    }
+
                     <Link to={`/blogs/${handle}`}>
                         <Button>Cancel</Button>
                     </Link>

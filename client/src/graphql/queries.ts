@@ -14,6 +14,7 @@ export const ENTRY_QUERY = gql`query EntryQuery($handle: String!, $id: ID!) {
             content
             created
             updated
+            published
         }
     }
 }`;

@@ -21,7 +21,7 @@ export class Entry extends Model implements Node {
     declare content: string;
     declare created: Date;
     declare updated: Date;
-    declare published: boolean;
+    declare published: Date;
 }
 
 export default class EntryStore implements DataSource<Entry> {
@@ -72,9 +72,17 @@ export default class EntryStore implements DataSource<Entry> {
         await Entry.sync();
     }
 
-    async create(blogId: string, title: string, content: string) : Promise<Entry> {
+    async create(blogId: string, title: string, content: string, publish: boolean | undefined) : Promise<Entry> {
         const now = new Date();
-        const entry = Entry.build({ id: `${uuid()}-entry`, blogId, title, content, created: now, updated: now });
+        const entry = Entry.build({
+            id: `${uuid()}-entry`,
+            blogId,
+            title,
+            content,
+            created: now,
+            updated: now,
+            published: publish ? now : null
+        });
         await entry.save();
         return entry.get();
     }
@@ -111,9 +119,14 @@ export default class EntryStore implements DataSource<Entry> {
         return this.retrieveAllWhere(limit, offset, { blogId, published: null });
     }
 
-    async update(id: string, title: string, content: string) : Promise<Entry | null> {
+    async update(id: string, title: string, content: string, publish: boolean | undefined) : Promise<Entry | null> {
+        const entry = await Entry.findOne({ where: { id } });
         const now = new Date();
-        const [ number ] = await Entry.update({ title, content, updated: now },
+        const [ number ] = await Entry.update({
+                title, content,
+                updated: now,
+                published: publish && !entry?.published ? now : null // don't reset existing publish date
+            },
             { where: { id } });
         if (number === 0) {
             throw Error('Entry not found');
