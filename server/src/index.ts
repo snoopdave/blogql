@@ -4,6 +4,7 @@
  */
 
 import {ApolloServer} from 'apollo-server-express';
+import {ApolloServerPluginSchemaReporting, ApolloServerPluginUsageReporting} from "apollo-server-core";
 import DBConnection from './dbconnection.js';
 import EntryStore from './entrystore.js';
 import resolvers from './resolvers.js';
@@ -14,7 +15,6 @@ import {log, LogLevel} from './utils.js';
 import BlogStore from './blogstore.js';
 import {readFileSync} from 'fs';
 import {config} from './config.js';
-import { ApolloServerPluginUsageReporting } from 'apollo-server-core';
 
 // Data sources
 let conn = new DBConnection('./db-test1.db');
@@ -48,21 +48,28 @@ const server = new ApolloServer({
         userStore
     }),
     context: async ({ req }) => {
-        if (req.session) {
-            log(LogLevel.DEBUG, `Session: ${req.session.id}`);
-            if (req.session.userId) {
-                const user = await userStore.retrieve(req.session.userId);
-                if (user) {
-                    log(LogLevel.DEBUG, `Logged in as ${req.session.userId}`);
-                    return { user }; // Adds user to the context
+        try {
+            if (req.session) {
+                log(LogLevel.DEBUG, `Session: ${req.session.id}`);
+                if (req.session.userId) {
+                    const user = await userStore.retrieve(req.session.userId);
+                    if (user) {
+                        log(LogLevel.DEBUG, `Logged in as ${req.session.userId}`);
+                        return {user}; // Adds user to the context
+                    }
+                    throw new AuthenticationError('User not found');
                 }
-                throw new AuthenticationError('User not found');
             }
+        } catch (e) {
+            log(LogLevel.ERROR, `Error checking auth`);
         }
     },
     plugins: [
+    	ApolloServerPluginSchemaReporting({
+      		endpointUrl: process.env.APOLLO_SCHEMA_REPORTING_URL,
+    	}),
         ApolloServerPluginUsageReporting({
-            endpointUrl: 'https://usage-reporting.api.staging.c0.gql.zone'
+            endpointUrl: process.env.APOLLO_USAGE_REPORTING_URL,
         }),
     ],
 });

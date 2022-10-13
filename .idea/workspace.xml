@@ -5,13 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="901c4220-56ba-4f73-94f0-845c155287b7" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/server/src/blogservice.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.github/workflows/node.js.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/node.js.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/BlogView.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/BlogView.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/EntryEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/EntryEditor.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/resolvers.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/resolvers.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/charts/Chart.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/charts/README.adoc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/charts/charts/postgresql-10.1.4.tgz" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/charts/requirements.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/charts/requirements.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/charts/templates/deployment-blogql.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/charts/templates/ingress.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/charts/templates/service.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/index.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,6 +24,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="MacroExpansionManager">
+    <option name="directoryName" value="uddblkjx" />
+  </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
@@ -29,26 +35,34 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">
-    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="node.js.detected.package.eslint" value="true" />
-    <property name="node.js.detected.package.tslint" value="true" />
-    <property name="node.js.selected.package.eslint" value="(autodetect)" />
-    <property name="node.js.selected.package.tslint" value="(autodetect)" />
-    <property name="nodejs_package_manager_path" value="yarn" />
-    <property name="ts.external.directory.path" value="$PROJECT_DIR$/client/node_modules/typescript/lib" />
-    <property name="vue.rearranger.settings.migration" value="true" />
-  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/dave/src.apollo/blogql&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;yarn&quot;,
+    &quot;ruby.rails.projectView.checked&quot;: &quot;true&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Users/dave/src.apollo/blogql/server/node_modules/typescript/lib&quot;
+  }
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/server/src" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/deploy/local" />
       <recent name="$PROJECT_DIR$/.github/workflows" />
     </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="Attach to node" type="ChromiumRemoteDebugType" factoryName="Chromium Remote" port="9229">
+      <method v="2" />
+    </configuration>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -61,6 +75,14 @@
       <workItem from="1655837708373" duration="5839000" />
       <workItem from="1656002332038" duration="17226000" />
       <workItem from="1656251319212" duration="85000" />
+      <workItem from="1658609806754" duration="491000" />
+      <workItem from="1659556116272" duration="640000" />
+      <workItem from="1661800335706" duration="3935000" />
+      <workItem from="1662653229141" duration="692000" />
+      <workItem from="1662677321659" duration="596000" />
+      <workItem from="1664209230230" duration="5226000" />
+      <workItem from="1665181869320" duration="2616000" />
+      <workItem from="1665407466590" duration="1195000" />
     </task>
     <servers />
   </component>
@@ -107,6 +129,11 @@
           <url>file://$PROJECT_DIR$/server/src/entrystore.js</url>
           <line>57</line>
           <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/server/src/index.ts</url>
+          <line>51</line>
+          <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
