@@ -9,3 +9,4 @@ badschema.graphql
 client/.idea
 server/.idea
 *.bak
+/.idea/
