@@ -18,7 +18,6 @@ export function RelativeDateTime(props: DateTimeProps) {
     const hoursAgo = -1 * Math.round(span / (60 * 60 * 1000));
     const minutesAgo = -1 * Math.round(span / (60 * 1000));
     const secondsAgo = -1 * Math.round(span / (1000));
-    //console.log(`Updated = ${updated} span = ${span} daysAgo = ${daysAgo}  hoursAgo = ${hoursAgo} minutesAgo = ${minutesAgo} secondsAgo = ${secondsAgo}`);
     if (daysAgo < 0) {
         return <>{rtf.format(daysAgo, 'day')}</>;
     } else if (hoursAgo < 0) {
@@ -33,7 +32,6 @@ export function RelativeDateTime(props: DateTimeProps) {
 
 // for use in editor and drafts page, e.g. "Sunday, July 3, 2022, 10:34 AM"
 export function SimpleDateTime(props: DateTimeProps) {
-    console.log(`when = ${props.when}`);
     return <>{new Intl.DateTimeFormat('en-US', {
         weekday: 'long',
         year: 'numeric',
