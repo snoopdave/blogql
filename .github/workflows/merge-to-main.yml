@@ -10,7 +10,7 @@ jobs:
     uses: snoopdave/blogql/.github/workflows/build-test.yaml@main
 
   check-schema:
-    uses: snoopdave/blogql/.github/workflows/check-schema.yml@main
+    uses: snoopdave/blogql/.github/workflows/check-schema.yaml@main
     with:
       config-path: schema.graphql
       working-dir: server
