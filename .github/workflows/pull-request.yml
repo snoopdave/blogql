@@ -1,0 +1,27 @@
+name: build-test
+
+on:
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+
+  build:
+    uses build.yaml@main
+
+  check-schema:
+    uses: check-schema.yml@main
+    with:
+      config-path: schema.graphql
+      working-dir: server
+      rover-api-key: ${{ secrets.APOLLO_KEY }}
+      registry-url: ${{ secrets.APOLLO_REGISTRY_URL }}
+
+  docker-build:
+    uses: docker-build.yaml@main
+    with:
+      docker-username: ${{ secrets.DOCKER_USERNAME }}
+      docker-password: ${{ secrets.DOCKER_PASSWORD }}
+      push: false
+      tags: "snoopdave/blogql"

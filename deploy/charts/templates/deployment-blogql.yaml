@@ -19,22 +19,22 @@ spec:
           imagePullPolicy: Always
           resources:
             limits:
-              cpu: "500m"
-              memory: "500Mi"
+              cpu: "200m"
+              memory: "200Mi"
             requests:
-              cpu: "500m"
-              memory: "500Mi"
+              cpu: "200m"
+              memory: "200Mi"
           ports:
             - containerPort: 4000
-          env:
-            - name: DATABASE_USERNAME
-              value: {{ .Values.blogql.databaseJdbcUsername }}
-            - name: DATABASE_HOSTANDPORT
-              value: {{ .Values.blogql.databaseHostandport }}
-            - name: DATABASE_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: pg-user-pass
-                  key: postgresql-password
+{{/*          env:*/}}
+{{/*            - name: DATABASE_USERNAME*/}}
+{{/*              value: {{ .Values.blogql.databaseJdbcUsername }}*/}}
+{{/*            - name: DATABASE_HOSTANDPORT*/}}
+{{/*              value: {{ .Values.blogql.databaseHostandport }}*/}}
+{{/*            - name: DATABASE_PASSWORD*/}}
+{{/*              valueFrom:*/}}
+{{/*                secretKeyRef:*/}}
+{{/*                  name: pg-user-pass*/}}
+{{/*                  key: postgresql-password*/}}
 
 
