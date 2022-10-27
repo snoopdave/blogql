@@ -13,7 +13,7 @@ jobs:
   check-schema:
     uses: snoopdave/blogql/.github/workflows/check-schema.yaml@main
     with:
-      config-path: schema.graphql
+      schema-path: schema.graphql
       working-dir: server
       #rover-api-key: ${{ secrets.ROVER_API_KEY }}
       #registry-url: ${{ secrets.APOLLO_REGISTRY_URL }}
