@@ -10,13 +10,13 @@ on:
       schema-path:
         required: true
         type: string
-    secrets:
-      rover-api-key:
-        required: true
-        type: string
-      registry-url:
-        required: true
-        type: string
+#    secrets:
+#      rover-api-key:
+#        required: true
+#        type: string
+#      registry-url:
+#        required: true
+#        type: string
 
 jobs:
 
