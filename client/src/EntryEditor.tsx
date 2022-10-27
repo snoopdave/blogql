@@ -99,15 +99,13 @@ export function EditorForm(props: EditorFormProps) {
     const [failure, setFailure] = useState(false);
     const [toast, setToast] = useState('');
     const [deleting, setDeleting] = useState(false);
-    const [publish, setPublish] = useState(!!props.published);
-    const [published, setPublished] = useState(props.published);
+    const [publish, setPublish] = useState(false);
+    const [published] = useState(props.published);
     const [saved, setSaved] = useState(id !== null && id !== undefined);
     const [valid, setValid] = useState(isValid());
 
     // eslint-disable-next-line
     let editor: UnprivilegedEditor | null = null; // assigned a value below in handleContentFocus()
-
-    console.log(`${instance} - State: title='${title}' content='${content}' valid=${valid}`);
 
     const [createEntryMutation] = useMutation<Entry, { blogId: string, title: string, content: string, publish: boolean }>(
         ENTRY_CREATE_MUTATION, {variables: {blogId: props.blogId, title, content, publish}});
@@ -132,11 +130,11 @@ export function EditorForm(props: EditorFormProps) {
         ENTRY_UPDATE_MUTATION, {variables: {id: id!, title: title, content: content, publish}});
 
     function updateEntry() {
+        console.log(`updateEntry with publish=${publish}`);
         updateEntryMutation()
             .then(() => {
                 setSuccess(true);
                 setSaved(true);
-                setPublished(new Date());
                 setToast('Entry updated');
                 validateForm();
                 // setTimeout(() => {
@@ -208,7 +206,7 @@ export function EditorForm(props: EditorFormProps) {
             <Toast show={success} autohide={true} delay={3000}
                    style={{ position: 'absolute', top: 0, right: 0, }} onClose={clearToast} >
                 <Toast.Header>
-                    <FontAwesomeIcon icon='home' style={{ color: 'green' }} />
+                    <FontAwesomeIcon icon='house' style={{ color: 'green' }} />
                     Success!
                 </Toast.Header>
                 <Toast.Body>{toast}</Toast.Body>
@@ -217,7 +215,7 @@ export function EditorForm(props: EditorFormProps) {
             <Toast show={failure} autohide={true} delay={3000}
                    style={{ position: 'absolute', top: 0, right: 0, }} onClose={clearToast} >
                 <Toast.Header>
-                    <FontAwesomeIcon icon='home' style={{ color: 'red', margin: '1em' }} />
+                    <FontAwesomeIcon icon='house' style={{ color: 'red', margin: '1em' }} />
                     Um... not good!
                 </Toast.Header>
                 <Toast.Body>{toast}</Toast.Body>
@@ -261,7 +259,6 @@ export function EditorForm(props: EditorFormProps) {
 
                     { published &&
                         <Button disabled={!valid || saved} onClick={() => {
-                            setPublish(true);
                             updateEntry();
                         }}>Save
                         </Button>

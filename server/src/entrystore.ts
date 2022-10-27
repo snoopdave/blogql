@@ -125,7 +125,7 @@ export default class EntryStore implements DataSource<Entry> {
         const [ number ] = await Entry.update({
                 title, content,
                 updated: now,
-                published: publish && !entry?.published ? now : null // don't reset existing publish date
+                published: (publish && !entry?.published) ? now : null // don't reset existing publish date
             },
             { where: { id } });
         if (number === 0) {
