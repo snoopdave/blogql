@@ -14,7 +14,7 @@ jobs:
     with:
       config-path: schema.graphql
       working-dir: server
-      rover-api-key: ${{ secrets.APOLLO_KEY }}
+      rover-api-key: ${{ secrets.ROVER_API_KEY }}
       registry-url: ${{ secrets.APOLLO_REGISTRY_URL }}
 
   docker-build:
