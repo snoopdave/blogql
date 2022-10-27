@@ -7,10 +7,10 @@ on:
 jobs:
 
   build:
-    uses build.yaml@main
+    uses snoopdave/blogql/.github/workflows/build.yaml@main
 
   check-schema:
-    uses: check-schema.yml@main
+    uses: snoopdave/blogql/.github/workflows/check-schema.yml@main
     with:
       config-path: schema.graphql
       working-dir: server
@@ -18,7 +18,7 @@ jobs:
       registry-url: ${{ secrets.APOLLO_REGISTRY_URL }}
 
   docker-build:
-    uses: docker-build.yaml@main
+    uses: snoopdave/blogql/.github/workflows/docker-build.yaml@main
     with:
       docker-username: ${{ secrets.DOCKER_USERNAME }}
       docker-password: ${{ secrets.DOCKER_PASSWORD }}
