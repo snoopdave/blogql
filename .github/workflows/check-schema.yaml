@@ -16,7 +16,7 @@ on:
         type: string
       registry-url:
         required: true
-        type:string
+        type: string
 
 jobs:
   check:
