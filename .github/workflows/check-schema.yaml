@@ -19,14 +19,15 @@ on:
         type: string
 
 jobs:
+
   check:
     runs-on: ubuntu-latest
 
     # https://docs.github.com/en/actions/reference/encrypted-secrets
     # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idstepsenv
     env:
-      APOLLO_KEY: ${{ secrets.rover-api-key }}
-      APOLLO_REGISTRY_URL: ${{ secrets.registry-url }}
+      APOLLO_KEY: ${{ secrets.ROVER_API_KEY }}
+      APOLLO_REGISTRY_URL: ${{ secrets.APOLLO_REGISTRY_URL }}
       APOLLO_VCS_COMMIT: ${{ github.event.pull_request.head.sha }}
       APOLLO_GRAPH_REF: BlogQL@current
 
