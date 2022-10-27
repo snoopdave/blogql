@@ -7,7 +7,7 @@ on:
 jobs:
 
   build:
-    uses snoopdave/blogql/.github/workflows/build.yaml@main
+    uses: snoopdave/blogql/.github/workflows/build.yaml@main
 
   check-schema:
     uses: snoopdave/blogql/.github/workflows/check-schema.yml@main
