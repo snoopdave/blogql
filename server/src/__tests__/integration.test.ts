@@ -104,7 +104,7 @@ describe('Test the GraphQL API integration', () => {
         const user: User = await userStore.create(
             'test-user', 'test-user@example.com', 'dummy.png')
         const blog: Blog = await blogStore.create(user.id, 'Blog Name', 'bloghandle');
-        const entry = await entryStore.create(blog.id, 'entry 1 title', 'entry 1 content');
+        const entry = await entryStore.create(blog.id, 'entry 1 title', 'entry 1 content', undefined);
         try {
             const entryFetched = await getEntry(server, blog.handle, entry.id);
             expect(entryFetched.errors).toBeUndefined();
@@ -121,7 +121,7 @@ describe('Test the GraphQL API integration', () => {
     test(`It can delete an entry`, async () => {
         const {server, conn, blogStore, entryStore, authUsers} = await initDataStorage();
         const blog: Blog = await blogStore.create(authUsers[0].id, 'Blog Name', 'bloghandle');
-        const entry = await entryStore.create(blog.id, 'entry 1 title', 'entry 1 content');
+        const entry = await entryStore.create(blog.id, 'entry 1 title', 'entry 1 content', undefined);
         try {
             const itemFetched = await getEntry(server, blog.handle, entry.id);
             expect(itemFetched.errors).toBeUndefined();
@@ -162,7 +162,7 @@ describe('Test the GraphQL API integration', () => {
     test(`It can update an entry's title and content and updated time`, async () => {
         const {server, conn, blogStore, entryStore, authUsers} = await initDataStorage();
         const blog: Blog = await blogStore.create(authUsers[0].id, 'Blog Name', 'bloghandle');
-        const entry = await entryStore.create(blog.id, 'entry 1 title', 'entry 1 content');
+        const entry = await entryStore.create(blog.id, 'entry 1 title', 'entry 1 content', undefined);
         try {
             let entryFetched: GraphQLResponse = await getEntry(server, blog.handle, entry.id);
             expect(entryFetched.errors).toBeUndefined();
@@ -353,7 +353,7 @@ async function createBlogAndTestEntriesViaSql(user: User, bs: BlogStore, es: Ent
     const blog: Blog = await bs.create(user.id, 'Blog Name', 'bloghandle');
     const blogId = blog.id;
     for (let i = 0; i < 10; i++) {
-        const entry: Entry = await es.create(blogId, 'Entry Title ' + i, 'Entry content' + i);
+        const entry: Entry = await es.create(blogId, 'Entry Title ' + i, 'Entry content' + i, undefined);
         expect(entry.id).toBeDefined();
     }
     return blog;
