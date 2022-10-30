@@ -51,7 +51,7 @@ type EntryResponse {
 """
 Represents a user of BlogQL.
 """
-type User implements Node {
+type User implements Tode {
     """
     User's and unchangeable unique identifier.
     """
