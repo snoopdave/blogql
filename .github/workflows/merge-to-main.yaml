@@ -4,6 +4,7 @@ on:
   push:
     branches: [ main ]
 
+
 jobs:
 
   build:
@@ -15,8 +16,8 @@ jobs:
       schema-path: schema.graphql
       working-dir: server
     secrets:
-      rover-api-key: ${{ secrets.ROVER_API_KEY }}
-      registry-url: ${{ secrets.APOLLO_REGISTRY_URL }}
+      ROVER_API_KEY: ${{ secrets.ROVER_API_KEY }}
+      APOLLO_REGISTRY_URL: ${{ secrets.APOLLO_REGISTRY_URL }}
 
   docker-build:
     uses: snoopdave/blogql/.github/workflows/docker-build.yaml@main
@@ -24,5 +25,5 @@ jobs:
       push: true
       tags: "snoopdave/blogql"
     secrets:
-      docker-username: ${{ secrets.DOCKER_USERNAME }}
-      docker-password: ${{ secrets.DOCKER_PASSWORD }}
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
