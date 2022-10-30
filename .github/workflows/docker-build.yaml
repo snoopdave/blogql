@@ -12,10 +12,8 @@ on:
     secrets:
       DOCKER_USERNAME:
         required: true
-        type: string
       DOCKER_PASSWORD:
         required: true
-        type: string
 
 jobs:
 

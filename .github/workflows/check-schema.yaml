@@ -13,10 +13,8 @@ on:
     secrets:
       ROVER_API_KEY:
         required: true
-        type: string
       APOLLO_REGISTRY_URL:
         required: true
-        type: string
 
 jobs:
 
