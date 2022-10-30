@@ -27,7 +27,7 @@ jobs:
       APOLLO_KEY: ${{ secrets.ROVER_API_KEY }}
       #APOLLO_REGISTRY_URL: ${{ secrets.APOLLO_REGISTRY_URL }}
       APOLLO_VCS_COMMIT: ${{ github.event.pull_request.head.sha }}
-      APOLLO_GRAPH_REF: BlogQL@current
+      APOLLO_GRAPH_REF: BlogQL-0jc7sk@current
 
     steps:
       - uses: actions/checkout@v3

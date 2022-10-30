@@ -26,10 +26,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "compile": "sed -i .bak 's/noEmit\\\": true/noEmit\\\": false/' tsconfig.json && tsc && yarn run gentypes",
+    "compile": "tsc --noEmit false && yarn run gentypes",
     "build": "yarn run compile && react-scripts build",
-    "action-compile": "sed -i\".bak\"'s/noEmit\\\": true/noEmit\\\": false/' tsconfig.json && tsc && yarn run gentypes",
-    "action-build": "yarn run action-compile && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "gentypes": "npx apollo codegen:generate --excludes=src/*/*.ts --localSchemaFile=../server/schema.graphql --target=typescript --tagName=gql",
