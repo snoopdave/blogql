@@ -28,5 +28,5 @@ jobs:
 
     - run: |
         yarn install
-        yarn run action-build
+        yarn run build
       working-directory: client
