@@ -22,12 +22,12 @@ import {BLOG_BY_HANDLE_QUERY, ENTRY_QUERY} from './graphql/queries';
 import {SimpleDateTime} from "./DateTime";
 
 
-function randomString(length: number) {
-    const allLowerAlpha = [...'abcdefghijklmnopqrstuvwxyz'];
-    const allNumbers = [...'0123456789'];
-    const base = [...allNumbers, ...allLowerAlpha];
-    return [...Array(length)].map(i => base[Math.random() * base.length | 0]).join('');
-}
+// function randomString(length: number) {
+//     const allLowerAlpha = [...'abcdefghijklmnopqrstuvwxyz'];
+//     const allNumbers = [...'0123456789'];
+//     const base = [...allNumbers, ...allLowerAlpha];
+//     return [...Array(length)].map(i => base[Math.random() * base.length | 0]).join('');
+// }
 
 export function EditorWelcome() {
     return <Jumbotron>
