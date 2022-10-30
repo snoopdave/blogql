@@ -14,13 +14,13 @@ jobs:
     with:
       schema-path: schema.graphql
       working-dir: server
-      #rover-api-key: ${{ secrets.ROVER_API_KEY }}
-      #registry-url: ${{ secrets.APOLLO_REGISTRY_URL }}
+      rover-api-key: ${{ secrets.ROVER_API_KEY }}
+      registry-url: ${{ secrets.APOLLO_REGISTRY_URL }}
 
   docker-build:
     uses: snoopdave/blogql/.github/workflows/docker-build.yaml@main
     with:
-#      docker-username: ${{ secrets.DOCKER_USERNAME }}
-#      docker-password: ${{ secrets.DOCKER_PASSWORD }}
+      docker-username: ${{ secrets.DOCKER_USERNAME }}
+      docker-password: ${{ secrets.DOCKER_PASSWORD }}
       push: true
       tags: "snoopdave/blogql"

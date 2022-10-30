@@ -9,13 +9,13 @@ on:
       tags:
         required: true
         type: string
-#    secrets:
-#      docker-username:
-#        required: true
-#        type: string
-#      docker-password:
-#        required: true
-#        type: string
+    secrets:
+      DOCKER_USERNAME:
+        required: true
+        type: string
+      DOCKER_PASSWORD:
+        required: true
+        type: string
 
 jobs:
 
