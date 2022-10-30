@@ -92,7 +92,6 @@ export function EditorForm(props: EditorFormProps) {
     const id = props.id;
     const { handle } = useParams<{handle : string}>(); // get handle param from router route
 
-    const instance = randomString(5);
     const [title, setTitle] = useState(props.title);
     const [content, setContent] = useState(props.content);
     const [success, setSuccess] = useState(false);
