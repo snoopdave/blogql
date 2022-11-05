@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: blogql
-          image: "snoopdave/blogql:1.0.0"
+          image: "snoopdave/blogql:latest"
           imagePullPolicy: Always
           resources:
             limits:
