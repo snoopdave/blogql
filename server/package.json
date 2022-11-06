@@ -10,7 +10,7 @@
   "license": "ISC",
   "scripts": {
     "start": "node --experimental-modules src/index.js",
-    "build": "tsc",
+    "build": "tsc --noEmit false",
     "test": "NODE_OPTIONS=\"--experimental-vm-modules --input-type module\" npx jest",
     "clean": "rm -rf node_modules src/*.js src/__tests__/*.js"
   },
