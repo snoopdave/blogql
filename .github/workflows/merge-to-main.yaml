@@ -12,33 +12,33 @@ on:
 jobs:
 
   build-test:
-    uses: snoopdave/blogql/.github/workflows/build-test.yaml@main
+    uses: "snoopdave/blogql/.github/workflows/build-test.yaml@main"
 
   check-schema:
-    uses: snoopdave/blogql/.github/workflows/check-schema.yaml@main
+    uses: "snoopdave/blogql/.github/workflows/check-schema.yaml@main"
     with:
-      schema-path: schema.graphql
+      schema-path: "schema.graphql"
       working-dir: server
-      graph-ref: BlogQL-0jc7sk@current
+      graph-ref: "BlogQL-0jc7sk@current"
     secrets:
       ROVER_API_KEY: ${{ secrets.ROVER_API_KEY }}
       APOLLO_REGISTRY_URL: ${{ secrets.APOLLO_REGISTRY_URL }}
 
   docker-build:
-    uses: snoopdave/blogql/.github/workflows/docker-build.yaml@main
+    uses: "snoopdave/blogql/.github/workflows/docker-build.yaml@main"
     with:
       push: true
-      tags: snoopdave/blogql@1.0
+      tags: "snoopdave/blogql@1.0"
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
   publish-schema:
-    uses: snoopdave/blogql/.github/workflows/publish-schema.yaml@main
+    uses: "snoopdave/blogql/.github/workflows/publish-schema.yaml@main"
     with:
-      schema-path: schema.graphql
+      schema-path: "schema.graphql"
       working-dir: server
-      graph-ref: BlogQL-0jc7sk@current
+      graph-ref: "BlogQL-0jc7sk@current"
     secrets:
       ROVER_API_KEY: ${{ secrets.ROVER_API_KEY }}
       APOLLO_REGISTRY_URL: ${{ secrets.APOLLO_REGISTRY_URL }}

@@ -27,7 +27,7 @@ jobs:
 
     env:
       APOLLO_KEY: ${{ secrets.ROVER_API_KEY }}
-      APOLLO_GRAPH_REF: BlogQL-0jc7sk@current
+      APOLLO_GRAPH_REF: ${{ inputs.graph-ref }}
       APOLLO_VCS_COMMIT: ${{ github.event.pull_request.head.sha }}
       #APOLLO_REGISTRY_URL: ${{ secrets.APOLLO_REGISTRY_URL }} # needed if not running against prod Studio
 
