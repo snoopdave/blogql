@@ -22,7 +22,7 @@ jobs:
       graph-ref: "BlogQL-0jc7sk@current"
     secrets:
       ROVER_API_KEY: ${{ secrets.ROVER_API_KEY }}
-      APOLLO_REGISTRY_URL: ${{ secrets.APOLLO_REGISTRY_URL }}
+#      APOLLO_REGISTRY_URL: ${{ secrets.APOLLO_REGISTRY_URL }}
 
   docker-build:
     uses: "snoopdave/blogql/.github/workflows/docker-build.yaml@main"
