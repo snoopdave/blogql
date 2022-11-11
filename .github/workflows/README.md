@@ -7,8 +7,8 @@ There are also four reusable actions.
 
 The main actions:
 
-* `merge-to-main.yaml`: runs builds, tests, GraphQL schema check and publishes schema and Docker image.
-* `pull-request.yaml`: runs builds, tests, GraphQL schema check and verifies that Docker build works.
+* `merge-to-main.yaml`: triggered when merge is made to main. Runs builds, tests, GraphQL schema check and publishes schema and Docker image.
+* `pull-request.yaml`: triggered when a Pull Request is created or updated. Runs builds, tests, GraphQL schema check and verifies that Docker build works.
 
 The re-usable actions:
 
