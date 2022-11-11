@@ -17,8 +17,8 @@ on:
     secrets:
       ROVER_API_KEY:
         required: true
-#      APOLLO_REGISTRY_URL:
-#        required: true
+      #APOLLO_REGISTRY_URL:
+        #required: true
 
 jobs:
 

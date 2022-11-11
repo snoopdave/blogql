@@ -16,18 +16,18 @@ jobs:
   check-schema:
     uses: "snoopdave/blogql/.github/workflows/check-schema.yaml@main"
     with:
-      schema-path: "schema.graphql"
-      working-dir: server
       graph-ref: "BlogQL-0jc7sk@current"
+      working-dir: server
+      schema-path: "schema.graphql"
     secrets:
       ROVER_API_KEY: ${{ secrets.ROVER_API_KEY }}
-#      APOLLO_REGISTRY_URL: ${{ secrets.APOLLO_REGISTRY_URL }}
+      #APOLLO_REGISTRY_URL: ${{ secrets.APOLLO_REGISTRY_URL }}
 
   docker-build:
     uses: "snoopdave/blogql/.github/workflows/docker-build.yaml@main"
     with:
       push: false
-      tags: "snoopdave/blogql"
+      tags: "snoopdave/blogql@snapshot"
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
