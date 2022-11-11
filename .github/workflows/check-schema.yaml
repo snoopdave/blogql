@@ -11,7 +11,7 @@ on:
       schema-path:
         required: true
         type: string
-      graph-ref: true
+      graph-ref:
         required: true
         type: string
     secrets:
