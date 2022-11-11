@@ -1,6 +1,6 @@
-name: check-schema
+name: publish-schema
 
-# Check GraphQL schema via Apollo Studio client Rover
+# Publish GraphQL schema to Apollo Studio
 
 on:
   workflow_call:
@@ -42,8 +42,8 @@ jobs:
           # https://docs.github.com/en/actions/reference/workflow-commands-for-github-actions#adding-a-system-path
           echo "$HOME/.rover/bin" >> $GITHUB_PATH
 
-      - name: Check schema
+      - name: Publish schema
         run: |
-          rover graph check ${APOLLO_GRAPH_REF} --schema ${{ inputs.schema-path }}
+          rover graph publish ${APOLLO_GRAPH_REF} --schema ${{ inputs.schema-path }}
         working-directory: ${{ inputs.working-dir }}
 

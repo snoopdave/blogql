@@ -1,9 +1,11 @@
 name: docker-build
 
+# Runs docker build in top-level directory
+
 on:
   workflow_call:
     inputs:
-      push:
+      push: # true will cause push to Docker hub
         required: true
         type: boolean
       tags:
