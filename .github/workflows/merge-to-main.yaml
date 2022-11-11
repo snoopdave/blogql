@@ -28,7 +28,7 @@ jobs:
     uses: "snoopdave/blogql/.github/workflows/docker-build.yaml@main"
     with:
       push: true
-      tags: "snoopdave/blogql@1.0"
+      tags: "snoopdave/blogql"
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
