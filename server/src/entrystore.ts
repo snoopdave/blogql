@@ -72,7 +72,7 @@ export default class EntryStore implements DataSource<Entry> {
         await Entry.sync();
     }
 
-    async create(blogId: string, title: string, content: string, publish: boolean | undefined) : Promise<Entry> {
+    async create(blogId: string, title: string, content: string) : Promise<Entry> {
         const now = new Date();
         const entry = Entry.build({
             id: `${uuid()}-entry`,
@@ -81,7 +81,7 @@ export default class EntryStore implements DataSource<Entry> {
             content,
             created: now,
             updated: now,
-            published: publish ? now : null
+            published: null
         });
         await entry.save();
         return entry.get();
@@ -119,13 +119,13 @@ export default class EntryStore implements DataSource<Entry> {
         return this.retrieveAllWhere(limit, offset, { blogId, published: null });
     }
 
-    async update(id: string, title: string, content: string, publish: boolean | undefined) : Promise<Entry | null> {
-        const entry = await Entry.findOne({ where: { id } });
+    async update(id: string, title: string, content: string) : Promise<Entry | null> {
+        await Entry.findOne({ where: { id } });
         const now = new Date();
         const [ number ] = await Entry.update({
-                title, content,
-                updated: now,
-                published: (publish && !entry?.published) ? now : null // don't reset existing publish date
+                title,
+                content,
+                updated: now
             },
             { where: { id } });
         if (number === 0) {
@@ -136,9 +136,10 @@ export default class EntryStore implements DataSource<Entry> {
         return this.retrieve(id);
     }
 
-    async publish(id: string, published: boolean) : Promise<Entry | null> {
-        const now = new Date();
-        const [ number ] = await Entry.update({ published: published ? now : null },
+    async doPublish(id: string, now: Date | null) : Promise<Entry | null> {
+        const [ number ] = await Entry.update({
+                published: now
+            },
             { where: { id } });
         if (number === 0) {
             throw Error('Entry not found');
@@ -146,6 +147,14 @@ export default class EntryStore implements DataSource<Entry> {
             throw Error('Unexpected outcome: multiple entries updated');
         }
         return this.retrieve(id);
+    }
+
+    async unPublish(id: string) : Promise<Entry | null> {
+        return this.doPublish(id, null);
+    }
+
+    async publish(id: string) : Promise<Entry | null> {
+        return this.doPublish(id, new Date());
     }
 
     async delete(id: string): Promise<void> {

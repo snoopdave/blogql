@@ -33,7 +33,7 @@ describe('Test BlogStore', () => {
         const user: User = await userStore.create(
             'test-user', 'test-user@example.com', 'dummy.png')
         try {
-            const blogCreated = await blogStore.create(user.id, 'My Blog', `myblog-${slug}`);
+            const blogCreated = await blogStore.create(user.id, `myblog-${slug}`, 'My Blog');
             expect(blogCreated).toHaveProperty('id');
             expect(blogCreated).toHaveProperty('name', 'My Blog');
             expect(blogCreated).toHaveProperty('handle', `myblog-${slug}`);
@@ -67,7 +67,7 @@ describe('Test BlogStore', () => {
                 let slug = randomString(5);
                 const user: User = await userStore.create(
                     `test-user-${slug}`, 'test-user-${slug}@example.com', 'dummy.png')
-                await blogStore.create(user.id, `My Blog ${i}`, `myblog-${i}`);
+                await blogStore.create(user.id, `myblog-${i}`, `My Blog ${i}`);
             }
 
             const blogsRetrieved = await blogStore.retrieveAll(10, 0);

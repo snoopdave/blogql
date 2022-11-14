@@ -78,132 +78,55 @@ type User implements Node {
     updated: DateTime!
 }
 
-"""
-TBD
-"""
 type UserResponse {
-    """
-    TBD
-    """
     nodes: [User]!
-    """
-    TBD
-    """
     pageInfo: PageInfo!
 }
 
-"""
-TBD
-"""
 type PageInfo {
-    """
-    TBD
-    """
     cursor: String
-    """
-    TBD
-    """
     totalCount: Int!
 }
 
-"""
-TBD
-"""
 type Blog implements Node {
-    """
-    TBD
-    """
     id: ID!
-    """
-    TBD
-    """
     name: String!
-    """
-    TBD
-    """
     handle: String!
-    """
-    TBD
-    """
     created: DateTime!
-    """
-    TBD
-    """
     updated: DateTime!
-    """
-    TBD
-    """
     entry(id: ID!): Entry
-    """
-    TBD
-    """
     entries(limit: Int, cursor: String): EntryResponse!
-    """
-    TBD
-    """
     drafts(limit: Int, cursor: String): EntryResponse!
-    """
-    TBD
-    """
     userId: ID!
-    """
-    TBD
-    """
     user: User!
 }
 
-"""
-TBD
-"""
 type BlogResponse {
-    """
-    TBD
-    """
     nodes: [Blog]!
-    """
-    TBD
-    """
     pageInfo: PageInfo!
 }
 
 type Query {
-    """
-    TBD
-    """
     blogForUser(userId: ID!): Blog
-    """
-    TBD
-    """
     blog(handle: String!): Blog
-    """
-    TBD
-    """
     blogs(limit: Int, cursor: String): BlogResponse
 }
 
+type BlogMutation {
+    update(name: String!): Blog
+    delete: Node
+    createEntry(title: String!, content: String!): Entry
+    entry(id: ID!): EntryMutation
+}
+
+type EntryMutation {
+    update(title: String!, content: String!): Entry
+    publish: Entry
+    delete: Node
+}
+
 type Mutation {
-    """
-    TBD
-    """
     createBlog(handle: String!, name: String!): Blog
-    """
-    TBD
-    """
-    updateBlog(id: ID!, name: String!): Blog
-    """
-    TBD
-    """
-    deleteBlog(id: ID!): Node
-    """
-    TBD
-    """
-    createEntry(blogId: ID!, title: String!, content: String!, publish: Boolean): Entry
-    """
-    TBD
-    """
-    updateEntry(id: ID!, title: String!, content: String!, publish: Boolean): Entry
-    """
-    TBD
-    """
-    deleteEntry(id: ID!): Node
+    blog(handle: String!): BlogMutation
+    blogByID(id: ID!): BlogMutation
 }

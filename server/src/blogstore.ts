@@ -71,7 +71,7 @@ export default class BlogStore implements DataSource<Blog> {
         await Blog.sync();
     }
 
-    async create(userId: string, name: string, handle: string): Promise<Blog> {
+    async create(userId: string, handle: string, name: string): Promise<Blog> {
         let blog = await this.retrieveByUserId(userId);
         if (!blog) {
             const now = new Date();

@@ -9,7 +9,7 @@ import {Node} from './node.js';
 import {Blog} from './blogstore.js';
 import {User} from './userstore.js';
 import {BlogServiceSQLiteImpl} from './blogservice.js';
-import {BlogQLContext, BlogQLDataSources} from './index.js';
+import {BlogQLContext} from './index.js';
 
 
 const resolvers = {
@@ -54,32 +54,54 @@ const resolvers = {
             return await blogService.getDrafts(blog, args.limit, args.offset, args.cursor);
         },
     },
+    BlogMutation: {
+        update: async (blog: Blog, args: { blog: Blog, name: string }, ctx: BlogQLContext): Promise<Blog | null> => {
+            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
+            return await blogService.updateBlog(blog.id, args.name);
+        },
+        delete: async (blog: Blog, args: { blog: Blog }, ctx: BlogQLContext): Promise<Node> => {
+            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
+            return await blogService.deleteBlog(blog.id);
+        },
+        entry: async (blog: Blog, args: { id: string }, ctx: BlogQLContext): Promise<Entry | null> => {
+            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
+            return await blogService.getEntry(blog, args.id);
+        },
+        createEntry: async (blog: Blog, args: { title: string, content: string, publish: boolean }, ctx: BlogQLContext): Promise<Entry> => {
+            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
+            return await blogService.createEntry(blog.id, args.title, args.content);
+        },
+    },
+    EntryMutation: {
+        update: async (entry: Entry, args: { title: string, content: string}, ctx: BlogQLContext):
+            Promise<Entry | null> => {
+            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
+            return await blogService.updateEntry(entry.id, args.title, args.content);
+        },
+        publish: async (entry: Entry, args: { entry: Entry }, ctx: BlogQLContext):
+            Promise<Entry | null> => {
+            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
+            return await blogService.publishEntry(entry.id);
+        },
+        delete: async (entry: Entry, args: { id: string }, ctx: BlogQLContext): Promise<Node> => {
+            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
+            return await blogService.deleteEntry(entry.id);
+        },
+    },
     Mutation: {
         createBlog: async (_: undefined, args: { handle: string, name: string }, ctx: BlogQLContext): Promise<Blog> => {
             const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
-            return await blogService.createBlog(args.name, args.handle);
+            return await blogService.createBlog(args.handle, args.name);
         },
-        createEntry: async (_: undefined, args: { blogId: string, title: string, content: string, publish: boolean }, ctx: BlogQLContext): Promise<Entry> => {
+        blog: async (_: undefined, args: { handle: string }, ctx: BlogQLContext): Promise<Blog | null> => {
             const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
-            return await blogService.createEntry(args.blogId, args.title, args.content, args.publish);
+            return await blogService.getBlog(args.handle);
         },
-        deleteBlog: async (_: undefined, args: { id: string }, ctx: BlogQLContext): Promise<Node> => {
+        blogByID: async (_: undefined, args: { id: string }, ctx: BlogQLContext): Promise<Blog | null> => {
             const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
-            return await blogService.deleteBlog(args.id);
+            return await blogService.getBlog(args.id);
         },
-        deleteEntry: async (_: undefined, args: { id: string }, ctx: BlogQLContext): Promise<Node> => {
-            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
-            return await blogService.deleteEntry(args.id);
-        },
-        updateBlog: async (_: undefined, args: { id: string, name: string }, ctx: BlogQLContext): Promise<Blog | null> => {
-            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
-            return await blogService.updateBlog(args.id, args.name);
-        },
-        updateEntry: async (_: undefined, args: { id: string, title: string, content: string, published: boolean }, ctx: BlogQLContext):
-            Promise<Entry | null> => {
-            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
-            return await blogService.updateEntry(args.id, args.title, args.content, args.published);
-        },
+
     }
 }
 

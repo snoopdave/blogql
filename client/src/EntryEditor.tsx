@@ -3,7 +3,7 @@
  * Licensed under Apache Software License v2.
  */
 
-import React, {ChangeEvent, useState} from 'react';
+import React, {ChangeEvent, useState, useEffect} from 'react';
 import {Button, Form, Jumbotron, Modal, Toast} from 'react-bootstrap';
 import './EntryEditor.css';
 import {Link, useHistory, useParams} from 'react-router-dom';
@@ -98,7 +98,6 @@ export function EditorForm(props: EditorFormProps) {
     const [failure, setFailure] = useState(false);
     const [toast, setToast] = useState('');
     const [deleting, setDeleting] = useState(false);
-    const [publish, setPublish] = useState(false);
     const [published] = useState(props.published);
     const [saved, setSaved] = useState(id !== null && id !== undefined);
     const [valid, setValid] = useState(isValid());
@@ -114,7 +113,6 @@ export function EditorForm(props: EditorFormProps) {
             .then(() => {
                 setSuccess(true);
                 setToast('New entry created');
-                validateForm();
                 setTimeout(() => {
                     history.push(`/blogs/${handle}`);
                 }, 500);
@@ -126,16 +124,14 @@ export function EditorForm(props: EditorFormProps) {
     }
 
     const [updateEntryMutation] = useMutation<Entry, { id: string, title: string, content: string, publish: boolean }>(
-        ENTRY_UPDATE_MUTATION, {variables: {id: id!, title: title, content: content, publish}});
+        ENTRY_UPDATE_MUTATION, { variables: {id: id!, title, content, publish }});
 
     function updateEntry() {
-        console.log(`updateEntry with publish=${publish}`);
         updateEntryMutation()
             .then(() => {
                 setSuccess(true);
                 setSaved(true);
                 setToast('Entry updated');
-                validateForm();
                 // setTimeout(() => {
                 //     history.push(`/blogs/${handle}`);
                 // }, 500);
@@ -266,7 +262,6 @@ export function EditorForm(props: EditorFormProps) {
                     { !published &&
                         <Button disabled={!valid} onClick={() => {
                             setPublish(true);
-                            updateEntry();
                         }}>Publish
                         </Button>
                     }
