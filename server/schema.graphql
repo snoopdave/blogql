@@ -12,7 +12,7 @@ interface Node {
 type Blog implements Node {
     created: DateTime!
     drafts(cursor: String, limit: Int): EntryResponse!
-    entries(cursor: String, limit: Int): EntryResponse!
+    entries(cursor: String!, limit: Int): EntryResponse!
     entry(id: ID!): Entry
     handle: String!
     id: ID!
