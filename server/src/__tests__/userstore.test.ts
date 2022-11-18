@@ -33,7 +33,7 @@ describe('Test UserStore', () => {
     });
 
     test('It can CRUD a user', async () => {
-        let slug = randomString(5);
+        let slug = randomString(6);
         let conn = new DBConnection(`./db-test-${slug}.db`);
         let us = new UserStore(conn);
         await us.init();

@@ -58,12 +58,12 @@ describe('Test the GraphQL API integration', () => {
     test('It can create new entries via GraphQL', async () => {
         const {server, conn, blogStore, authUsers} = await initDataStorage();
         try {
-            const blog: Blog = await blogStore.create(authUsers[0].id, 'Blog Name', 'bloghandle');
-            const entryCreated = await createEntry(server, blog.id, 'First post!', 'LOL');
+            const blog: Blog = await blogStore.create(authUsers[0].id, 'bloghandle', 'Blog Name');
+            const entryCreated = await createEntry(server, blog.handle, 'First post!', 'LOL');
             expect(entryCreated.errors).toBeUndefined();
-            expect(entryCreated.data?.createEntry.title).toBe('First post!')
-            verifyDate(entryCreated.data?.createEntry.created);
-            verifyDate(entryCreated.data?.createEntry.updated);
+            expect(entryCreated.data?.blog.createEntry.title).toBe('First post!')
+            verifyDate(entryCreated.data?.blog.createEntry.created);
+            verifyDate(entryCreated.data?.blog.createEntry.updated);
         } finally {
             await conn.destroy();
         }
@@ -103,8 +103,8 @@ describe('Test the GraphQL API integration', () => {
         const {server, conn, userStore, blogStore, entryStore} = await initDataStorage();
         const user: User = await userStore.create(
             'test-user', 'test-user@example.com', 'dummy.png')
-        const blog: Blog = await blogStore.create(user.id, 'Blog Name', 'bloghandle');
-        const entry = await entryStore.create(blog.id, 'entry 1 title', 'entry 1 content', undefined);
+        const blog: Blog = await blogStore.create(user.id, 'bloghandle', 'Blog Name');
+        const entry = await entryStore.create(blog.id, 'entry 1 title', 'entry 1 content');
         try {
             const entryFetched = await getEntry(server, blog.handle, entry.id);
             expect(entryFetched.errors).toBeUndefined();
@@ -120,16 +120,16 @@ describe('Test the GraphQL API integration', () => {
 
     test(`It can delete an entry`, async () => {
         const {server, conn, blogStore, entryStore, authUsers} = await initDataStorage();
-        const blog: Blog = await blogStore.create(authUsers[0].id, 'Blog Name', 'bloghandle');
-        const entry = await entryStore.create(blog.id, 'entry 1 title', 'entry 1 content', undefined);
+        const blog: Blog = await blogStore.create(authUsers[0].id, 'bloghandle', 'Blog Name');
+        const entry = await entryStore.create(blog.id, 'entry 1 title', 'entry 1 content');
         try {
             const itemFetched = await getEntry(server, blog.handle, entry.id);
             expect(itemFetched.errors).toBeUndefined();
             expect(itemFetched.data?.blog.entry.content).toBe('entry 1 content');
 
-            const itemDeleted = await deleteEntry(server, entry.id);
+            const itemDeleted = await deleteEntry(server, blog.handle, entry.id);
             expect(itemDeleted.errors).toBeUndefined();
-            expect(itemDeleted.data?.deleteEntry.id).toBe(entry.id);
+            expect(itemDeleted.data?.blog.entry.delete.id).toBe(entry.id);
         } finally {
             await conn.destroy();
         }
@@ -140,8 +140,8 @@ describe('Test the GraphQL API integration', () => {
         try {
             const user: User = await userStore.create(
                 'test-user', 'test-user@example.com', 'dummy.png')
-            const blog: Blog = await blogStore.create(user.id, 'Blog Name', 'bloghandle');
-            const entryCreated = await createEntry(server, blog.id, 'First post!', 'LOL');
+            const blog: Blog = await blogStore.create(user.id, 'bloghandle', 'Blog Name');
+            const entryCreated = await createEntry(server, blog.handle, 'First post!', 'LOL');
             expect(entryCreated.errors).toHaveLength(1);
         } finally {
             await conn.destroy();
@@ -149,10 +149,11 @@ describe('Test the GraphQL API integration', () => {
     });
 
     test(`It gives error when deleting entry that does not exist`, async () => {
-        const {server, conn} = await initDataStorage();
+        const {server, conn, blogStore, authUsers} = await initDataStorage();
         const id = uuid();
+        const blog: Blog = await blogStore.create(authUsers[0].id, 'bloghandle', 'Blog Name');
         try {
-            const entryDeleted = await deleteEntry(server, id);
+            const entryDeleted = await deleteEntry(server, blog.handle, id);
             expect(entryDeleted.errors).toBeDefined();
         } finally {
             await conn.destroy();
@@ -161,8 +162,8 @@ describe('Test the GraphQL API integration', () => {
 
     test(`It can update an entry's title and content and updated time`, async () => {
         const {server, conn, blogStore, entryStore, authUsers} = await initDataStorage();
-        const blog: Blog = await blogStore.create(authUsers[0].id, 'Blog Name', 'bloghandle');
-        const entry = await entryStore.create(blog.id, 'entry 1 title', 'entry 1 content', undefined);
+        const blog: Blog = await blogStore.create(authUsers[0].id, 'bloghandle', 'Blog Name');
+        const entry = await entryStore.create(blog.id, 'entry 1 title', 'entry 1 content');
         try {
             let entryFetched: GraphQLResponse = await getEntry(server, blog.handle, entry.id);
             expect(entryFetched.errors).toBeUndefined();
@@ -170,10 +171,11 @@ describe('Test the GraphQL API integration', () => {
 
             const entryUpdated = await updateEntry(
                 server,
+                blog.handle,
                 entry.id,
                 entry.title + ' (EDITED)',
                 entry.content + ' (EDITED)');
-            expect(entryUpdated.data?.updateEntry.id).toBe(entry.id);
+            expect(entryUpdated.data?.blog.entry.update.id).toBe(entry.id);
             expect(entryUpdated.errors).toBeUndefined();
 
             entryFetched = await getEntry(server, blog.handle, entry.id);
@@ -189,9 +191,8 @@ describe('Test the GraphQL API integration', () => {
         const limit = 2;
         const {server, conn, blogStore, authUsers} = await initDataStorage();
         await createTestBlogsViaSql(authUsers, blogStore);
-        let payload = {query: getBlogsQuery, variables: {limit}};
         try {
-            const result = await server.executeOperation(payload);
+            const result = await getBlogs(server, limit, undefined);
             expect(result.errors).toBeUndefined();
             expect(result.data?.blogs.nodes).toHaveLength(limit);
             expect(result.data?.blogs.pageInfo.totalCount).toBe(authUsers.length);
@@ -207,18 +208,11 @@ describe('Test the GraphQL API integration', () => {
             const slug = randomString(5);
 
             // create a blog
-            const createBlogPayload = {
-                query: createBlogMutation, variables: {
-                    name: `Test Blog ${slug}`,
-                    handle: `test-blog-${slug}`,
-                }
-            };
-            const blog = await server.executeOperation(createBlogPayload);
+            const blog = await createBlog(server, `test-blog-${slug}`, `Test Blog ${slug}`);
             expect(blog.errors).toBeUndefined();
 
             // get the blog
-            const getBlogPayload = {query: getBlogQuery, variables: {handle: blog.data?.createBlog.handle}};
-            const fetchedBlog = await server.executeOperation(getBlogPayload);
+            const fetchedBlog = await getBlog(server, blog.data?.createBlog.handle);
             expect(fetchedBlog.errors).toBeUndefined();
             expect(fetchedBlog.data?.blog.name).toBe(`Test Blog ${slug}`);
             expect(fetchedBlog.data?.blog.handle).toBe(`test-blog-${slug}`);
@@ -226,28 +220,16 @@ describe('Test the GraphQL API integration', () => {
             expect(fetchedBlog.data?.blog.user.id).toBe(authUsers[0].id);
 
             // update the blog
-            const updateBlogPayload = {
-                query: updateBlogMutation, variables: {
-                    id: blog?.data?.createBlog.id,
-                    name: `Test Blog ${slug} - Updated`,
-                }
-            };
-            const updatedBlog = await server.executeOperation(updateBlogPayload);
+            const updatedBlog = await updateBlog(server, blog?.data?.createBlog.handle, `Test Blog ${slug} - Updated`);
             expect(updatedBlog.errors).toBeUndefined();
-            expect(updatedBlog.data?.updateBlog.name).toBe(`Test Blog ${slug} - Updated`);
+            expect(updatedBlog.data?.blog.update.name).toBe(`Test Blog ${slug} - Updated`);
 
             // delete the blog
-            const deleteBlogPayload = {
-                query: deleteBlogMutation, variables: {
-                    id: blog?.data?.createBlog.id,
-                }
-            };
-            const deletedBlog = await server.executeOperation(deleteBlogPayload);
+            const deletedBlog = await deleteBlog(server, blog?.data?.createBlog.handle);
             expect(deletedBlog.errors).toBeUndefined();
 
             // attempt to get blog should return null
-            const getDeletedBlogPayload = {query: getBlogQuery, variables: {handle: blog?.data?.createBlog.handle}};
-            const deletedBlogFetched = await server.executeOperation(getDeletedBlogPayload);
+            const deletedBlogFetched = await getBlog(server, blog.data?.createBlog.handle);
             expect(deletedBlogFetched.errors).toBeUndefined();
             expect(deletedBlogFetched.data?.blog).toBeNull();
 
@@ -270,13 +252,12 @@ describe('Test the GraphQL API integration', () => {
     });
 
     test('It can get blog for a user', async () => {
-        const {server, conn, blogStore, authUsers} = await initDataStorage();
+        const {server, conn, authUsers} = await initDataStorage();
         const slug = randomString(5);
         const blog = await createBlog(server, `My Blog ${slug}`, `myblog${slug}`);
         blog?.data?.createBlog.id;
-        const payload = {query: getBlogForUser, variables: {userId: authUsers[0].id}};
         try {
-            let data = await server.executeOperation(payload);
+            let data = await getBlogForUser(server, authUsers[0].id);
             expect(data.errors).toBeUndefined();
             expect(data?.data?.blogForUser?.id).toBe(blog?.data?.createBlog.id);
         } finally {
@@ -350,10 +331,11 @@ async function getAllBlogs(server: ApolloServer, payload: any, dataRetrieved: En
 }
 
 async function createBlogAndTestEntriesViaSql(user: User, bs: BlogStore, es: EntryStore): Promise<Blog> {
-    const blog: Blog = await bs.create(user.id, 'Blog Name', 'bloghandle');
+    const blog: Blog = await bs.create(user.id, 'bloghandle', 'Blog Name');
     const blogId = blog.id;
     for (let i = 0; i < 10; i++) {
-        const entry: Entry = await es.create(blogId, 'Entry Title ' + i, 'Entry content' + i, undefined);
+        const entry: Entry = await es.create(blogId, 'Entry Title ' + i, 'Entry content' + i);
+        es.publish(entry.id);
         expect(entry.id).toBeDefined();
     }
     return blog;
@@ -363,7 +345,7 @@ async function createTestBlogsViaSql(users: User[], bs: BlogStore): Promise<Blog
     const blogs: Blog[] = []
     for (let i = 0; i < users.length; i++) {
         const slug = randomString(5);
-        blogs.push(await bs.create(users[i].id, `Blog ${slug}`, `blog${slug}`));
+        blogs.push(await bs.create(users[i].id, `blog${slug}`, `Blog ${slug}`));
     }
     return blogs;
 }
@@ -376,31 +358,7 @@ function verifyDate(dateString: string) {
 }
 
 //
-// GraphQL CRUD methods
-//
-
-async function createEntry(server: ApolloServer, blogId: string, title: string, content: string): Promise<GraphQLResponse> {
-    return server.executeOperation({query: createEntryMutation, variables: {blogId, title, content}});
-}
-
-async function updateEntry(server: ApolloServer, id: string, title: string, content: string): Promise<GraphQLResponse> {
-    return server.executeOperation({query: updateEntryMutation, variables: {id, title, content}});
-}
-
-async function getEntry(server: ApolloServer, handle: string, entryId: string): Promise<GraphQLResponse> {
-    return server.executeOperation({query: getEntryQuery, variables: {handle: handle, id: entryId}});
-}
-
-async function deleteEntry(server: ApolloServer, id: string): Promise<GraphQLResponse> {
-    return server.executeOperation({query: deleteEntryMutation, variables: {id}});
-}
-
-async function createBlog(server: ApolloServer, name: string, handle: string): Promise<GraphQLResponse> {
-    return server.executeOperation({query: createBlogMutation, variables: {handle, name}});
-}
-
-//
-// GraphQL CRUD queries
+// GraphQL queries and mutations
 //
 
 const getEntriesQuery = `
@@ -422,6 +380,10 @@ const getEntriesQuery = `
             }
         }`;
 
+async function getEntry(server: ApolloServer, handle: string, entryId: string): Promise<GraphQLResponse> {
+    return server.executeOperation({query: getEntryQuery, variables: {handle, id: entryId}});
+}
+
 const getEntryQuery = `query getEntry($handle: String!, $id: ID!) {
         blog(handle: $handle) {
           entry(id: $id) {
@@ -434,37 +396,67 @@ const getEntryQuery = `query getEntry($handle: String!, $id: ID!) {
         } 
     }`;
 
-const createEntryMutation = `mutation CreateEntry($blogId: ID!, $title: String!, $content: String!) { 
-        createEntry(blogId: $blogId, title: $title, content: $content) {
-            id
-            title 
-            content
-            created
-            updated
+async function createEntry(server: ApolloServer, handle: string, title: string, content: string): Promise<GraphQLResponse> {
+    return server.executeOperation({query: createEntryMutation, variables: {handle, title, content}});
+}
+
+const createEntryMutation = `mutation CreateEntry($handle: String!, $title: String!, $content: String!) { 
+        blog(handle: $handle) {
+            createEntry(title: $title, content: $content) {
+                id
+                title 
+                content
+                created
+                updated
+            }
         } 
     }`;
 
-const deleteEntryMutation = `mutation DeleteEntry($id: ID!) {
-        deleteEntry(id: $id) {
-            id
+async function deleteEntry(server: ApolloServer, handle: string, id: string): Promise<GraphQLResponse> {
+    return server.executeOperation({query: deleteEntryMutation, variables: {handle, id}});
+}
+
+const deleteEntryMutation = `mutation DeleteEntry($handle: String!, $id: ID!) {
+        blog(handle: $handle) {
+            entry(id: $id) {
+                delete {
+                    id
+                }
+            } 
+        }
+    }`;
+
+async function updateEntry(server: ApolloServer, handle: string, id: string, title: string, content: string): Promise<GraphQLResponse> {
+    return server.executeOperation({query: updateEntryMutation, variables: {handle, id, title, content}});
+}
+
+const updateEntryMutation = `mutation UpdateEntry($handle: String!, $id: ID!, $title: String!, $content: String!) { 
+        blog(handle: $handle) {
+            entry(id: $id) {
+                update(title: $title, content: $content) {
+                    id
+                }
+            }
         } 
     }`;
 
-const updateEntryMutation = `mutation UpdateEntry($id: ID!, $title: String!, $content: String!) { 
-        updateEntry(id: $id, title: $title, content: $content) {
-            id
-        } 
-    }`;
+async function createBlog(server: ApolloServer, handle: string, name: string): Promise<GraphQLResponse> {
+    return server.executeOperation({query: createBlogMutation, variables: {handle, name}});
+}
 
 const createBlogMutation = `mutation CreateBlog($handle: String!, $name: String!) { 
         createBlog(handle: $handle, name: $name) {
             id
-            name 
             handle
+            name 
             created
             updated
         } 
     }`;
+
+async function getBlog(server: ApolloServer, handle: string): Promise<GraphQLResponse> {
+    return server.executeOperation({query: getBlogQuery, variables: {handle}});
+}
 
 const getBlogQuery = `query getBlog($handle: String!) {
         blog(handle: $handle) {
@@ -480,18 +472,34 @@ const getBlogQuery = `query getBlog($handle: String!) {
         } 
     }`;
 
-const updateBlogMutation = `mutation UpdateBlog($id: ID!, $name: String!) { 
-        updateBlog(id: $id, name: $name) {
-            id
-            name
+async function updateBlog(server: ApolloServer, handle: string, name: string): Promise<GraphQLResponse> {
+    return server.executeOperation({query: updateBlogMutation, variables: {handle, name}});
+}
+
+const updateBlogMutation = `mutation UpdateBlog($handle: String!, $name: String!) { 
+        blog(handle: $handle) {
+            update(name: $name) {
+                id
+                name
+            }
         } 
     }`;
 
-const deleteBlogMutation = `mutation DeleteBlog($id: ID!) { 
-        deleteBlog(id: $id) {
-            id
-        } 
+async function deleteBlog(server: ApolloServer, handle: string): Promise<GraphQLResponse> {
+    return server.executeOperation({query: deleteBlogMutation, variables: {handle}});
+}
+
+const deleteBlogMutation = `mutation DeleteBlog($handle: String!) { 
+        blog(handle: $handle) {
+            delete {
+                id
+            } 
+        }
     }`;
+
+async function getBlogs(server: ApolloServer, limit: number, cursor: string | undefined): Promise<GraphQLResponse> {
+    return server.executeOperation({query: getBlogsQuery, variables: {limit, cursor}});
+}
 
 const getBlogsQuery = `query getBlogs($limit: Int, $cursor: String) {
         blogs(limit: $limit, cursor: $cursor) { 
@@ -509,7 +517,11 @@ const getBlogsQuery = `query getBlogs($limit: Int, $cursor: String) {
         }
     }`;
 
-const getBlogForUser = `query getBlogForUser($userId: ID!) {
+async function getBlogForUser(server: ApolloServer, userId: string): Promise<GraphQLResponse> {
+    return server.executeOperation({query: getBlogForUserQuery, variables: {userId}});
+}
+
+const getBlogForUserQuery = `query getBlogForUser($userId: ID!) {
         blogForUser(userId: $userId) { 
            id
            handle 

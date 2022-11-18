@@ -14,12 +14,14 @@ const { DataTypes, Model } = sequelize; // sequelize is a CommonJS module
 
 
 export class Blog extends Model {
-    id!: string;
-    name!: string;
-    handle!: string;
-    created!: Date;
-    updated!: Date;
-    userId!: string;
+    // use 'declare' to avoid shadowing model's getters/setters
+    // https://sequelize.org/docs/v6/core-concepts/model-basics/#caveat-with-public-class-fields
+    declare id: string;
+    declare name: string;
+    declare handle: string;
+    declare created: Date;
+    declare updated: Date;
+    declare userId: string;
 }
 
 export default class BlogStore implements DataSource<Blog> {
@@ -71,7 +73,7 @@ export default class BlogStore implements DataSource<Blog> {
         await Blog.sync();
     }
 
-    async create(userId: string, name: string, handle: string): Promise<Blog> {
+    async create(userId: string, handle: string, name: string): Promise<Blog> {
         let blog = await this.retrieveByUserId(userId);
         if (!blog) {
             const now = new Date();

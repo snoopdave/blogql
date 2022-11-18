@@ -16,45 +16,74 @@ export const BLOG_CREATE_MUTATION = gql`mutation BlogCreateMutation($handle: Str
 }`;
 
 export const BLOG_UPDATE_MUTATION = gql`mutation BlogUpdateMutation($id: ID!, $name: String!) {
-    updateBlog(id: $id, name: $name) {
-        id 
+    blogByID(id: $id) {
+        update(name: $name) {
+            id
+        }
     }
 }`;
 
 export const BLOG_DELETE_MUTATION = gql`mutation BlogDeleteMutation($id: ID!) {
-    deleteBlog(id: $id) {
-        id
+    blogByID(id: $id) {
+        delete {
+            id
+        }
     }
 }`;
 
 export const ENTRY_CREATE_MUTATION = gql`mutation EntryCreateMutation(
-    $blogId: ID!, $title: String!, $content: String!, $publish: Boolean) {
-    createEntry(blogId: $blogId, title: $title, content: $content, publish: $publish) {
-        id
-        title
-        content
-        created
-        updated
-        published
+    $handle: String!, $title: String!, $content: String!) {
+    blog(handle: $handle) {
+        createEntry(title: $title, content: $content) {
+            id
+            title
+            content
+            created
+            updated
+            published
+        }
     }
 }`;
 
 export const ENTRY_UPDATE_MUTATION = gql`mutation EntryUpdateMutation(
-    $id: ID!, $title: String!, $content: String!, $publish: Boolean) {
-    
-    updateEntry(id: $id, title: $title, content: $content, publish: $publish) {
-        id
-        title
-        content
-        created
-        updated
-        published
+    $handle: String!, $id: ID!, $title: String!, $content: String!) {
+    blog(handle: $handle) {
+        entry(id: $id) {
+            update(title: $title, content: $content) {
+                id
+                title
+                content
+                created
+                updated
+                published
+            }
+        }
     }
 }`;
 
-export const ENTRY_DELETE_MUTATION = gql`mutation EntryDeleteMutation($id: ID!) {
-    deleteEntry(id: $id) {
-        id
+export const ENTRY_PUBLISH_MUTATION = gql`mutation EntryPublishMutation(
+    $handle: String!, $id: ID!) {
+    blog(handle: $handle) {
+        entry(id: $id) {
+            publish {
+                id
+                title
+                content
+                created
+                updated
+                published
+            }
+        }
+    }
+}`;
+
+export const ENTRY_DELETE_MUTATION = gql`mutation EntryDeleteMutation($handle: String!, $id: ID!) {
+    blog(handle: $handle) {
+        entry(id: $id) {
+            delete {
+                id
+            }
+        }
     }
 }`;
 

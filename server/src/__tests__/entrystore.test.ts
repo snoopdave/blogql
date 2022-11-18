@@ -36,8 +36,8 @@ describe('Test EntryStore', () => {
         const user: User = await userStore.create(
             `test-user-${slug}`, 'test-user@example.com', 'dummy.png')
         try {
-            const blog = await blogStore.create(user.id, `Blog ${slug}`, `blog-${slug}`)
-            const entryCreated = await entryStore.create(blog.id, 'entry title', 'has content', undefined);
+            const blog = await blogStore.create(user.id, `blog-${slug}`, `Blog ${slug}`)
+            const entryCreated = await entryStore.create(blog.id, 'entry title', 'has content');
             expect(entryCreated).toHaveProperty('id');
             expect(entryCreated).toHaveProperty('title', 'entry title');
             expect(entryCreated).toHaveProperty('content', 'has content');
@@ -51,7 +51,7 @@ describe('Test EntryStore', () => {
             expect(entryRetrieved).toHaveProperty('created');
             expect(entryRetrieved).toHaveProperty('updated');
 
-            const entriesRetrieved = await entryStore.retrieveAll(blog.id, 10, 0);
+            const entriesRetrieved = await entryStore.retrieveAllDrafts(blog.id, 10, 0);
             expect(entriesRetrieved.rows).toHaveLength(1);
 
         } finally {
@@ -71,21 +71,21 @@ describe('Test EntryStore', () => {
         const user: User = await userStore.create(
             `test-user-${slug}`, 'test-user@example.com', 'dummy.png')
         try {
-            const blog = await blogStore.create(user.id, `Blog ${slug}`, `blog-${slug}`)
-            const entryCreated = await entryStore.create(blog.id, 'entry title', 'has content', undefined);
+            const blog = await blogStore.create(user.id, `blog-${slug}`, `Blog ${slug}`)
+            const entryCreated = await entryStore.create(blog.id, 'entry title', 'has content');
 
-            expect(await entryStore.retrieveAll(blog.id, 10, 0)).toBe(0);
-            expect(await entryStore.retrieveAllDrafts(blog.id, 10, 0)).toBe(1);
+            expect((await entryStore.retrieveAll(blog.id, 10, 0)).count).toBe(0);
+            expect((await entryStore.retrieveAllDrafts(blog.id, 10, 0)).count).toBe(1);
 
-            await entryStore.publish(entryCreated.id, true);
+            await entryStore.publish(entryCreated.id);
 
-            expect(await entryStore.retrieveAll(blog.id, 10, 0)).toBe(1);
-            expect(await entryStore.retrieveAllDrafts(blog.id, 10, 0)).toBe(0);
+            expect((await entryStore.retrieveAll(blog.id, 10, 0)).count).toBe(1);
+            expect((await entryStore.retrieveAllDrafts(blog.id, 10, 0)).count).toBe(0);
 
-            await entryStore.publish(entryCreated.id, false);
+            await entryStore.unPublish(entryCreated.id);
 
-            expect(await entryStore.retrieveAll(blog.id, 10, 0)).toBe(0);
-            expect(await entryStore.retrieveAllDrafts(blog.id, 10, 0)).toBe(1);
+            expect((await entryStore.retrieveAll(blog.id, 10, 0)).count).toBe(0);
+            expect((await entryStore.retrieveAllDrafts(blog.id, 10, 0)).count).toBe(1);
 
         } finally {
             await conn.destroy();
@@ -104,9 +104,10 @@ describe('Test EntryStore', () => {
         const user: User = await userStore.create(
             `test-user-${slug}`, 'test-user@example.com', 'dummy.png')
         try {
-            const blog = await blogStore.create(user.id, `Blog ${slug}`, `blog-${slug}`)
+            const blog = await blogStore.create(user.id, `blog-${slug}`, `Blog ${slug}`)
             for (let i = 0; i < 25; i++) {
-                await entryStore.create(blog.id, `entry title ${i}`, 'has content', undefined);
+                let entry = await entryStore.create(blog.id, `entry title ${i}`, 'has content');
+                await entryStore.publish(entry.id);
             }
 
             const entriesRetrieved = await entryStore.retrieveAll(blog.id, 10, 0);
