@@ -16,6 +16,7 @@ import {Entry} from './graphql/schema';
 import {
     ENTRY_CREATE_MUTATION,
     ENTRY_DELETE_MUTATION,
+    ENTRY_PUBLISH_MUTATION,
     ENTRY_UPDATE_MUTATION
 } from './graphql/mutations';
 import {BLOG_BY_HANDLE_QUERY, ENTRY_QUERY} from './graphql/queries';
@@ -98,7 +99,6 @@ export function EditorForm(props: EditorFormProps) {
     const [failure, setFailure] = useState(false);
     const [toast, setToast] = useState('');
     const [deleting, setDeleting] = useState(false);
-    const [publish, setPublish] = useState(false);
     const [published] = useState(props.published);
     const [saved, setSaved] = useState(id !== null && id !== undefined);
     const [valid, setValid] = useState(isValid());
@@ -106,15 +106,14 @@ export function EditorForm(props: EditorFormProps) {
     // eslint-disable-next-line
     let editor: UnprivilegedEditor | null = null; // assigned a value below in handleContentFocus()
 
-    const [createEntryMutation] = useMutation<Entry, { blogId: string, title: string, content: string, publish: boolean }>(
-        ENTRY_CREATE_MUTATION, {variables: {blogId: props.blogId, title, content, publish}});
+    const [createEntryMutation] = useMutation<Entry, { blogId: string, title: string, content: string }>(
+        ENTRY_CREATE_MUTATION, {variables: {blogId: props.blogId, title, content}});
 
     function createEntry() {
         createEntryMutation()
             .then(() => {
                 setSuccess(true);
                 setToast('New entry created');
-                validateForm();
                 setTimeout(() => {
                     history.push(`/blogs/${handle}`);
                 }, 500);
@@ -125,17 +124,15 @@ export function EditorForm(props: EditorFormProps) {
             });
     }
 
-    const [updateEntryMutation] = useMutation<Entry, { id: string, title: string, content: string, publish: boolean }>(
-        ENTRY_UPDATE_MUTATION, {variables: {id: id!, title: title, content: content, publish}});
+    const [updateEntryMutation] = useMutation<Entry, { handle: string, id: string, title: string, content: string }>(
+        ENTRY_UPDATE_MUTATION, { variables: {handle, id, title, content }});
 
     function updateEntry() {
-        console.log(`updateEntry with publish=${publish}`);
         updateEntryMutation()
             .then(() => {
                 setSuccess(true);
                 setSaved(true);
                 setToast('Entry updated');
-                validateForm();
                 // setTimeout(() => {
                 //     history.push(`/blogs/${handle}`);
                 // }, 500);
@@ -143,6 +140,25 @@ export function EditorForm(props: EditorFormProps) {
             .catch(() => {
                 setFailure(true);
                 setToast('Failed to update entry');
+            });
+    }
+
+    const [publishEntryMutation] = useMutation<Entry, { handle: string, id: string, title: string, content: string }>(
+        ENTRY_PUBLISH_MUTATION, { variables: {handle, id, title, content }});
+
+    function publishEntry() {
+        publishEntryMutation()
+            .then(() => {
+                setSuccess(true);
+                setSaved(true);
+                setToast('Entry published');
+                // setTimeout(() => {
+                //     history.push(`/blogs/${handle}`);
+                // }, 500);
+            })
+            .catch(() => {
+                setFailure(true);
+                setToast('Failed to publish entry');
             });
     }
 
@@ -190,6 +206,7 @@ export function EditorForm(props: EditorFormProps) {
 
     let handleContentFocus = (range: ReactQuill.Range, source: Sources, theEditor: UnprivilegedEditor) => {
         // TODO: there must be a better way to obtain a reference to the editor
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         editor = theEditor;
     }
 
@@ -265,8 +282,7 @@ export function EditorForm(props: EditorFormProps) {
 
                     { !published &&
                         <Button disabled={!valid} onClick={() => {
-                            setPublish(true);
-                            updateEntry();
+                            publishEntry();
                         }}>Publish
                         </Button>
                     }

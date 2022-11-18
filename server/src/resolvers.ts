@@ -9,9 +9,8 @@ import {Node} from './node.js';
 import {Blog} from './blogstore.js';
 import {User} from './userstore.js';
 import {BlogServiceSQLiteImpl} from './blogservice.js';
-import {BlogQLContext, BlogQLDataSources} from './index.js';
-
-
+import {BlogQLContext} from './index.js';
+import {log, LogLevel} from './utils.js';
 const resolvers = {
     Node: {
         __resolveType: (node: Node) => {
@@ -54,33 +53,79 @@ const resolvers = {
             return await blogService.getDrafts(blog, args.limit, args.offset, args.cursor);
         },
     },
+    BlogMutation: {
+        update: async (parent: BlogMutation, args: { name: string }, ctx: BlogQLContext): Promise<Blog | null> => {
+            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
+            return await blogService.updateBlog(parent.blog.id, args.name);
+        },
+        delete: async (parent: BlogMutation, args: {}, ctx: BlogQLContext): Promise<Node> => {
+            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
+            return await blogService.deleteBlog(parent.blog.id);
+        },
+        entry: async (parent: BlogMutation, args: { id: string }, ctx: BlogQLContext): Promise<EntryMutation | null> => {
+            log(LogLevel.DEBUG, '*******************');
+            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
+            const entry: Entry | null = await blogService.getEntry(parent.blog, args.id);
+            if (entry) {
+                return { blog: parent.blog, entry };
+            }
+            throw Error(`Entry ${args.id} not found`);
+        },
+        createEntry: async (parent: BlogMutation, args: { title: string, content: string, publish: boolean }, ctx: BlogQLContext): Promise<Entry> => {
+            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
+            return await blogService.createEntry(parent.blog.id, args.title, args.content);
+        },
+    },
+    EntryMutation: {
+        update: async (parent: EntryMutation, args: { title: string, content: string}, ctx: BlogQLContext):
+            Promise<Entry | null> => {
+            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
+            return await blogService.updateEntry(parent.entry.id, args.title, args.content);
+        },
+        publish: async (parent: EntryMutation, args: { entry: Entry }, ctx: BlogQLContext):
+            Promise<Entry | null> => {
+            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
+            return await blogService.publishEntry(parent.entry.id);
+        },
+        delete: async (parent: EntryMutation, args: {}, ctx: BlogQLContext): Promise<Node> => {
+            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
+            return await blogService.deleteEntry(parent.entry.id);
+        },
+    },
     Mutation: {
         createBlog: async (_: undefined, args: { handle: string, name: string }, ctx: BlogQLContext): Promise<Blog> => {
             const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
-            return await blogService.createBlog(args.name, args.handle);
+            return await blogService.createBlog(args.handle, args.name);
         },
-        createEntry: async (_: undefined, args: { blogId: string, title: string, content: string, publish: boolean }, ctx: BlogQLContext): Promise<Entry> => {
+        blog: async (_: undefined, args: { handle: string }, ctx: BlogQLContext): Promise<BlogMutation | null> => {
             const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
-            return await blogService.createEntry(args.blogId, args.title, args.content, args.publish);
+            const blog: Blog | null = await blogService.getBlog(args.handle);
+            if (blog) {
+                return  { blog };
+            } else {
+                throw Error(`Blog ${args.handle} not found`);
+            }
         },
-        deleteBlog: async (_: undefined, args: { id: string }, ctx: BlogQLContext): Promise<Node> => {
+        blogByID: async (_: undefined, args: { id: string }, ctx: BlogQLContext): Promise<BlogMutation | null> => {
             const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
-            return await blogService.deleteBlog(args.id);
+            const blog: Blog | null = await blogService.getBlogById(args.id);
+            if (blog) {
+                return  { blog };
+            } else {
+                throw Error(`Blog ${args.id} not found`);
+            }
         },
-        deleteEntry: async (_: undefined, args: { id: string }, ctx: BlogQLContext): Promise<Node> => {
-            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
-            return await blogService.deleteEntry(args.id);
-        },
-        updateBlog: async (_: undefined, args: { id: string, name: string }, ctx: BlogQLContext): Promise<Blog | null> => {
-            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
-            return await blogService.updateBlog(args.id, args.name);
-        },
-        updateEntry: async (_: undefined, args: { id: string, title: string, content: string, published: boolean }, ctx: BlogQLContext):
-            Promise<Entry | null> => {
-            const blogService = new BlogServiceSQLiteImpl(ctx.user, ctx.dataSources);
-            return await blogService.updateEntry(args.id, args.title, args.content, args.published);
-        },
+
     }
+}
+
+interface BlogMutation {
+    blog: Blog;
+}
+
+interface EntryMutation {
+    blog: Blog;
+    entry: Entry;
 }
 
 export default resolvers;

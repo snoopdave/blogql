@@ -3,13 +3,14 @@
  * Licensed under Apache Software License v2.
  */
 
-import BlogStore, {Blog} from './blogstore.js';
-import EntryStore, {Entry} from './entrystore.js';
+import {Blog} from './blogstore.js';
+import {Entry} from './entrystore.js';
 import {User} from './userstore.js';
 import {Node} from './node.js';
 import {Response, Cursor, resolveCollection} from './pagination.js';
 import {AuthenticationError, ForbiddenError} from 'apollo-server-express';
 import {BlogQLDataSources} from "./index";
+import {log, LogLevel} from "./utils.js";
 
 
 export interface BlogService {
@@ -18,6 +19,7 @@ export interface BlogService {
 
     getBlogForUser(userId: string): Promise<Blog | null>;
     getBlog(handle: string): Promise<Blog | null>;
+    getBlogById(id: string): Promise<Blog | null>;
     getBlogs(limit: number, offset: number, cursor: string): Promise<Response<Blog>>;
 
     // blog
@@ -32,7 +34,7 @@ export interface BlogService {
     updateEntry(id: string, title: string, content: string, published: boolean | undefined): Promise<Entry | null>;
     deleteEntry(id: string): Promise<Node>;
 
-    createBlog(name: string, handle: string): Promise<Blog>;
+    createBlog(handle: string, name: string): Promise<Blog>;
     updateBlog(id: string, name: string): Promise<Blog | null>;
     deleteBlog(id: string): Promise<Node>;
 }
@@ -58,19 +60,19 @@ export class BlogServiceSQLiteImpl implements BlogService {
             if (await this.dataSources.blogStore.retrieveByUserId(this.user.id)) {
                 throw new ForbiddenError('Currently only one blog per user is supported.');
             }
-            return await this.dataSources.blogStore.create(this.user.id, name, handle);
+            return await this.dataSources.blogStore.create(this.user.id, handle, name);
         }
         throw new AuthenticationError('Must be logged in to createBlog');
     }
 
-    async createEntry(blogId: string, title: string, content: string, published: boolean | undefined): Promise<Entry> {
+    async createEntry(blogId: string, title: string, content: string): Promise<Entry> {
         if (this.user) {
             await this.initDataSources();
             const blog = await this.dataSources.blogStore.retrieveById(blogId);
             if (blog?.userId !== this.user.id) {
                 throw new AuthenticationError('You are not authorized to create entries for this blog.');
             }
-            return await this.dataSources.entryStore.create(blogId, title, content, published);
+            return await this.dataSources.entryStore.create(blogId, title, content);
         }
         throw new AuthenticationError('Must be logged in to createEntry');
     }
@@ -108,6 +110,11 @@ export class BlogServiceSQLiteImpl implements BlogService {
     async getBlog(handle: string): Promise<Blog | null> {
         await this.initDataSources();
         return await this.dataSources.blogStore.retrieve(handle);
+    }
+
+    async getBlogById(id: string): Promise<Blog | null> {
+        await this.initDataSources();
+        return await this.dataSources.blogStore.retrieveById(id);
     }
 
     async getBlogForUser(userId: string): Promise<Blog | null> {
@@ -155,10 +162,11 @@ export class BlogServiceSQLiteImpl implements BlogService {
             }
             return await this.dataSources.blogStore.update(id, name);
         }
-        throw new AuthenticationError('Must be logged in to createBlog');
+        throw new AuthenticationError('Must be logged in to updateBlog');
     }
 
-    async updateEntry(id: string, title: string, content: string, publish: boolean | undefined): Promise<Entry | null> {
+    async updateEntry(id: string, title: string, content: string): Promise<Entry | null> {
+        log(LogLevel.DEBUG, `updating entry`);
         if (this.user) {
             await this.initDataSources();
             const entry = await this.dataSources.entryStore.retrieve(id);
@@ -167,7 +175,23 @@ export class BlogServiceSQLiteImpl implements BlogService {
                 if (blog?.userId !== this.user.id) {
                     throw new AuthenticationError('You are not authorized to update entries for this blog.');
                 }
-                return await this.dataSources.entryStore.update(id, title, content, publish);
+                return await this.dataSources.entryStore.update(id, title, content);
+            }
+            throw Error(`Entry ${id} not found`);
+        }
+        throw new AuthenticationError('Must be logged in to updateEntry');
+    }
+
+    async publishEntry(id: string): Promise<Entry | null> {
+        if (this.user) {
+            await this.initDataSources();
+            const entry = await this.dataSources.entryStore.retrieve(id);
+            if (entry) {
+                const blog = await this.dataSources.blogStore.retrieveById(entry?.blogId);
+                if (blog?.userId !== this.user.id) {
+                    throw new AuthenticationError('You are not authorized to update entries for this blog.');
+                }
+                return await this.dataSources.entryStore.publish(id);
             }
             throw Error(`Entry ${id} not found`);
         }
