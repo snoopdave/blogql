@@ -3,11 +3,11 @@ kind: Ingress
 metadata:
   name: blogql
   annotations:
-    kubernetes.io/ingress.class: nginx
+    kubernetes.io/ingress.class: "nginx"
     ingress.kubernetes.io/preserve-host: "true"
 spec:
   rules:
-    - host: localhost
+    - host: {{ .Values.ingress.blogQlHost }}
       http:
         paths:
           - path: /
@@ -17,4 +17,3 @@ spec:
                 name: blogql
                 port:
                   number: 80
-

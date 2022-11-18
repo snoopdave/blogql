@@ -9,9 +9,10 @@
     "module": "esnext",
     "moduleResolution": "node",
     "target": "ESNext",
-    "typeRoots": ["./src/types", "./node_modules/@types"]
+    "typeRoots": ["./src/types", "./node_modules/@types"],
+    "noEmit": false,
+    "outDir": "src"
   },
-  "include": [
-    "src"
-  ]
+  "include": ["./src"],
+  "exclude": ["deploy"]
 }

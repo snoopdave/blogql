@@ -1,4 +1,8 @@
-name: prod-deploy
+name: merge-to-main
+
+# When there is a merge to main this workflow will build, test and check BlogQL's GraphQL schema.
+# If that is successful, a docker build and push will occur.
+# And finally, the GraphQL schema will be published.
 
 on:
   push:
@@ -7,23 +11,34 @@ on:
 
 jobs:
 
-  build:
-    uses: snoopdave/blogql/.github/workflows/build-test.yaml@main
+  build-test:
+    uses: "snoopdave/blogql/.github/workflows/build-test.yaml@main"
 
   check-schema:
-    uses: snoopdave/blogql/.github/workflows/check-schema.yaml@main
+    uses: "snoopdave/blogql/.github/workflows/check-schema.yaml@main"
     with:
-      schema-path: schema.graphql
+      graph-ref: "BlogQL-0jc7sk@current"
       working-dir: server
+      schema-path: "schema.graphql"
     secrets:
       ROVER_API_KEY: ${{ secrets.ROVER_API_KEY }}
-      APOLLO_REGISTRY_URL: ${{ secrets.APOLLO_REGISTRY_URL }}
+      #APOLLO_REGISTRY_URL: ${{ secrets.APOLLO_REGISTRY_URL }}
 
   docker-build:
-    uses: snoopdave/blogql/.github/workflows/docker-build.yaml@main
+    uses: "snoopdave/blogql/.github/workflows/docker-build.yaml@main"
     with:
       push: true
       tags: "snoopdave/blogql"
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+  publish-schema:
+    uses: "snoopdave/blogql/.github/workflows/publish-schema.yaml@main"
+    with:
+      schema-path: "schema.graphql"
+      working-dir: server
+      graph-ref: "BlogQL-0jc7sk@current"
+    secrets:
+      ROVER_API_KEY: ${{ secrets.ROVER_API_KEY }}
+      #APOLLO_REGISTRY_URL: ${{ secrets.APOLLO_REGISTRY_URL }}

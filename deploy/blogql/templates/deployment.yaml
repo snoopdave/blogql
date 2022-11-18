@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: blogql
-          image: "snoopdave/blogql:1.0.0"
+          image: "snoopdave/blogql:latest"
           imagePullPolicy: Always
           resources:
             limits:
@@ -26,15 +26,16 @@ spec:
               memory: "200Mi"
           ports:
             - containerPort: 4000
-{{/*          env:*/}}
-{{/*            - name: DATABASE_USERNAME*/}}
-{{/*              value: {{ .Values.blogql.databaseJdbcUsername }}*/}}
-{{/*            - name: DATABASE_HOSTANDPORT*/}}
-{{/*              value: {{ .Values.blogql.databaseHostandport }}*/}}
-{{/*            - name: DATABASE_PASSWORD*/}}
-{{/*              valueFrom:*/}}
-{{/*                secretKeyRef:*/}}
-{{/*                  name: pg-user-pass*/}}
-{{/*                  key: postgresql-password*/}}
+          env:
+            - name: APOLLO_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.apollo.keySecretName }}
+                  key: apolloKey
+            - name: APOLLO_GRAPH_REF
+              value: {{ .Values.apollo.graphRef }}
+            - name: APOLLO_SCHEMA_REPORTING
+              value: "{{ .Values.apollo.schemaReporting }}"
+
 
 

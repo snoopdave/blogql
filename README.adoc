@@ -1,6 +1,6 @@
 = BlogQL: Simple Blog Server with GraphQL API
 
-This is a learning project; something I started to help me learn React, TypeScript and modern JavaScript.
+This is a learning project; something I started to help me learn React, TypeScript and more about GraphQL and Apollo Studio.
 
 BlogQL is a simple blog server.
 It's really just a learning exercise and an example of a web app implemented as a server and a web-browser client written in TypeScript.
