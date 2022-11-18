@@ -10,8 +10,7 @@ import {Blog} from './blogstore.js';
 import {User} from './userstore.js';
 import {BlogServiceSQLiteImpl} from './blogservice.js';
 import {BlogQLContext} from './index.js';
-import {log, LogLevel} from "./utils";
-
+import {log, LogLevel} from './utils.js';
 const resolvers = {
     Node: {
         __resolveType: (node: Node) => {

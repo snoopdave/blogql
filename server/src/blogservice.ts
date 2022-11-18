@@ -10,7 +10,7 @@ import {Node} from './node.js';
 import {Response, Cursor, resolveCollection} from './pagination.js';
 import {AuthenticationError, ForbiddenError} from 'apollo-server-express';
 import {BlogQLDataSources} from "./index";
-import {log, LogLevel} from "./utils";
+import {log, LogLevel} from "./utils.js";
 
 
 export interface BlogService {

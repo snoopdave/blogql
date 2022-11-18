@@ -1,104 +1,32 @@
-scalar DateTime
+# This file was generated based on ".graphqlconfig". Do not edit manually.
+
+schema {
+    query: Query
+    mutation: Mutation
+}
 
 interface Node {
     id: ID!
 }
 
-"""
-Represents a single entry in a blog which is considered a draft if published is not defined.
-"""
-type Entry implements Node {
-    """
-    Unique identifier of the entry.
-    """
-    id: ID!
-    """
-    Title of the entry, a plain-text string with no HTML markup.
-    """
-    title: String!
-    """
-    Content of the entry which can include HTML markup.
-    """
-    content: String!
-    """
-    Date that the entry was created.
-    """
-    created: DateTime!
-    """
-    Date that the entry was updated.
-    """
-    updated: DateTime!
-    """
-    Date that the entry was published or undefined if entry is a draft.
-    """
-    published: DateTime
-}
-
-"""
-Represents a pageable list of entries.
-"""
-type EntryResponse {
-    """
-    Entries returned in this response.
-    """
-    nodes: [Entry]!
-    """
-    Information about the pagination of the entries.
-    """
-    pageInfo: PageInfo!
-}
-
-"""
-Represents a user of BlogQL.
-"""
-type User implements Node {
-    """
-    User's and unchangeable unique identifier.
-    """
-    id: ID!
-    """
-    User's unique username.
-    """
-    username: String!
-    """
-    User's email address.
-    """
-    email: String!
-    """
-    URL of user's avatar.
-    """
-    picture: String
-    """
-    Date user was created.
-    """
-    created: DateTime!
-    """
-    Date user was updated.
-    """
-    updated: DateTime!
-}
-
-type UserResponse {
-    nodes: [User]!
-    pageInfo: PageInfo!
-}
-
-type PageInfo {
-    cursor: String
-    totalCount: Int!
-}
-
 type Blog implements Node {
+    created: DateTime!
+    drafts(cursor: String, limit: Int): EntryResponse!
+    entries(cursor: String, limit: Int): EntryResponse!
+    entry(id: ID!): Entry
+    handle: String!
     id: ID!
     name: String!
-    handle: String!
-    created: DateTime!
     updated: DateTime!
-    entry(id: ID!): Entry
-    entries(limit: Int, cursor: String): EntryResponse!
-    drafts(limit: Int, cursor: String): EntryResponse!
-    userId: ID!
     user: User!
+    userId: ID!
+}
+
+type BlogMutation {
+    createEntry(content: String!, title: String!): Entry
+    delete: Node
+    entry(id: ID!): EntryMutation
+    update(name: String!): Blog
 }
 
 type BlogResponse {
@@ -106,27 +34,72 @@ type BlogResponse {
     pageInfo: PageInfo!
 }
 
-type Query {
-    blogForUser(userId: ID!): Blog
-    blog(handle: String!): Blog
-    blogs(limit: Int, cursor: String): BlogResponse
-}
-
-type BlogMutation {
-    update(name: String!): Blog
-    delete: Node
-    createEntry(title: String!, content: String!): Entry
-    entry(id: ID!): EntryMutation
+"Represents a single entry in a blog which is considered a draft if published is not defined."
+type Entry implements Node {
+    "Content of the entry which can include HTML markup."
+    content: String!
+    "Date that the entry was created."
+    created: DateTime!
+    "Unique identifier of the entry."
+    id: ID!
+    "Date that the entry was published or undefined if entry is a draft."
+    published: DateTime
+    "Title of the entry, a plain-text string with no HTML markup."
+    title: String!
+    "Date that the entry was updated."
+    updated: DateTime!
 }
 
 type EntryMutation {
-    update(title: String!, content: String!): Entry
-    publish: Entry
     delete: Node
+    publish: Entry
+    update(content: String!, title: String!): Entry
+}
+
+"Represents a pageable list of entries."
+type EntryResponse {
+    "Entries returned in this response."
+    nodes: [Entry]!
+    "Information about the pagination of the entries."
+    pageInfo: PageInfo!
 }
 
 type Mutation {
-    createBlog(handle: String!, name: String!): Blog
     blog(handle: String!): BlogMutation
     blogByID(id: ID!): BlogMutation
+    createBlog(handle: String!, name: String!): Blog
 }
+
+type PageInfo {
+    cursor: String
+    totalCount: Int!
+}
+
+type Query {
+    blog(handle: String!): Blog
+    blogForUser(userId: ID!): Blog
+    blogs(cursor: String, limit: Int): BlogResponse
+}
+
+"Represents a user of BlogQL."
+type User implements Node {
+    "Date user was created."
+    created: DateTime!
+    "User's email address."
+    email: String!
+    "User's and unchangeable unique identifier."
+    id: ID!
+    "URL of user's avatar."
+    picture: String
+    "Date user was updated."
+    updated: DateTime!
+    "User's unique username."
+    username: String!
+}
+
+type UserResponse {
+    nodes: [User]!
+    pageInfo: PageInfo!
+}
+
+scalar DateTime
