@@ -18,7 +18,8 @@ export default class DBConnection {
         this.db = new sequelize.Sequelize({
             dialect: 'sqlite',
             storage: path,
-            logging: config.logLevel >= LogLevel.DEBUG
+            //logging: config.logLevel >= LogLevel.INFO,
+            logging: false,
         });
     }
 

@@ -171,6 +171,7 @@ describe('Test the GraphQL API integration', () => {
 
             const entryUpdated = await updateEntry(
                 server,
+                blog.handle,
                 entry.id,
                 entry.title + ' (EDITED)',
                 entry.content + ' (EDITED)');
@@ -219,7 +220,7 @@ describe('Test the GraphQL API integration', () => {
             expect(fetchedBlog.data?.blog.user.id).toBe(authUsers[0].id);
 
             // update the blog
-            const updatedBlog = await updateBlog(server, blog?.data?.createBlog.id, `Test Blog ${slug} - Updated`);
+            const updatedBlog = await updateBlog(server, blog?.data?.createBlog.handle, `Test Blog ${slug} - Updated`);
             expect(updatedBlog.errors).toBeUndefined();
             expect(updatedBlog.data?.blog.update.name).toBe(`Test Blog ${slug} - Updated`);
 
@@ -425,11 +426,11 @@ const deleteEntryMutation = `mutation DeleteEntry($handle: String!, $id: ID!) {
         }
     }`;
 
-async function updateEntry(server: ApolloServer, handle: string, title: string, content: string): Promise<GraphQLResponse> {
-    return server.executeOperation({query: updateEntryMutation, variables: {handle, title, content}});
+async function updateEntry(server: ApolloServer, handle: string, id: string, title: string, content: string): Promise<GraphQLResponse> {
+    return server.executeOperation({query: updateEntryMutation, variables: {handle, id, title, content}});
 }
 
-const updateEntryMutation = `mutation UpdateEntry(handle: String!, $id: ID!, $title: String!, $content: String!) { 
+const updateEntryMutation = `mutation UpdateEntry($handle: String!, $id: ID!, $title: String!, $content: String!) { 
         blog(handle: $handle) {
             entry(id: $id) {
                 update(title: $title, content: $content) {
@@ -488,8 +489,8 @@ async function deleteBlog(server: ApolloServer, handle: string): Promise<GraphQL
     return server.executeOperation({query: deleteBlogMutation, variables: {handle}});
 }
 
-const deleteBlogMutation = `mutation DeleteBlog(handle: String!) { 
-        blog(handle: handle) {
+const deleteBlogMutation = `mutation DeleteBlog($handle: String!) { 
+        blog(handle: $handle) {
             delete {
                 id
             } 

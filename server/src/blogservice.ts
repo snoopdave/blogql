@@ -10,6 +10,7 @@ import {Node} from './node.js';
 import {Response, Cursor, resolveCollection} from './pagination.js';
 import {AuthenticationError, ForbiddenError} from 'apollo-server-express';
 import {BlogQLDataSources} from "./index";
+import {log, LogLevel} from "./utils";
 
 
 export interface BlogService {
@@ -165,6 +166,7 @@ export class BlogServiceSQLiteImpl implements BlogService {
     }
 
     async updateEntry(id: string, title: string, content: string): Promise<Entry | null> {
+        log(LogLevel.DEBUG, `updating entry`);
         if (this.user) {
             await this.initDataSources();
             const entry = await this.dataSources.entryStore.retrieve(id);
