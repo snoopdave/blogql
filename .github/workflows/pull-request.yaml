@@ -14,6 +14,7 @@ jobs:
     uses: "snoopdave/blogql/.github/workflows/build-test.yaml@main"
 
   check-schema:
+    needs: build-test
     uses: "snoopdave/blogql/.github/workflows/check-schema.yaml@main"
     with:
       graph-ref: "BlogQL-0jc7sk@current"
@@ -24,6 +25,7 @@ jobs:
       #APOLLO_REGISTRY_URL: ${{ secrets.APOLLO_REGISTRY_URL }}
 
   docker-build:
+    needs: check-schema
     uses: "snoopdave/blogql/.github/workflows/docker-build.yaml@main"
     with:
       push: false
