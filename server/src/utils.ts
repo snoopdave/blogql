@@ -11,8 +11,14 @@ export enum LogLevel {
     ERROR,
 }
 
-export function log(logLevel: LogLevel, message: string) {
-    if (logLevel <= config.logLevel) {
+export const DEBUG = "DEBUG";
+export const ERROR= "ERROR";
+export const INFO = "INFO";
+
+type LogLevelString = keyof typeof LogLevel;
+
+export function log(logLevel: LogLevelString, message: string) {
+    if (LogLevel[logLevel] >= config.logLevel) {
         console.log(`${logLevel}: ${message}`);
     }
 }

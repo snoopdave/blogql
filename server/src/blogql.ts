@@ -10,7 +10,7 @@ import bodyParser from 'body-parser';
 import session from 'express-session';
 import EntryStore from './entrystore.js';
 import UserStore, {User} from './userstore.js';
-import {log, LogLevel} from './utils.js';
+import {DEBUG, log, LogLevel} from './utils.js';
 import {config} from './config.js';
 
 
@@ -24,7 +24,7 @@ export default class BlogQL {
 
         this.app.use('*', function(req, res, next) {
             // There is also some CORS setup in index.ts
-            log(LogLevel.DEBUG, `Setting CORs headers ${req.method} ${req.originalUrl}`);
+            log(DEBUG, `Setting CORs headers ${req.method} ${req.originalUrl}`);
             res.setHeader('Access-Control-Allow-Origin', config.corsOrigin);
             res.setHeader('Access-Control-Allow-Methods', 'POST, GET, DELETE, OPTIONS');
             res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -52,7 +52,7 @@ export default class BlogQL {
                 } else {
                     res.status(401);
                 }
-                log(LogLevel.DEBUG, `GET ${req.originalUrl} ${res.statusCode}`);
+                log(DEBUG, `GET ${req.originalUrl} ${res.statusCode}`);
                 res.end();
             });
 
@@ -69,24 +69,24 @@ export default class BlogQL {
                 const {name, email, picture} = ticket.getPayload()!;
                 const user: User = await userStore.upsert(name!, email!, picture!);
                 req.session.userId = user.id;
-                log(LogLevel.DEBUG, `Logged in as username 
+                log(DEBUG, `Logged in as username 
                     ${user.username}/${req.session.userId} in session.id=${req.session.id}`);
                 res.status(201)
                 res.json(user);
-                log(LogLevel.DEBUG, `POST ${req.originalUrl} ${res.statusCode}`);
+                log(DEBUG, `POST ${req.originalUrl} ${res.statusCode}`);
                 res.end();
             });
 
         this.app.delete('/logout',
             async (req, res) => {
                 await req.session.destroy(() => {
-                    log(LogLevel.DEBUG, 'Logged out');
+                    log(DEBUG, 'Logged out');
                 });
                 res.status(200)
                 res.json({
                     message: 'Logged out successfully'
                 });
-                log(LogLevel.DEBUG, `DELETE ${req.originalUrl} ${res.statusCode}`);
+                log(DEBUG, `DELETE ${req.originalUrl} ${res.statusCode}`);
                 res.end();
             });
     }

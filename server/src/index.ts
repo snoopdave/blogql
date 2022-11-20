@@ -11,7 +11,7 @@ import resolvers from './resolvers.js';
 import UserStore, {User} from './userstore.js';
 import BlogQL from './blogql.js';
 import {AuthenticationError, gql} from 'apollo-server';
-import {log, LogLevel} from './utils.js';
+import {DEBUG, ERROR, INFO, log, LogLevel} from './utils.js';
 import BlogStore from './blogstore.js';
 import {readFileSync} from 'fs';
 import {config} from './config.js';
@@ -50,18 +50,18 @@ const server = new ApolloServer({
     context: async ({ req }) => {
         try {
             if (req.session) {
-                log(LogLevel.DEBUG, `Session: ${req.session.id}`);
+                log(DEBUG, `Session: ${req.session.id}`);
                 if (req.session.userId) {
                     const user = await userStore.retrieve(req.session.userId);
                     if (user) {
-                        log(LogLevel.DEBUG, `Logged in as ${req.session.userId}`);
+                        log(DEBUG, `Logged in as ${req.session.userId}`);
                         return {user}; // Adds user to the context
                     }
                     throw new AuthenticationError('User not found');
                 }
             }
         } catch (e) {
-            log(LogLevel.ERROR, `Error checking auth`);
+            log(ERROR, `Error checking auth`);
         }
     },
     plugins: [
@@ -92,7 +92,7 @@ setTimeout(function() {
         },
     });
     let port = 4000;
-    log(LogLevel.INFO, `🚀 BlogQL running at http://localhost:${port}/graphql`);
+    log(INFO, `🚀 BlogQL running at http://localhost:${port}/graphql`);
     blogQL.start(port);
 }, 1000);
 

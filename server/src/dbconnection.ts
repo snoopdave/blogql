@@ -5,7 +5,7 @@
 
 import fs from 'fs';
 import sequelize from 'sequelize';
-import {log, LogLevel} from './utils.js';
+import {ERROR, log, LogLevel} from './utils.js';
 import {config} from './config.js';
 
 
@@ -18,8 +18,7 @@ export default class DBConnection {
         this.db = new sequelize.Sequelize({
             dialect: 'sqlite',
             storage: path,
-            logging: config.logLevel >= LogLevel.DEBUG,
-            //logging: false,
+            logging: config.logLevel === LogLevel.DEBUG,
         });
     }
 
@@ -27,7 +26,7 @@ export default class DBConnection {
         try {
             fs.unlinkSync(this.path);
         } catch (e) {
-            log(LogLevel.ERROR, `Cannot delete file ${this.path} due to ${e}`);
+            log(ERROR, `Cannot delete file ${this.path} due to ${e}`);
         }
     }
 }

@@ -7,7 +7,7 @@
   "description": "Simple GraphQL blog server, this time with Apollo 🚀",
   "main": "src/index.js",
   "author": "",
-  "license": "ISC",
+  "license": "ASL 2.0",
   "scripts": {
     "start": "node --experimental-modules src/index.js",
     "build": "tsc --noEmit false",
