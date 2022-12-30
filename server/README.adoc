@@ -13,5 +13,29 @@ This is the BlogQL server. It is written in TypeScript and uses Express and the 
 
 == Running server
 
+You can start the server via `yarn` like so:
+
     yarn run start
+
+=== Using Apollo schema and usage reporting
+
+If you want to use Apollo Studio features like schema & usage reporting and checks, then you will need to sign up for an account at https://studio.apollographql.com.
+Create a new graph of type "Monolith" and you get a set of environment variables, including these:
+
+    APOLLO_KEY
+    APOLLO_GRAPH_REF
+
+=== Using a different database
+
+By default, the server will use SQLite3 and stores data in the file `db-test1.db`.
+If you want to use a different SQLite3 file, then set `SQLITE_DATA_PATH`.
+
+If you would rather use Postgres then set it up yourself and set these env vars:
+
+    POSTGRES_HOSTNAME
+    POSTGRES_DATABASE
+    POSTGRES_USERNAME
+    POSTGRES_PASSWORD
+
+
 

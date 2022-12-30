@@ -33,7 +33,7 @@ export default class BlogQL {
         });
 
         this.app.use(session({
-            secret: 'squawk turtle',
+            secret: 'squawk turtle', // TODO: make this an env var
             saveUninitialized: true,
             resave: false
         }));

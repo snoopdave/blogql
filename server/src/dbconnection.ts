@@ -10,24 +10,30 @@ import {config} from './config.js';
 
 
 export default class DBConnection {
-    path: string;
+    path: string | undefined = undefined;
     db: sequelize.Sequelize;
 
-    constructor(path: string) {
-        this.path = path;
-        this.db = new sequelize.Sequelize({
-            dialect: 'sqlite',
-            storage: path,
-            logging: config.logLevel >= LogLevel.DEBUG,
-            //logging: false,
-        });
+    constructor(path: string | undefined) {
+        if (process.env.POSTGRES_HOSTNAME) {
+            this.db = new sequelize.Sequelize(`postgres://${process.env.POSTGRES_USERNAME}:${process.env.POSTGRES_PASSWORD}@${process.env.POSTGRES_HOSTNAME}/${process.env.POSTGRES_DATABASE}`);
+        } else {
+            // fall back to SQLite
+            this.path = path || 'db-test1.db';
+            this.db = new sequelize.Sequelize({
+                dialect: 'sqlite',
+                storage: this.path,
+                logging: config.logLevel === LogLevel.DEBUG,
+            });
+        }
     }
 
     async destroy() {
-        try {
-            fs.unlinkSync(this.path);
-        } catch (e) {
-            log(LogLevel.ERROR, `Cannot delete file ${this.path} due to ${e}`);
+        if (this.path) {
+            try {
+                fs.unlinkSync(this.path);
+            } catch (e) {
+                log(LogLevel.ERROR, `Cannot delete file ${this.path} due to ${e}`);
+            }
         }
     }
 }

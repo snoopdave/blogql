@@ -17,7 +17,7 @@ import {readFileSync} from 'fs';
 import {config} from './config.js';
 
 // Data sources
-let conn = new DBConnection('./db-test1.db');
+let conn = new DBConnection(undefined);
 const blogStore = new BlogStore(conn);
 const entryStore = new EntryStore(conn);
 const userStore = new UserStore(conn);
@@ -38,6 +38,15 @@ export interface BlogQLContext {
     readonly user: User | undefined;
 }
 
+const plugins = process.env.APOLLO_KEY ? [
+        ApolloServerPluginSchemaReporting({
+            endpointUrl: process.env.APOLLO_SCHEMA_REPORTING_URL,
+        }),
+        ApolloServerPluginUsageReporting({
+            endpointUrl: process.env.APOLLO_USAGE_REPORTING_URL,
+        }),
+    ] : [];
+
 // ApolloServer provides GraphQL API for blogging
 const server = new ApolloServer({
     typeDefs,
@@ -57,6 +66,7 @@ const server = new ApolloServer({
                         log(LogLevel.DEBUG, `Logged in as ${req.session.userId}`);
                         return {user}; // Adds user to the context
                     }
+                    // TODO: throw is caught locally
                     throw new AuthenticationError('User not found');
                 }
             }
@@ -64,14 +74,7 @@ const server = new ApolloServer({
             log(LogLevel.ERROR, `Error checking auth`);
         }
     },
-    plugins: [
-    	ApolloServerPluginSchemaReporting({
-      		endpointUrl: process.env.APOLLO_SCHEMA_REPORTING_URL,
-    	}),
-        ApolloServerPluginUsageReporting({
-            endpointUrl: process.env.APOLLO_USAGE_REPORTING_URL,
-        }),
-    ],
+    plugins,
 });
 
 // This oddness is working around the lack of top-level await
