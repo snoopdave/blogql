@@ -2,6 +2,7 @@ name: pull-request
 
 # When there is change to a Pull Request, this workflow will build, test and check BlogQL's GraphQL schema.
 # If that is successful, the Docker image will be built but just as a test: it will not be pushed to Docker Hub.
+#
 
 on:
   pull_request:
@@ -17,12 +18,11 @@ jobs:
     needs: build-test
     uses: "snoopdave/blogql/.github/workflows/check-schema.yaml@main"
     with:
-      graph-ref: "BlogQL-0jc7sk@current"
       working-dir: server
       schema-path: "schema.graphql"
     secrets:
-      ROVER_API_KEY: ${{ secrets.ROVER_API_KEY }}
-      #APOLLO_REGISTRY_URL: ${{ secrets.APOLLO_REGISTRY_URL }}
+      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+      APOLLO_GRAPH_REF: ${{ secrets.APOLLO_GRAPH_REF }}
 
   docker-build:
     needs: check-schema

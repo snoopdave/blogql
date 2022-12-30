@@ -18,12 +18,11 @@ jobs:
     needs: build-test
     uses: "snoopdave/blogql/.github/workflows/check-schema.yaml@main"
     with:
-      graph-ref: "BlogQL-0jc7sk@current"
       working-dir: server
       schema-path: "schema.graphql"
     secrets:
-      ROVER_API_KEY: ${{ secrets.ROVER_API_KEY }}
-      #APOLLO_REGISTRY_URL: ${{ secrets.APOLLO_REGISTRY_URL }}
+      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+      APOLLO_GRAPH_REF: ${{ secrets.APOLLO_GRAPH_REF }}
 
   docker-build:
     needs: build-test
@@ -41,7 +40,6 @@ jobs:
     with:
       schema-path: "schema.graphql"
       working-dir: server
-      graph-ref: "BlogQL-0jc7sk@current"
     secrets:
-      ROVER_API_KEY: ${{ secrets.ROVER_API_KEY }}
-      #APOLLO_REGISTRY_URL: ${{ secrets.APOLLO_REGISTRY_URL }}
+      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+      APOLLO_GRAPH_REF: ${{ secrets.APOLLO_GRAPH_REF }}
