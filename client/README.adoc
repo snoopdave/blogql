@@ -16,4 +16,13 @@ Before you can build the client you need to build and run the server because the
 
 == Running the client
 
+BlogQL uses Google Authentication and requires a Google Client ID.
+Before running the client app, you must obtain a Client ID and then create a file named `.env` in the `client` directory with that client ID:
+
+Contents of `client/.env`:
+
+    REACT_APP_CLIENT_ID=Your Client ID goes here
+
+Run the client like so:
+
     yarn run start
