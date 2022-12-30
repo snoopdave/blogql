@@ -12,7 +12,7 @@ export enum LogLevel {
 }
 
 export function log(logLevel: LogLevel, message: string) {
-    if (logLevel <= config.logLevel) {
+    if (logLevel >= config.logLevel) {
         console.log(`${logLevel}: ${message}`);
     }
 }

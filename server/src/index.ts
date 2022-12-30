@@ -9,7 +9,7 @@ import DBConnection from './dbconnection.js';
 import {EntryStore} from './entrystore.js';
 import resolvers from './resolvers.js';
 import {User, UserStore} from './userstore.js';
-import BlogQL from './blogql';
+import BlogQL from './blogql.js';
 import {AuthenticationError, gql} from 'apollo-server';
 import {log, LogLevel} from './utils.js';
 import BlogStore from './blogstore.js';
@@ -48,7 +48,7 @@ const plugins = process.env.APOLLO_KEY ? [
     ] : [];
 
 // ApolloServer provides GraphQL API for blogging
-const server = new ApolloServer({
+const apolloServer = new ApolloServer({
     typeDefs,
     resolvers,
     dataSources: () => ({
@@ -82,12 +82,12 @@ const server = new ApolloServer({
     await blogStore.init();
     await entryStore.init();
     await userStore.init();
-    await server.start();
+    await apolloServer.start();
 })();
 
 // Wait a sec for the server.start() to be called
 setTimeout(function() {
-    server.applyMiddleware({
+    apolloServer.applyMiddleware({
         app: blogQL.app,
         cors: { // There is also some CORS setup in blogql.ts
             origin: config.corsOrigin,
@@ -96,7 +96,7 @@ setTimeout(function() {
     });
     let port = 4000;
     log(LogLevel.INFO, `🚀 BlogQL running at http://localhost:${port}/graphql`);
-    blogQL.start(port);
-}, 1000);
+    blogQL.startBlogQL(port);
+}, 2000);
 
 

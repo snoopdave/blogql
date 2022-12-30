@@ -91,7 +91,7 @@ export default class BlogQL {
             });
     }
 
-    start(port: number) {
+    startBlogQL(port: number) {
         this.app.listen(port);
     }
 }

@@ -17,9 +17,6 @@ export default class DBConnection {
             this.db = new sequelize.Sequelize(`postgres://${process.env.POSTGRES_USERNAME}:${process.env.POSTGRES_PASSWORD}@${process.env.POSTGRES_HOSTNAME}/${process.env.POSTGRES_DATABASE}`);
         } else {
             // fall back to SQLite
-            if (!filePath) {
-                console.trace();
-            }
             this.path = filePath || 'db-test1.db';
             log(LogLevel.INFO, `Connecting to SQLite3 ${this.path}`);
             this.db = new sequelize.Sequelize({
