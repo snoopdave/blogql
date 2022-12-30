@@ -1,4 +1,6 @@
-*.js
+src/*.js
+src/__tests__/*.js
+src/types/*.js
 *.db
 client/__generated__
 client/src/graphql/__generated__

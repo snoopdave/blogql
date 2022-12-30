@@ -8,10 +8,10 @@ import {OAuth2Client} from 'google-auth-library';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import session from 'express-session';
-import EntryStore from './entrystore.js';
-import UserStore, {User} from './userstore.js';
-import {log, LogLevel} from './utils.js';
-import {config} from './config.js';
+import {EntryStore} from './entrystore';
+import {User, UserStore} from "./userstore";
+import {log, LogLevel} from './utils';
+import {config} from './config';
 
 
 export default class BlogQL {

@@ -5,24 +5,27 @@
 
 import fs from 'fs';
 import sequelize from 'sequelize';
-import {log, LogLevel} from './utils.js';
-import {config} from './config.js';
+import {log, LogLevel} from './utils';
 
 
 export default class DBConnection {
     path: string | undefined = undefined;
     db: sequelize.Sequelize;
 
-    constructor(path: string | undefined) {
+    constructor(filePath: string | undefined) {
         if (process.env.POSTGRES_HOSTNAME) {
             this.db = new sequelize.Sequelize(`postgres://${process.env.POSTGRES_USERNAME}:${process.env.POSTGRES_PASSWORD}@${process.env.POSTGRES_HOSTNAME}/${process.env.POSTGRES_DATABASE}`);
         } else {
             // fall back to SQLite
-            this.path = path || 'db-test1.db';
+            if (!filePath) {
+                console.trace();
+            }
+            this.path = filePath || 'db-test1.db';
+            log(LogLevel.INFO, `Connecting to SQLite3 ${this.path}`);
             this.db = new sequelize.Sequelize({
                 dialect: 'sqlite',
                 storage: this.path,
-                logging: config.logLevel === LogLevel.DEBUG,
+                logging: false, // config.logLevel === LogLevel.DEBUG,
             });
         }
     }

@@ -4,9 +4,9 @@
  */
 
 import DBConnection from '../dbconnection';
-import UserStore, {User} from '../userstore';
+import {User, UserStore} from "../userstore";
 import {expect, test} from '@jest/globals';
-import EntryStore from '../entrystore';
+import {EntryStore} from '../entrystore';
 import {FindAllResult} from '../pagination';
 
 

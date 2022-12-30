@@ -3,13 +3,13 @@
  * Licensed under Apache Software License v2.
  */
 
-import {Blog} from './blogstore.js';
-import {Entry} from './entrystore.js';
-import {User} from './userstore.js';
-import {Node} from './node.js';
-import {Response, Cursor, resolveCollection} from './pagination.js';
+import {Blog} from './blogstore';
+import {Entry} from './entrystore';
+import {User} from './userstore';
+import {Node} from './node';
+import {Response, Cursor, resolveCollection} from './pagination';
 import {AuthenticationError, ForbiddenError} from 'apollo-server-express';
-import {BlogQLDataSources} from "./index";
+import {BlogQLDataSources} from "./index.js";
 import {log, LogLevel} from "./utils.js";
 
 

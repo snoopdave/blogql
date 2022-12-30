@@ -3,7 +3,7 @@
  * Licensed under Apache Software License v2.
  */
 
-import {config} from './config.js';
+import {config} from './config';
 
 export enum LogLevel {
     DEBUG,

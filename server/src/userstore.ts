@@ -3,7 +3,7 @@
  * Licensed under Apache Software License v2.
  */
 
-import DBConnection from './dbconnection.js';
+import DBConnection from './dbconnection';
 import {v4 as uuid} from 'uuid';
 import sequelize from 'sequelize';
 import {DataSource} from 'apollo-datasource';
@@ -22,7 +22,7 @@ export class User extends Model {
     declare updated: Date
 }
 
-export default class UserStore implements DataSource<User> {
+export class UserStore implements DataSource<User> {
     db: sequelize.Sequelize;
 
     constructor(conn: DBConnection) {
@@ -122,5 +122,3 @@ export default class UserStore implements DataSource<User> {
         }
     }
 }
-
-

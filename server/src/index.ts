@@ -5,27 +5,27 @@
 
 import {ApolloServer} from 'apollo-server-express';
 import {ApolloServerPluginSchemaReporting, ApolloServerPluginUsageReporting} from "apollo-server-core";
-import DBConnection from './dbconnection.js';
-import EntryStore from './entrystore.js';
-import resolvers from './resolvers.js';
-import UserStore, {User} from './userstore.js';
-import BlogQL from './blogql.js';
+import DBConnection from './dbconnection';
+import {EntryStore} from './entrystore';
+import resolvers from './resolvers';
+import {User, UserStore} from "./userstore";
+import BlogQL from './blogql';
 import {AuthenticationError, gql} from 'apollo-server';
-import {log, LogLevel} from './utils.js';
-import BlogStore from './blogstore.js';
+import {log, LogLevel} from './utils';
+import BlogStore from './blogstore';
 import {readFileSync} from 'fs';
-import {config} from './config.js';
+import {config} from './config';
 
 // Data sources
-let conn = new DBConnection(undefined);
-const blogStore = new BlogStore(conn);
-const entryStore = new EntryStore(conn);
-const userStore = new UserStore(conn);
+let appConn = new DBConnection(undefined);
+const blogStore = new BlogStore(appConn);
+const entryStore = new EntryStore(appConn);
+const userStore = new UserStore(appConn);
 
 // Express app provides REST API for authentication
 let blogQL = new BlogQL(entryStore, userStore);
 
-export const typeDefs = gql(readFileSync('schema.graphql', 'utf8'));
+const typeDefs = gql(readFileSync('schema.graphql', 'utf8'));
 
 export interface BlogQLDataSources {
     readonly blogStore: BlogStore;

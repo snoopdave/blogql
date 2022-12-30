@@ -4,10 +4,10 @@
  */
 
 import DBConnection from '../dbconnection';
-import EntryStore from '../entrystore';
+import {EntryStore} from '../entrystore';
 import {randomString} from './userstore.test';
-import BlogStore from '../blogstore';
-import UserStore, {User} from '../userstore';
+import BlogStore from "../blogstore";
+import {User, UserStore} from "../userstore";
 
 
 describe('Test EntryStore', () => {

@@ -3,7 +3,6 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "strict": true,
-    "isolatedModules": true,
     "noImplicitAny": true,
     "lib": [
       "ES2020"
@@ -22,7 +21,8 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "resolveJsonModule": true,
-    "jsx": "react"
+    "jsx": "react",
+    "isolatedModules": true
   },
   "include": [
     "./src"

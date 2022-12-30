@@ -6,14 +6,14 @@
 import DBConnection from '../dbconnection';
 import {randomString} from './userstore.test';
 import BlogStore from '../blogstore';
-import UserStore, {User} from '../userstore';
+import {User, UserStore} from "../userstore";
 
 
 describe('Test BlogStore', () => {
 
     test('It can connect to blog store', async () => {
         let slug = randomString(5);
-        let conn = new DBConnection(`./db-tbst-${slug}.db`);
+        let conn = new DBConnection(`./db-test-${slug}.db`);
         let bs = new BlogStore(conn);
         await bs.init();
         try {
