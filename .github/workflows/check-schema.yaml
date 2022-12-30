@@ -11,14 +11,11 @@ on:
       schema-path:
         required: true
         type: string
-      graph-ref:
-        required: true
-        type: string
     secrets:
-      ROVER_API_KEY:
+      APOLLO_KEY:
         required: true
-#      APOLLO_REGISTRY_URL:
-#        required: true
+      APOLLO_GRAPH_REF:
+        required: true
 
 jobs:
 
@@ -26,10 +23,9 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      APOLLO_KEY: ${{ secrets.ROVER_API_KEY }}
-      APOLLO_GRAPH_REF: ${{ inputs.graph-ref }}
+      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+      APOLLO_GRAPH_REF: ${{ secrets.APOLLO_GRAPH_REF }}
       APOLLO_VCS_COMMIT: ${{ github.event.pull_request.head.sha }}
-      #APOLLO_REGISTRY_URL: ${{ secrets.APOLLO_REGISTRY_URL }} # needed if not running against prod Studio
 
     steps:
       # Checkout project code
