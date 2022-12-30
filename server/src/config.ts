@@ -2,7 +2,7 @@
  * Copyright David M. Johnson (snoopdave@gmail.com).
  * Licensed under Apache Software License v2.
  */
-import {LogLevel} from './utils';
+import {LogLevel} from './utils.js';
 
 export interface Config {
     corsOrigin: string;

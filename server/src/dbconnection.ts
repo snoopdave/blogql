@@ -5,7 +5,7 @@
 
 import fs from 'fs';
 import sequelize from 'sequelize';
-import {log, LogLevel} from './utils';
+import {log, LogLevel} from './utils.js';
 
 
 export default class DBConnection {

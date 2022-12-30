@@ -3,16 +3,16 @@
  * Licensed under Apache Software License v2.
  */
 
-import {EntryStore, Entry} from '../entrystore';
+import {EntryStore, Entry} from '../entrystore.js';
 import {describe, expect, test} from '@jest/globals';
 import {v4 as uuid} from 'uuid';
 import {ApolloServer} from 'apollo-server';
-import resolvers from '../resolvers';
-import {randomString} from './userstore.test';
-import BlogStore, {Blog} from '../blogstore';
+import resolvers from '../resolvers.js';
+import {randomString} from './userstore.test.js';
+import BlogStore, {Blog} from '../blogstore.js';
 import {GraphQLResponse} from 'apollo-server-types';
-import {User, UserStore} from "../userstore";
-import DBConnection from "../dbconnection";
+import {User, UserStore} from '../userstore.js';
+import DBConnection from '../dbconnection.js';
 import { readFileSync } from 'fs';
 import {gql} from 'apollo-server';
 

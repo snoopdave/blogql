@@ -19,7 +19,7 @@ on:
 
 jobs:
 
-  check:
+  publish:
     runs-on: ubuntu-latest
 
     env:

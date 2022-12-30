@@ -3,11 +3,11 @@
  * Licensed under Apache Software License v2.
  */
 
-import DBConnection from '../dbconnection';
-import {User, UserStore} from "../userstore";
+import DBConnection from '../dbconnection.js';
+import {User, UserStore} from '../userstore.js';
 import {expect, test} from '@jest/globals';
-import {EntryStore} from '../entrystore';
-import {FindAllResult} from '../pagination';
+import {EntryStore} from '../entrystore.js';
+import {FindAllResult} from '../pagination.js';
 
 
 export function randomString(length: number) {

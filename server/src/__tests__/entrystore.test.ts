@@ -3,11 +3,11 @@
  * Licensed under Apache Software License v2.
  */
 
-import DBConnection from '../dbconnection';
-import {EntryStore} from '../entrystore';
-import {randomString} from './userstore.test';
-import BlogStore from "../blogstore";
-import {User, UserStore} from "../userstore";
+import DBConnection from '../dbconnection.js';
+import {EntryStore} from '../entrystore.js';
+import {randomString} from './userstore.test.js';
+import BlogStore from '../blogstore.js';
+import {User, UserStore} from '../userstore.js';
 
 
 describe('Test EntryStore', () => {

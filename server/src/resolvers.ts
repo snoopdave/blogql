@@ -3,14 +3,14 @@
  * Licensed under Apache Software License v2.
  */
 
-import {Entry} from './entrystore';
-import {Response} from './pagination';
-import {Node} from './node';
-import {Blog} from './blogstore';
-import {User} from './userstore';
-import {BlogServiceSQLiteImpl} from './blogservice';
-import {BlogQLContext} from './index';
-import {log, LogLevel} from './utils';
+import {Entry} from './entrystore.js';
+import {Response} from './pagination.js';
+import {Node} from './node.js';
+import {Blog} from './blogstore.js';
+import {User} from './userstore.js';
+import {BlogServiceSQLiteImpl} from './blogservice.js';
+import {BlogQLContext} from './index.js';
+import {log, LogLevel} from './utils.js';
 const resolvers = {
     Node: {
         __resolveType: (node: Node) => {

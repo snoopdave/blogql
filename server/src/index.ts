@@ -4,17 +4,17 @@
  */
 
 import {ApolloServer} from 'apollo-server-express';
-import {ApolloServerPluginSchemaReporting, ApolloServerPluginUsageReporting} from "apollo-server-core";
-import DBConnection from './dbconnection';
-import {EntryStore} from './entrystore';
-import resolvers from './resolvers';
-import {User, UserStore} from "./userstore";
+import {ApolloServerPluginSchemaReporting, ApolloServerPluginUsageReporting} from 'apollo-server-core';
+import DBConnection from './dbconnection.js';
+import {EntryStore} from './entrystore.js';
+import resolvers from './resolvers.js';
+import {User, UserStore} from './userstore.js';
 import BlogQL from './blogql';
 import {AuthenticationError, gql} from 'apollo-server';
-import {log, LogLevel} from './utils';
-import BlogStore from './blogstore';
+import {log, LogLevel} from './utils.js';
+import BlogStore from './blogstore.js';
 import {readFileSync} from 'fs';
-import {config} from './config';
+import {config} from './config.js';
 
 // Data sources
 let appConn = new DBConnection(undefined);

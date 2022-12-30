@@ -6,9 +6,9 @@
 import { v4 as uuid } from 'uuid';
 import {DataSource} from 'apollo-datasource' ;
 import {DataSourceConfig} from 'apollo-datasource/src';
-import DBConnection from './dbconnection';
-import {FindAllResult} from './pagination';
-import {Node} from './node';
+import DBConnection from './dbconnection.js';
+import {FindAllResult} from './pagination.js';
+import {Node} from './node.js';
 import sequelize, {Op} from 'sequelize';
 import {WhereOptions} from "sequelize/types/model";
 const { DataTypes, Model } = sequelize; // sequelize is a CommonJS module

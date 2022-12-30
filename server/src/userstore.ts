@@ -3,12 +3,12 @@
  * Licensed under Apache Software License v2.
  */
 
-import DBConnection from './dbconnection';
+import DBConnection from './dbconnection.js';
 import {v4 as uuid} from 'uuid';
 import sequelize from 'sequelize';
 import {DataSource} from 'apollo-datasource';
 import {DataSourceConfig} from 'apollo-datasource/src';
-import {FindAllResult} from './pagination';
+import {FindAllResult} from './pagination.js';
 
 const { DataTypes, Model } = sequelize; // sequelize is a CommonJS module
 
