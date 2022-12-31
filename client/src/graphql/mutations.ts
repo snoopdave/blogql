@@ -87,4 +87,8 @@ export const ENTRY_DELETE_MUTATION = gql`mutation EntryDeleteMutation($handle: S
     }
 }`;
 
+export const ISSUE_API_KEY_MUTATION = gql`mutation IssueApiKeyMutation {
+    issueApiKey
+}`;
+
 
