@@ -5,9 +5,9 @@
 
 import DBConnection from '../dbconnection.js';
 import {EntryStore} from '../entrystore.js';
-import {randomString} from './userstore.test.js';
 import BlogStore from '../blogstore.js';
 import {User, UserStore} from '../userstore.js';
+import {randomString} from "../utils.js";
 
 
 describe('Test EntryStore', () => {

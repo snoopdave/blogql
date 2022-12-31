@@ -56,6 +56,7 @@ export default class BlogQL {
                 res.end();
             });
 
+        // Google Auth posts to this end-point after user has logged in
         this.app.post(
             '/auth',
             this.jsonParser,
