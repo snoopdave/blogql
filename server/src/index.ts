@@ -15,7 +15,7 @@ import {log, LogLevel} from './utils.js';
 import BlogStore from './blogstore.js';
 import {readFileSync} from 'fs';
 import {config} from './config.js';
-import {ApiKeyStore} from "./apikeystore";
+import {ApiKeyStore} from "./apikeystore.js";
 
 // Data sources
 let appConn = new DBConnection(undefined);

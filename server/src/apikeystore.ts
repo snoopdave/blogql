@@ -6,11 +6,11 @@
 
 import { v4 as uuid } from 'uuid';
 import { DataSource, DataSourceConfig } from "apollo-datasource";
-import {Node} from "./node";
-import DBConnection from "./dbconnection";
+import {Node} from "./node.js";
+import DBConnection from "./dbconnection.js";
 import sequelize from 'sequelize';
-import {randomString} from "./utils";
-import {Blog} from "./blogstore";
+import {randomString} from "./utils.js";
+import {Blog} from "./blogstore.js";
 import { AuthenticationError } from 'apollo-server';
 const { DataTypes, Model } = sequelize; // sequelize is a CommonJS module
 
