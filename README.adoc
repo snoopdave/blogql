@@ -9,9 +9,11 @@ Server
 * TypeScript
 * Node.JS
 * Apollo GraphQL server
+* Google authentication
+* API key authentication
 * Express
-* SQLite
-* Jest
+* SQLite3 and Postgres databases
+* Jest tests
 
 Client
 
