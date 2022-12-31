@@ -2,31 +2,29 @@
 
 This is a learning project; something I started to help me learn React, TypeScript and more about GraphQL and Apollo Studio.
 
-BlogQL is a simple blog server.
-It's really just a learning exercise and an example of a web app implemented as a server and a web-browser client written in TypeScript.
-The server provides a GraphQL API, which is used by the client.
-I made these choices because I want to learn about how React, GraphQL and TypeScript can work together.
-
 Here are some more details about the technologies in use:
 
 Server
 
 * TypeScript
 * Node.JS
-* Express
 * Apollo GraphQL server
-* SQLLite
+* Express
+* SQLite
 * Jest
 
 Client
 
 * TypeScript
+* Node.JS
+* Apollo GraphQL client
 * React via Create React App
 * React Router
 * React Bootstrap
-* Apollo GraphQL client
 * Quill (rich text editor)
 
 Infrastructure
 
-* Github Action triggered by PR update that builds and checks the GraphQL schema via the Apollo Rover CLI.
+* Github Action triggered by PR update that builds, tests and checks the GraphQL schema via the Apollo Rover CLI.
+* Dockerfile for packaging the server 
+* Work in progress Helm charts for deploying to Kubernetes
