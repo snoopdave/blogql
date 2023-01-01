@@ -16,3 +16,10 @@ export function log(logLevel: LogLevel, message: string) {
         console.log(`${logLevel}: ${message}`);
     }
 }
+
+export function randomString(length: number) {
+    const allLowerAlpha = [...'abcdefghijklmnopqrstuvwxyz'];
+    const allNumbers = [...'0123456789'];
+    const base = [...allNumbers, ...allLowerAlpha];
+    return [...Array(length)].map(() => base[Math.random() * base.length | 0]).join('');
+}

@@ -8,7 +8,7 @@ import {describe, expect, test} from '@jest/globals';
 import {v4 as uuid} from 'uuid';
 import {ApolloServer} from 'apollo-server';
 import resolvers from '../resolvers.js';
-import {randomString} from './userstore.test.js';
+import {randomString} from "../utils.js";
 import BlogStore, {Blog} from '../blogstore.js';
 import {GraphQLResponse} from 'apollo-server-types';
 import {User, UserStore} from '../userstore.js';
@@ -18,7 +18,7 @@ import {gql} from 'apollo-server';
 
 describe('Test the GraphQL API integration', () => {
 
-    interface TextContext {
+    interface TestContext {
         server: ApolloServer;
         conn: DBConnection;
         userStore: UserStore;
@@ -27,9 +27,9 @@ describe('Test the GraphQL API integration', () => {
         authUsers: User[];
     }
 
-    async function initDataStorage(): Promise<TextContext> {
+    async function initDataStorage(): Promise<TestContext> {
         const conn = new DBConnection(`./db-test-${randomString(5)}.db`);
-        const userStore = new UserStore(conn);
+        const userStore = new UserStore(conn)
         await userStore.init();
         let authUsers: User[] = [];
         for (let i = 0; i < 10; i++) {

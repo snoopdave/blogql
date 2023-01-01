@@ -8,14 +8,7 @@ import {User, UserStore} from '../userstore.js';
 import {expect, test} from '@jest/globals';
 import {EntryStore} from '../entrystore.js';
 import {FindAllResult} from '../pagination.js';
-
-
-export function randomString(length: number) {
-    const allLowerAlpha = [...'abcdefghijklmnopqrstuvwxyz'];
-    const allNumbers = [...'0123456789'];
-    const base = [...allNumbers, ...allLowerAlpha];
-    return [...Array(length)].map(() => base[Math.random() * base.length | 0]).join('');
-}
+import {randomString} from "../utils.js";
 
 
 describe('Test UserStore', () => {

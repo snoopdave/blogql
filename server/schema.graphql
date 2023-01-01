@@ -64,6 +64,7 @@ type EntryResponse {
 }
 
 type Mutation {
+    issueApiKey: String
     blog(handle: String!): BlogMutation
     blogByID(id: ID!): BlogMutation
     createBlog(handle: String!, name: String!): Blog
@@ -78,6 +79,7 @@ type Query {
     blog(handle: String!): Blog
     blogForUser(userId: ID!): Blog
     blogs(cursor: String, limit: Int): BlogResponse
+    apiKeyForUser(userId: ID!): String
 }
 
 "Represents a user of BlogQL."

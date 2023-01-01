@@ -6,7 +6,7 @@
 import {Button, Form, Toast} from 'react-bootstrap';
 import React, {ChangeEvent, useState} from 'react';
 import {useMutation} from '@apollo/client';
-import {Entry} from './graphql/schema';
+import {Blog} from './graphql/schema';
 import {BLOG_CREATE_MUTATION} from './graphql/mutations';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {Link, useHistory} from 'react-router-dom';
@@ -26,7 +26,7 @@ export function BlogCreate(props: BlogCreateProps) {
 
     const history = useHistory();
 
-    const [blogCreateMutation] = useMutation<Entry, { handle: string | undefined, name: string | undefined }>(
+    const [blogCreateMutation] = useMutation<Blog, { handle: string | undefined, name: string | undefined }>(
         BLOG_CREATE_MUTATION, { variables: { handle, name } });
 
     function onHandleChange(event: ChangeEvent<HTMLInputElement>) {
