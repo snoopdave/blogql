@@ -28,7 +28,7 @@ export function BlogList() {
             </thead>
             <tbody>{ data.blogs?.nodes.map((blog: Blog) => blog ? (
                 <tr key={blog.id}>
-                    <td><Link className='nav-link' to={`/blogs/${blog.handle}`}>{blog.handle}</Link></td>
+                    <td><Link className='nav-link' to={`/blogs/${blog.handle}`}>{blog.name}</Link></td>
                     <td><Link className='nav-link' to={`/blogs/${blog.handle}`}>TODO</Link></td>
                 </tr> ) : null)
             }</tbody>
