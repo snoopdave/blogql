@@ -8,10 +8,10 @@ import {OAuth2Client} from 'google-auth-library';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import session from 'express-session';
-import EntryStore from './entrystore.js';
-import UserStore, {User} from './userstore.js';
-import {DEBUG, log, LogLevel} from './utils.js';
+import {DEBUG, log} from './utils.js';
 import {config} from './config.js';
+import {User, UserStore} from "./userstore";
+import {EntryStore} from "./entrystore";
 
 
 export default class BlogQL {
@@ -33,7 +33,7 @@ export default class BlogQL {
         });
 
         this.app.use(session({
-            secret: 'squawk turtle',
+            secret: 'squawk turtle', // TODO: make this an env var
             saveUninitialized: true,
             resave: false
         }));
@@ -56,6 +56,7 @@ export default class BlogQL {
                 res.end();
             });
 
+        // Google Auth posts to this end-point after user has logged in
         this.app.post(
             '/auth',
             this.jsonParser,
@@ -91,7 +92,7 @@ export default class BlogQL {
             });
     }
 
-    start(port: number) {
+    startBlogQL(port: number) {
         this.app.listen(port);
     }
 }

@@ -8,7 +8,7 @@ import {v4 as uuid} from 'uuid';
 import sequelize from 'sequelize';
 import {DataSource} from 'apollo-datasource';
 import {DataSourceConfig} from 'apollo-datasource/src';
-import {FindAllResult} from './pagination';
+import {FindAllResult} from './pagination.js';
 
 const { DataTypes, Model } = sequelize; // sequelize is a CommonJS module
 
@@ -22,7 +22,7 @@ export class User extends Model {
     declare updated: Date
 }
 
-export default class UserStore implements DataSource<User> {
+export class UserStore implements DataSource<User> {
     db: sequelize.Sequelize;
 
     constructor(conn: DBConnection) {
@@ -122,5 +122,3 @@ export default class UserStore implements DataSource<User> {
         }
     }
 }
-
-

@@ -5,28 +5,35 @@
 
 import fs from 'fs';
 import sequelize from 'sequelize';
-import {ERROR, log, LogLevel} from './utils.js';
-import {config} from './config.js';
+import {ERROR, INFO, log} from "./utils";
 
 
 export default class DBConnection {
-    path: string;
+    path: string | undefined = undefined;
     db: sequelize.Sequelize;
 
-    constructor(path: string) {
-        this.path = path;
-        this.db = new sequelize.Sequelize({
-            dialect: 'sqlite',
-            storage: path,
-            logging: config.logLevel === LogLevel.DEBUG,
-        });
+    constructor(filePath: string | undefined) {
+        if (process.env.POSTGRES_HOSTNAME) {
+            this.db = new sequelize.Sequelize(`postgres://${process.env.POSTGRES_USERNAME}:${process.env.POSTGRES_PASSWORD}@${process.env.POSTGRES_HOSTNAME}/${process.env.POSTGRES_DATABASE}`);
+        } else {
+            // fall back to SQLite
+            this.path = filePath || 'db-test1.db';
+            log(INFO, `Connecting to SQLite3 ${this.path}`);
+            this.db = new sequelize.Sequelize({
+                dialect: 'sqlite',
+                storage: this.path,
+                logging: false, // config.logLevel === LogLevel.DEBUG,
+            });
+        }
     }
 
     async destroy() {
-        try {
-            fs.unlinkSync(this.path);
-        } catch (e) {
-            log(ERROR, `Cannot delete file ${this.path} due to ${e}`);
+        if (this.path) {
+            try {
+                fs.unlinkSync(this.path);
+            } catch (e) {
+                log(ERROR, `Cannot delete file ${this.path} due to ${e}`);
+            }
         }
     }
 }

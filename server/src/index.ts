@@ -4,33 +4,36 @@
  */
 
 import {ApolloServer} from 'apollo-server-express';
-import {ApolloServerPluginSchemaReporting, ApolloServerPluginUsageReporting} from "apollo-server-core";
+import {ApolloServerPluginSchemaReporting, ApolloServerPluginUsageReporting} from 'apollo-server-core';
 import DBConnection from './dbconnection.js';
-import EntryStore from './entrystore.js';
+import {EntryStore} from './entrystore.js';
 import resolvers from './resolvers.js';
-import UserStore, {User} from './userstore.js';
+import {User, UserStore} from './userstore.js';
 import BlogQL from './blogql.js';
 import {AuthenticationError, gql} from 'apollo-server';
-import {DEBUG, ERROR, INFO, log, LogLevel} from './utils.js';
+import {DEBUG, INFO, log} from './utils.js';
 import BlogStore from './blogstore.js';
 import {readFileSync} from 'fs';
 import {config} from './config.js';
+import {ApiKeyStore} from "./apikeystore.js";
 
 // Data sources
-let conn = new DBConnection('./db-test1.db');
-const blogStore = new BlogStore(conn);
-const entryStore = new EntryStore(conn);
-const userStore = new UserStore(conn);
+let appConn = new DBConnection(undefined);
+const blogStore = new BlogStore(appConn);
+const entryStore = new EntryStore(appConn);
+const userStore = new UserStore(appConn);
+const apiKeyStore = new ApiKeyStore(appConn);
 
 // Express app provides REST API for authentication
 let blogQL = new BlogQL(entryStore, userStore);
 
-export const typeDefs = gql(readFileSync('schema.graphql', 'utf8'));
+const typeDefs = gql(readFileSync('schema.graphql', 'utf8'));
 
 export interface BlogQLDataSources {
     readonly blogStore: BlogStore;
     readonly entryStore: EntryStore;
     readonly userStore: UserStore;
+    readonly apiKeyStore: ApiKeyStore;
 }
 
 export interface BlogQLContext {
@@ -38,40 +41,45 @@ export interface BlogQLContext {
     readonly user: User | undefined;
 }
 
+const plugins = process.env.APOLLO_KEY ? [
+        ApolloServerPluginSchemaReporting({
+            endpointUrl: process.env.APOLLO_SCHEMA_REPORTING_URL,
+        }),
+        ApolloServerPluginUsageReporting({
+            endpointUrl: process.env.APOLLO_USAGE_REPORTING_URL,
+        }),
+    ] : [];
+
 // ApolloServer provides GraphQL API for blogging
-const server = new ApolloServer({
+const apolloServer = new ApolloServer({
     typeDefs,
     resolvers,
     dataSources: () => ({
         blogStore,
         entryStore,
-        userStore
+        userStore,
+        apiKeyStore,
     }),
     context: async ({ req }) => {
-        try {
-            if (req.session) {
-                log(DEBUG, `Session: ${req.session.id}`);
-                if (req.session.userId) {
-                    const user = await userStore.retrieve(req.session.userId);
-                    if (user) {
-                        log(DEBUG, `Logged in as ${req.session.userId}`);
-                        return {user}; // Adds user to the context
-                    }
-                    throw new AuthenticationError('User not found');
+        if (req.session) {
+            log(DEBUG, `Session: ${req.session.id}`);
+            if (req.session.userId) {
+                const user = await userStore.retrieve(req.session.userId);
+                if (user) {
+                    log(DEBUG, `Logged in as ${req.session.userId}`);
+                    return { user }; // Adds user to the context
                 }
+                throw new AuthenticationError('User not found');
             }
-        } catch (e) {
-            log(ERROR, `Error checking auth`);
+        }
+        const apiKey = req.get('x-api-key');
+        if (apiKey) {
+            const userId = await apiKeyStore.lookupUserId(apiKey);
+            const user = await userStore.retrieve(userId);
+            return { user };
         }
     },
-    plugins: [
-    	ApolloServerPluginSchemaReporting({
-      		endpointUrl: process.env.APOLLO_SCHEMA_REPORTING_URL,
-    	}),
-        ApolloServerPluginUsageReporting({
-            endpointUrl: process.env.APOLLO_USAGE_REPORTING_URL,
-        }),
-    ],
+    plugins,
 });
 
 // This oddness is working around the lack of top-level await
@@ -79,12 +87,13 @@ const server = new ApolloServer({
     await blogStore.init();
     await entryStore.init();
     await userStore.init();
-    await server.start();
+    await apiKeyStore.init();
+    await apolloServer.start();
 })();
 
 // Wait a sec for the server.start() to be called
 setTimeout(function() {
-    server.applyMiddleware({
+    apolloServer.applyMiddleware({
         app: blogQL.app,
         cors: { // There is also some CORS setup in blogql.ts
             origin: config.corsOrigin,
@@ -93,7 +102,6 @@ setTimeout(function() {
     });
     let port = 4000;
     log(INFO, `🚀 BlogQL running at http://localhost:${port}/graphql`);
-    blogQL.start(port);
-}, 1000);
-
+    blogQL.startBlogQL(port);
+}, 2000);
 

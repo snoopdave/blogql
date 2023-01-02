@@ -3,19 +3,12 @@
  * Licensed under Apache Software License v2.
  */
 
-import DBConnection from '../dbconnection';
-import UserStore, {User} from '../userstore';
+import DBConnection from '../dbconnection.js';
+import {User, UserStore} from '../userstore.js';
 import {expect, test} from '@jest/globals';
-import EntryStore from '../entrystore';
-import {FindAllResult} from '../pagination';
-
-
-export function randomString(length: number) {
-    const allLowerAlpha = [...'abcdefghijklmnopqrstuvwxyz'];
-    const allNumbers = [...'0123456789'];
-    const base = [...allNumbers, ...allLowerAlpha];
-    return [...Array(length)].map(() => base[Math.random() * base.length | 0]).join('');
-}
+import {EntryStore} from '../entrystore.js';
+import {FindAllResult} from '../pagination.js';
+import {randomString} from "../utils.js";
 
 
 describe('Test UserStore', () => {

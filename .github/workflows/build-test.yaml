@@ -30,9 +30,8 @@ jobs:
         yarn run test
       working-directory: server
 
-    # install dependencies and build client
+    # install dependencies and build client, TODO: client-side tests
     - run: |
         yarn install
         yarn run build
-        yarn run test
       working-directory: client

@@ -10,7 +10,7 @@ import {Node} from './node.js';
 import {Response, Cursor, resolveCollection} from './pagination.js';
 import {AuthenticationError, ForbiddenError} from 'apollo-server-express';
 import {BlogQLDataSources} from "./index";
-import {DEBUG, log, LogLevel} from "./utils.js";
+import {DEBUG, log} from "./utils";
 
 
 export interface BlogService {
@@ -27,19 +27,22 @@ export interface BlogService {
     getEntry(blog: Blog, id: string): Promise<Entry | null>;
     getUser(blog: Blog, id: string): Promise<User | null>;
     getEntries(blog: Blog, limit: number, offset: number, cursor: string): Promise<Response<Entry>>;
+    getDrafts(blog: Blog, limit: number, offset: number, cursor: string): Promise<Response<Entry>>;
 
     // mutation
 
-    createEntry(blogId: string, title: string, content: string, published: boolean | undefined): Promise<Entry>;
-    updateEntry(id: string, title: string, content: string, published: boolean | undefined): Promise<Entry | null>;
+    createEntry(blogId: string, title: string, content: string): Promise<Entry>;
+    publishEntry(id: string): Promise<Entry | null>;
+    updateEntry(id: string, title: string, content: string): Promise<Entry | null>;
     deleteEntry(id: string): Promise<Node>;
 
     createBlog(handle: string, name: string): Promise<Blog>;
     updateBlog(id: string, name: string): Promise<Blog | null>;
     deleteBlog(id: string): Promise<Node>;
+    issueApiKey(): Promise<string | null>;
 }
 
-export class BlogServiceSQLiteImpl implements BlogService {
+export class BlogServiceSequelizeImpl implements BlogService {
     dataSources: BlogQLDataSources;
     user: User | undefined;
 
@@ -196,5 +199,12 @@ export class BlogServiceSQLiteImpl implements BlogService {
             throw Error(`Entry ${id} not found`);
         }
         throw new AuthenticationError('Must be logged in to updateEntry');
+    }
+
+    async issueApiKey(): Promise<string | null> {
+        if (this.user?.id) {
+            return await this.dataSources.apiKeyStore.issue(this.user?.id);
+        }
+        throw new AuthenticationError('Must be logged in to request API key');
     }
 }

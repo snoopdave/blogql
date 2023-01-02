@@ -24,7 +24,7 @@ export class Entry extends Model implements Node {
     declare published: Date;
 }
 
-export default class EntryStore implements DataSource<Entry> {
+export class EntryStore implements DataSource<Entry> {
     db: sequelize.Sequelize;
 
     constructor(conn: DBConnection) {

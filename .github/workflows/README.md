@@ -13,6 +13,6 @@ The main actions:
 The re-usable actions:
 
 * `build-test.yaml`: (no parameters) runs a Yarn build/test and a Docker build (no publish).
-* `check-schema.yaml`: takes inputs working-dir, schema-path, graph-ref, ROVER_API_KEY and runs a rover graph check.
-* `publish-schema.yaml`: takes inputs working-dir, schema-path, graph-ref, ROVER_API_KEY and runs a rover graph publish.
+* `check-schema.yaml`: takes inputs working-dir & schema-path, uses secrets APOLLO_KEY & APOLLO_GRAPH_REF and then runs a rover graph check.
+* `publish-schema.yaml`: takes inputs working-dir & schema-path, uses secrets APOLLO_KEY & APOLLO_GRAPH_REF and then runs a rover graph publish.
 * `docker-build.yaml`: takes inputs push (boolean), tags, DOCKER_USERNAME and DOCKER_PASSWORD and runs a Docker build and optionally a push to associated DockerHub account.
