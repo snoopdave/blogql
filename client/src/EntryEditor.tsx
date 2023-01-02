@@ -68,7 +68,7 @@ export function EditorFormViaBlogHandle() {
                 content=''
                 created={new Date()}
                 updated={new Date()}
-                published={null}
+                published={undefined}
                 publish={false}
             />
         );
@@ -83,7 +83,7 @@ interface EditorFormProps {
     blogId: string;
     created: Date;
     updated: Date;
-    published: Date | null;
+    published: Date | undefined;
     publish: boolean;
 }
 
@@ -99,15 +99,15 @@ export function EditorForm(props: EditorFormProps) {
     const [failure, setFailure] = useState(false);
     const [toast, setToast] = useState('');
     const [deleting, setDeleting] = useState(false);
-    const [published] = useState(props.published);
+    const [published, setPublished] = useState(props.published);
     const [saved, setSaved] = useState(id !== null && id !== undefined);
     const [valid, setValid] = useState(isValid());
 
     // eslint-disable-next-line
     let editor: UnprivilegedEditor | null = null; // assigned a value below in handleContentFocus()
 
-    const [createEntryMutation] = useMutation<Entry, { blogId: string, title: string, content: string }>(
-        ENTRY_CREATE_MUTATION, {variables: {blogId: props.blogId, title, content}});
+    const [createEntryMutation] = useMutation<Entry, { handle: string, title: string, content: string }>(
+        ENTRY_CREATE_MUTATION, {variables: {handle, title, content}});
 
     function createEntry() {
         createEntryMutation()
@@ -148,9 +148,11 @@ export function EditorForm(props: EditorFormProps) {
 
     function publishEntry() {
         publishEntryMutation()
-            .then(() => {
+            .then((data) => {
+                console.table(data);
+                //setPublished(new Date());
+                setPublished(data.data?.published);
                 setSuccess(true);
-                setSaved(true);
                 setToast('Entry published');
                 // setTimeout(() => {
                 //     history.push(`/blogs/${handle}`);
@@ -162,8 +164,8 @@ export function EditorForm(props: EditorFormProps) {
             });
     }
 
-    const [deleteEntryMutation] = useMutation<Entry, { id: string }>(
-        ENTRY_DELETE_MUTATION, {variables: {id}});
+    const [deleteEntryMutation] = useMutation<Entry, { handle: string, id: string }>(
+        ENTRY_DELETE_MUTATION, {variables: {handle, id}});
 
     function deleteEntry() {
         deleteEntryMutation()
@@ -270,26 +272,26 @@ export function EditorForm(props: EditorFormProps) {
                         } else {
                             createEntry();
                         }
-                    }}>Save as Draft
+                    }}>Save
                     </Button>
 
-                    { published &&
-                        <Button disabled={!valid || saved} onClick={() => {
-                            updateEntry();
-                        }}>Save
-                        </Button>
+                    <Button disabled={!valid || published !== undefined} onClick={() => {
+                        publishEntry();
+                    }}>Publish
+                    </Button>
+
+                    { saved &&
+                        <Link to={`/blogs/${handle}`}>
+                            <Button>Done</Button>
+                        </Link>
                     }
 
-                    { !published &&
-                        <Button disabled={!valid} onClick={() => {
-                            publishEntry();
-                        }}>Publish
-                        </Button>
+                    { !saved &&
+                        <Link to={`/blogs/${handle}`}>
+                            <Button>Cancel</Button>
+                        </Link>
                     }
 
-                    <Link to={`/blogs/${handle}`}>
-                        <Button>Cancel</Button>
-                    </Link>
                 </Form.Group>
                 <Form.Group>
                     <Button variant='danger' disabled={!id} onClick={() => {

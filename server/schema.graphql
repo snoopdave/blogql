@@ -10,8 +10,8 @@ interface Node {
 
 type Blog implements Node {
     created: DateTime!
-    drafts(cursor: String, limit: Int): EntryResponse!
-    entries(cursor: String, limit: Int): EntryResponse!
+    drafts(limit: Int, offset: Int, cursor: String): EntryResponse!
+    entries(limit: Int, offset: Int, cursor: String): EntryResponse!
     entry(id: ID!): Entry
     handle: String!
     id: ID!
@@ -78,7 +78,7 @@ type PageInfo {
 type Query {
     blog(handle: String!): Blog
     blogForUser(userId: ID!): Blog
-    blogs(cursor: String, limit: Int): BlogResponse
+    blogs(limit: Int, offset: Int, cursor: String): BlogResponse
     apiKeyForUser(userId: ID!): String
 }
 

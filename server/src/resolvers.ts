@@ -10,7 +10,7 @@ import {Blog} from './blogstore.js';
 import {User} from './userstore.js';
 import {BlogService, BlogServiceSequelizeImpl} from './blogservice.js';
 import {BlogQLContext} from './index.js';
-import {log, LogLevel} from './utils.js';
+import {DEBUG, log, LogLevel} from './utils.js';
 const resolvers = {
     Node: {
         __resolveType: (node: Node) => {
@@ -63,7 +63,6 @@ const resolvers = {
             return await blogService.deleteBlog(parent.blog.id);
         },
         entry: async (parent: BlogMutation, args: { id: string }, ctx: BlogQLContext): Promise<EntryMutation | null> => {
-            log(LogLevel.DEBUG, '*******************');
             const blogService: BlogService = new BlogServiceSequelizeImpl(ctx.user, ctx.dataSources);
             const entry: Entry | null = await blogService.getEntry(parent.blog, args.id);
             if (entry) {
