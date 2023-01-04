@@ -1,4 +1,4 @@
-import {useQuery} from '@apollo/client';
+import {useQuery} from '@apollo/client/react/hooks/useQuery';
 import {BLOGS_QUERY} from './graphql/queries';
 import React from 'react';
 import {Table} from 'react-bootstrap';

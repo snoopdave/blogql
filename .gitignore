@@ -4,9 +4,10 @@ env.sh
 *.db
 *.bak
 */src/*.js
+*/src/stories/*.js
 */src/__tests__/*.js
 */src/types/*.js
-client/src/graphql/*.js
+*/src/graphql/*.js
 **/__generated__
 */node_modules
 deploy/local/create-secrets.sh

@@ -12,17 +12,15 @@ import BlogView from './BlogView';
 import Drafts from './Drafts';
 import {BrowserRouter as Router, Link, Redirect, Route} from 'react-router-dom';
 import Switch from 'react-bootstrap/Switch';
-import dotenv from 'dotenv';
 import {LoginButton, logout, PrivateRoute, ProvideAuth, useAuth, User} from './Authentication';
 import {BlogList} from './BlogList';
-import {useQuery} from '@apollo/client';
+import {useQuery} from '@apollo/client/react/hooks/useQuery';
 import {USER_BLOG_QUERY} from './graphql/queries';
 import {BlogCreate} from './BlogCreate';
 import {BlogSettings} from './BlogSettings';
 
 
 function App() {
-    dotenv.config();
     const [loggedIn, setLoggedIn] = useState(false);
 
     const onLogin = (user: User | null | undefined) => {

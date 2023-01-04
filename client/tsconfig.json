@@ -25,6 +25,9 @@
   "include": [
     "src/*.ts",
     "src/*.tsx",
-    "src/graphql/*.ts"
+    "src/__tests__/*.ts",
+    "src/__tests__/*.tsx",
+    "src/graphql/*.ts",
+    "src/stories/*.tsx",
   ]
 }

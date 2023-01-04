@@ -6,7 +6,7 @@
 import React, {CSSProperties} from 'react';
 import {Button, Card, CardColumns, Jumbotron} from 'react-bootstrap';
 import {Link, useParams} from 'react-router-dom';
-import {useQuery} from '@apollo/client';
+import {useQuery} from '@apollo/client/react/hooks/useQuery';
 import {ENTRIES_QUERY} from './graphql/queries';
 import {RelativeDateTime} from "./DateTime";
 import {Entry} from "./graphql/schema";
