@@ -1,14 +1,15 @@
 // src/setupTests.js
 import { server } from './mocks/server.js'
 import '@testing-library/jest-dom/extend-expect';
-import {ApolloClient, InMemoryCache} from '@apollo/client';
+import {ApolloClient, HttpLink, InMemoryCache} from '@apollo/client';
+import fetch from 'cross-fetch';
 
 export const client = new ApolloClient({
-    uri: 'http://localhost:4000/graphql',
     cache: new InMemoryCache(),
     credentials: 'include',
     name: 'blogql-web',
-    version: '1.0'
+    version: '1.0',
+    link: new HttpLink({ uri: 'http://localhost:4000/graphql', fetch })
 });
 
 // Establish API mocking before all tests.

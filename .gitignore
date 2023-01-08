@@ -5,7 +5,7 @@ env.sh
 *.bak
 */src/*.js
 */src/stories/*.js
-*/src/__tests__/*.js
+*/src/tests/*.js
 */src/types/*.js
 */src/graphql/*.js
 **/__generated__

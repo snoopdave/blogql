@@ -1,11 +1,13 @@
+import '@testing-library/jest-dom'
+import '@testing-library/react';
+import {BlogList} from '../BlogList';
+import {Route, BrowserRouter as Router} from 'react-router-dom';
+import {screen, render} from '@testing-library/react';
 
-import { render, screen } from "@testing-library/react";
-import {BlogList} from "../BlogList";
-import {Route, BrowserRouter as Router} from "react-router-dom";
-import {ApolloProvider} from "@apollo/client";
-import {client} from "../setupTests";
+import {ApolloProvider} from '@apollo/client';
+import {client} from '../setupTests';
 
-it("renders without error", async () => {
+it('BlogList renders without error with Mocked Service Worker', async () => {
     render(
         <ApolloProvider client={client}>
             <Router>
@@ -15,9 +17,10 @@ it("renders without error", async () => {
             </Router>
         </ApolloProvider>
     );
-    expect(await screen.findByText("Loading...")).toBeInTheDocument();
-    expect(await screen.findByText("Blog One")).toBeInTheDocument();
-    expect(await screen.findByText("Blog Two")).toBeInTheDocument();
+    screen.debug();
+    expect(await screen.findByText('Loading...')).toBeInTheDocument();
+    screen.debug();
+    expect(await screen.findByText('Blog One')).toBeInTheDocument();
+    screen.debug();
+    expect(await screen.findByText('Blog Two')).toBeInTheDocument();
 });
-
-export const a = 5;
