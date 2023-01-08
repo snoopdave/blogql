@@ -12,3 +12,7 @@ env.sh
 */node_modules
 deploy/local/create-secrets.sh
 /client2/.env
+/client2/public/bundle.css
+/client2/public/bundle.css.map
+/client2/public/bundle.js
+/client2/public/bundle.js.map
