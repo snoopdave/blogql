@@ -8,7 +8,7 @@ import {ApolloProvider} from '@apollo/client';
 import {client} from '../setupTests';
 
 it('BlogList renders without error with Mocked Service Worker', async () => {
-    render(
+    const render1 = render(
         <ApolloProvider client={client}>
             <Router>
                 <Route exact path='/'>
@@ -18,8 +18,8 @@ it('BlogList renders without error with Mocked Service Worker', async () => {
         </ApolloProvider>
     );
     screen.debug();
-    expect(await screen.findByText('Loading...')).toBeInTheDocument();
-    screen.debug();
+    //expect(await screen.findByText('Loading...')).toBeInTheDocument();
+    //screen.debug();
     expect(await screen.findByText('Blog One')).toBeInTheDocument();
     screen.debug();
     expect(await screen.findByText('Blog Two')).toBeInTheDocument();

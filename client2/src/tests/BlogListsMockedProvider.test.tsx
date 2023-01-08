@@ -41,7 +41,7 @@ it('BlogList renders without error with Apollo MockedProvider', async () => {
             }
         },
     }];
-    render(
+    const render1 = render(
         <MockedProvider mocks={blogsMock} addTypename={false}>
             <Router>
                 <Route exact path='/'>
