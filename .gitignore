@@ -11,3 +11,4 @@ env.sh
 **/__generated__
 */node_modules
 deploy/local/create-secrets.sh
+/client2/.env
