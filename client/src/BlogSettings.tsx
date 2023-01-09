@@ -29,7 +29,7 @@ export function BlogSettings(props: BlogSettingsProps) {
     const { loading, error, data } = useQuery(BLOG_BY_HANDLE_QUERY, { variables: { handle } });
 
     if (loading) {
-        return (<p>Loading...</p>);
+        return (<>Loading...</>);
     }
     if (error) {
         return (<p>error!</p>);

@@ -12,6 +12,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import {checkLoginStatus} from './Authentication';
 import {ApolloClient, ApolloProvider, InMemoryCache} from '@apollo/client';
 
+console.log('BlogQL starting');
+
 checkLoginStatus( user => {
     if (user) {
         localStorage.setItem('BlogQlUser', JSON.stringify(user));
@@ -32,7 +34,7 @@ ReactDOM.render(
             <App />
         </ApolloProvider>
     </React.StrictMode>,
-    document.getElementById('root')
+    document.getElementById('app')
 );
 
 // If you want your app to work offline and load faster, you can change

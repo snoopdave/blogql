@@ -40,7 +40,7 @@ it('BlogList renders without error with Apollo MockedProvider', async () => {
                 }
             },
         }];
-    render(_jsx(MockedProvider, { mocks: blogsMock, addTypename: false, children: _jsx(Router, { children: _jsx(Route, { exact: true, path: '/', children: _jsx(BlogList, {}) }) }) }));
+    const render1 = render(_jsx(MockedProvider, { mocks: blogsMock, addTypename: false, children: _jsx(Router, { children: _jsx(Route, { exact: true, path: '/', children: _jsx(BlogList, {}) }) }) }));
     screen.debug();
     expect(await screen.findByText('Loading...')).toBeInTheDocument();
     screen.debug();

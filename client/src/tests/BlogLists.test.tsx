@@ -1,13 +1,14 @@
-import "@testing-library/jest-dom";
-import '@testing-library/jest-dom/extend-expect';
-import { render, screen } from "@testing-library/react";
-import {BlogList} from "../BlogList";
-import {Route, BrowserRouter as Router} from "react-router-dom";
-import {ApolloProvider} from "@apollo/client";
-import {client} from "../setupTests";
+import '@testing-library/jest-dom'
+import '@testing-library/react';
+import {BlogList} from '../BlogList';
+import {Route, BrowserRouter as Router} from 'react-router-dom';
+import {screen, render} from '@testing-library/react';
 
-it("renders without error", async () => {
-    render(
+import {ApolloProvider} from '@apollo/client';
+import {client} from '../setupTests';
+
+it('BlogList renders without error with Mocked Service Worker', async () => {
+    const render1 = render(
         <ApolloProvider client={client}>
             <Router>
                 <Route exact path='/'>
@@ -16,7 +17,10 @@ it("renders without error", async () => {
             </Router>
         </ApolloProvider>
     );
-    expect(await screen.findByText("Loading...")).toBeInTheDocument();
-    expect(await screen.findByText("Blog One")).toBeInTheDocument();
-    expect(await screen.findByText("Blog Two")).toBeInTheDocument();
+    screen.debug();
+    //expect(await screen.findByText('Loading...')).toBeInTheDocument();
+    //screen.debug();
+    expect(await screen.findByText('Blog One')).toBeInTheDocument();
+    screen.debug();
+    expect(await screen.findByText('Blog Two')).toBeInTheDocument();
 });

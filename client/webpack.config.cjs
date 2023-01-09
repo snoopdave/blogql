@@ -1,5 +1,7 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const webpack = require('webpack');
+require('dotenv').config({ path: './.env' });
 
 const prod = process.env.NODE_ENV === 'production';
 
@@ -31,6 +33,15 @@ module.exports = {
     plugins: [
         new MiniCssExtractPlugin({
             filename: 'bundle.css'
-        })
-    ]
+        }),
+        new webpack.DefinePlugin({
+            "process.env": JSON.stringify(process.env),
+        }),
+    ],
+    devServer: {
+        static: {
+            directory: path.join(__dirname, 'public'),
+        },
+        port: 3000
+    },
 };
