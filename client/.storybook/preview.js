@@ -1,4 +1,4 @@
-//import { initialize, mswDecorator } from 'msw-storybook-addon';
+import { initialize, mswDecorator } from 'msw-storybook-addon';
 import {worker} from "../src/mocks/browser";
 
 export const parameters = {
@@ -11,16 +11,15 @@ export const parameters = {
   },
 }
 
-// if (process.env.NODE_ENV === 'development') {
-//   console.log('Starting Mocked Service Worker');
-//   const { worker } = require('../src/mocks/browser.ts')
-//   worker.start()
-// } else {
-//   console.log('NOT Starting Mocked Service Worker');
-// }
-//
-// // Initialize MSW
-// initialize();
+if (process.env.NODE_ENV === 'development') {
+  console.log('Starting Mocked Service Worker');
+  const { worker } = require('../src/mocks/browser.ts')
+  worker.start()
+} else {
+  console.log('NOT Starting Mocked Service Worker');
+}
 
-// Provide the MSW addon decorator globally
-//export const decorators = [mswDecorator];
+// Initialize MSW
+initialize();
+
+export const decorators = [mswDecorator];

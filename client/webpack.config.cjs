@@ -1,9 +1,9 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const webpack = require('webpack');
-require('dotenv').config({ path: './.env' });
+//const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
 const prod = process.env.NODE_ENV === 'production';
+const ROOT_PATH = path.resolve(__dirname)
 
 module.exports = {
     entry: './src/index.tsx',
@@ -18,13 +18,10 @@ module.exports = {
                 test: /\.css$/,
                 use: [
                     MiniCssExtractPlugin.loader,
-                    'css-loader'
-                ]
-            }
+                    'css-loader',
+                ],
+            },
         ],
-    },
-    resolve: {
-        extensions: ['.tsx', '.ts', '.js'],
     },
     output: {
         filename: 'bundle.js',
@@ -32,16 +29,13 @@ module.exports = {
     },
     plugins: [
         new MiniCssExtractPlugin({
-            filename: 'bundle.css'
-        }),
-        new webpack.DefinePlugin({
-            "process.env": JSON.stringify(process.env),
+            filename: 'bundle.css',
         }),
     ],
     devServer: {
         static: {
             directory: path.join(__dirname, 'public'),
         },
-        port: 3000
+        port: 3000,
     },
 };
