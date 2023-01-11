@@ -1,7 +1,6 @@
 // src/setupTests.js
-import { server } from './mocks/server.js'
-import '@testing-library/jest-dom/extend-expect';
 import {ApolloClient, HttpLink, InMemoryCache} from '@apollo/client';
+import { server } from './mocks/server.js'
 import fetch from 'cross-fetch';
 
 export const client = new ApolloClient({

@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom'
+import '@testing-library/jest-dom/extend-expect';
 import '@testing-library/react';
 import {BlogList} from '../BlogList';
 import {Route, BrowserRouter as Router} from 'react-router-dom';

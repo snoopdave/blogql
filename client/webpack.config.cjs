@@ -1,9 +1,7 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-//const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
 const prod = process.env.NODE_ENV === 'production';
-const ROOT_PATH = path.resolve(__dirname)
 
 module.exports = {
     entry: './src/index.tsx',

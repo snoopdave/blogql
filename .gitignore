@@ -18,3 +18,5 @@ node_modules
 schema.graphql
 deploy/local/create-secrets.sh
 bundle.*
+
+/client/.storybook/public
