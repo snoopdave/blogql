@@ -1,11 +1,11 @@
-import {BlogList} from "../BlogList";
+import {BlogList} from "./BlogList";
 import {BrowserRouter as Router, Route} from 'react-router-dom';
-import {client} from "../setupTests";
+import {client} from "./setupTests";
 import {ApolloProvider} from "@apollo/client";
 import {ComponentMeta, ComponentStory} from "@storybook/react";
 
 export default {
-    title: 'BlogListMSW',
+    title: 'BlogList',
     component: BlogList,
 } as ComponentMeta<typeof BlogList>;
 

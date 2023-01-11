@@ -1,3 +1,6 @@
+# Copyright David M. Johnson (snoopdave@gmail.com).
+# Licensed under Apache Software License v2.
+
 name: pull-request
 
 # When there is change to a Pull Request, this workflow will build, test and check BlogQL's GraphQL schema.
