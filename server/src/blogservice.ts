@@ -9,8 +9,8 @@ import {User} from './userstore.js';
 import {Node} from './node.js';
 import {Response, Cursor, resolveCollection} from './pagination.js';
 import {AuthenticationError, ForbiddenError} from 'apollo-server-express';
-import {BlogQLDataSources} from "./index.js";
-import {log, LogLevel} from "./utils.js";
+import {BlogQLDataSources} from "./index";
+import {DEBUG, log} from "./utils";
 
 
 export interface BlogService {
@@ -169,7 +169,7 @@ export class BlogServiceSequelizeImpl implements BlogService {
     }
 
     async updateEntry(id: string, title: string, content: string): Promise<Entry | null> {
-        log(LogLevel.DEBUG, `updating entry`);
+        log(DEBUG, `updating entry`);
         if (this.user) {
             await this.initDataSources();
             const entry = await this.dataSources.entryStore.retrieve(id);

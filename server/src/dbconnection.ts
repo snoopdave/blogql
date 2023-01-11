@@ -5,7 +5,7 @@
 
 import fs from 'fs';
 import sequelize from 'sequelize';
-import {log, LogLevel} from './utils.js';
+import {ERROR, INFO, log} from "./utils";
 
 
 export default class DBConnection {
@@ -18,7 +18,7 @@ export default class DBConnection {
         } else {
             // fall back to SQLite
             this.path = filePath || 'db-test1.db';
-            log(LogLevel.INFO, `Connecting to SQLite3 ${this.path}`);
+            log(INFO, `Connecting to SQLite3 ${this.path}`);
             this.db = new sequelize.Sequelize({
                 dialect: 'sqlite',
                 storage: this.path,
@@ -32,7 +32,7 @@ export default class DBConnection {
             try {
                 fs.unlinkSync(this.path);
             } catch (e) {
-                log(LogLevel.ERROR, `Cannot delete file ${this.path} due to ${e}`);
+                log(ERROR, `Cannot delete file ${this.path} due to ${e}`);
             }
         }
     }

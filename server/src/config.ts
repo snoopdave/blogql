@@ -14,5 +14,5 @@ export const config: Config = {
     auth: false,
     corsOrigin: 'http://localhost:3000',
     // corsOrigin: 'https://studio.apollographql.com',
-    logLevel: 0
+    logLevel: 0, // DEBUG
 }
