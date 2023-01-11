@@ -1,6 +1,6 @@
 
 import {ComponentStory} from '@storybook/react';
-import {RelativeDateTime} from "../DateTime";
+import {RelativeDateTime} from "./DateTime";
 
 export default {
     title: 'DateTime',

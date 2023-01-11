@@ -1,3 +1,8 @@
+/**
+ * Copyright David M. Johnson (snoopdave@gmail.com).
+ * Licensed under Apache Software License v2.
+ */
+
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
