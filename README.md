@@ -28,6 +28,6 @@ Here are some more details about the technologies in use:
 ## Infrastructure
 
 * Github Actions
-** On pull-request update: builds server & client, runs tests, builds serve Docker image and checks the GraphQL schema via the Apollo Rover CLI.
-** On merge to main: does same steps and then publishes GraphQL schema to Apollo Studio.
+   * On pull-request update: builds server & client, runs tests, builds serve Docker image and checks the GraphQL schema via the Apollo Rover CLI.
+   * On merge to main: does same steps and then publishes GraphQL schema to Apollo Studio.
 * Work in progress: Helm charts for deploying to Kubernetes
