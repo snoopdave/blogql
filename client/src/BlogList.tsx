@@ -9,15 +9,19 @@ import {Blog} from "./graphql/schema";
 export function BlogList() {
     const { loading, error, data } = useQuery(BLOGS_QUERY);
     if (loading) {
+        console.log('BlogList: Loading...');
         return (<p>Loading...</p>);
     }
     if (error) {
+        console.log('BlogList: Error');
         return (<p>error!</p>);
     }
     if (!data) {
+        console.log('BlogList: No data');
         return (<p>no data!</p>);
     }
 
+    console.log('BlogList: rendering');
     return (
         <Table striped bordered hover>
             <thead>

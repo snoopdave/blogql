@@ -12,8 +12,8 @@ export default {
 export const Primary: ComponentStory<typeof BlogList> = () =>
     <ApolloProvider client={client}>
         <Router>
-            <Route exact path='/'>
-                Hi <BlogList />
+            <Route path='*'>
+                <BlogList />
             </Route>
         </Router>
     </ApolloProvider>;

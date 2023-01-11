@@ -11,12 +11,18 @@ export const client = new ApolloClient({
     link: new HttpLink({ uri: 'http://localhost:4000/graphql', fetch })
 });
 
-// Establish API mocking before all tests.
-beforeAll(() => server.listen())
+if (typeof beforeAll !== "undefined") { // running in Jest test
 
-// Reset any request handlers that we may add during the tests,
-// so they don't affect other tests.
-afterEach(() => server.resetHandlers())
+    // Establish API mocking before all tests.
+    beforeAll(() => server.listen());
 
-// Clean up after the tests are finished.
-afterAll(() => server.close())
+    // Reset any request handlers that we may add during the tests,
+    // so they don't affect other tests.
+    afterEach(() => server.resetHandlers());
+
+    // Clean up after the tests are finished.
+    afterAll(() => server.close());
+
+} else { // running in Storybook
+    server.listen();
+}
