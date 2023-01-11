@@ -11,7 +11,7 @@ import 'react-quill/dist/quill.snow.css';
 import ReactQuill, {UnprivilegedEditor} from 'react-quill';
 import { Sources } from 'quill';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {useMutation, useQuery} from '@apollo/client';
+import {useMutation, useQuery} from '@apollo/client/react/hooks';
 import {Entry} from './graphql/schema';
 import {
     ENTRY_CREATE_MUTATION,
@@ -53,7 +53,7 @@ export function EditorFormViaEntryId() {
                 publish={!!data.blog.entry.published}
             />);
     }
-    return (<p>An unexpected error has occurred: {error}</p>)
+    return (<>An unexpected error has occurred: {error}</>)
 }
 
 export function EditorFormViaBlogHandle() {
@@ -73,7 +73,7 @@ export function EditorFormViaBlogHandle() {
             />
         );
     }
-    return (<p>An unexpected error has occurred: {error}</p>)
+    return (<>An unexpected error has occurred: {error}</>)
 }
 
 interface EditorFormProps {

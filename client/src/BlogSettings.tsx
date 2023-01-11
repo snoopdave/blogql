@@ -5,7 +5,7 @@
 
 import {Button, Form, Modal, Toast, Tabs, Tab} from 'react-bootstrap';
 import React, {ChangeEvent, useState} from 'react';
-import {useMutation, useQuery} from '@apollo/client';
+import {useQuery, useMutation} from '@apollo/client/react/hooks';
 import {Entry} from './graphql/schema';
 import {BLOG_DELETE_MUTATION, BLOG_UPDATE_MUTATION, ISSUE_API_KEY_MUTATION} from './graphql/mutations';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
@@ -29,7 +29,7 @@ export function BlogSettings(props: BlogSettingsProps) {
     const { loading, error, data } = useQuery(BLOG_BY_HANDLE_QUERY, { variables: { handle } });
 
     if (loading) {
-        return (<p>Loading...</p>);
+        return (<>Loading...</>);
     }
     if (error) {
         return (<p>error!</p>);

@@ -5,7 +5,7 @@
 
 import React from 'react';
 import {Button, Form, Table} from "react-bootstrap";
-import {useQuery} from "@apollo/client";
+import {useQuery} from '@apollo/client/react/hooks/useQuery';
 import {DRAFTS_QUERY} from "./graphql/queries";
 import {Link, useHistory, useParams} from "react-router-dom";
 import {Entry} from "./graphql/schema";
