@@ -1,8 +1,6 @@
 # Simple Blog Server with GraphQL API
 
-This is a learning project; something I started to help me learn React, TypeScript and more about GraphQL and Apollo Studio.
-
-Here are some more details about the technologies in use:
+This is a learning project; something I started to help me learn React, TypeScript and more about GraphQL and Apollo Studio. Here are some more details about the technologies in use:
 
 ## Server
 
@@ -13,6 +11,7 @@ Here are some more details about the technologies in use:
 * Google and API key authentication
 * Support for SQLite3 and Postgres databases
 * Jest tests
+* [Apollo Studio](https://studio.apollographql.com/) schema checks and publish
 
 ## Client
 
@@ -23,7 +22,7 @@ Here are some more details about the technologies in use:
 * React Router
 * React Bootstrap
 * Quill (rich text editor)
-* Jest tests and Storybook stories
+* Jest tests, Storybook stories and [Chromatic](https://chromatic.com) integration
  
 ## Infrastructure
 
