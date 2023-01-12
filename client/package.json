@@ -19,8 +19,7 @@
     "clean": "rm -rf node_modules build src/*.js src/*.jsx __generated__/* src/graphql/__generated__/* schema.graphql",
     "build-storybook": "build-storybook",
     "storybook": "start-storybook -p 6006",
-    "nukeit": "yarn clean; rm yarn.lock; yarn install; yarn build",
-    "chromatic": "npx chromatic --project-token=${CHROMATIC_TOKEN}"
+    "nukeit": "yarn clean; rm yarn.lock; yarn install; yarn build"
   },
   "dependencies": {
     "@apollo/client": "~3.5.6",
