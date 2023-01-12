@@ -1,4 +1,4 @@
-# Simple Blog Server with GraphQL API
+# BlogQL: Simple Blog Server with GraphQL API
 
 This is a learning project; something I started to help me learn React, TypeScript and more about GraphQL and Apollo Studio. Here are some more details about the technologies in use:
 
