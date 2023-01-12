@@ -20,7 +20,7 @@
     "build-storybook": "build-storybook",
     "storybook": "start-storybook -p 6006",
     "nukeit": "yarn clean; rm yarn.lock; yarn install; yarn build",
-    "chromatic": "npx chromatic --project-token=8b67da320546"
+    "chromatic": "npx chromatic --project-token=${CHROMATIC_TOKEN}"
   },
   "dependencies": {
     "@apollo/client": "~3.5.6",
