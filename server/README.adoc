@@ -5,17 +5,17 @@ This is the BlogQL server. It is written in TypeScript and uses Express and the 
 == Building server
 
     yarn install
-    yarn run build
+    yarn build
 
 == Testing server
 
-    yarn run test
+    yarn test
 
 == Running server
 
 You can start the server via `yarn` like so:
 
-    yarn run start
+    yarn start
 
 === Using Apollo schema and usage reporting
 
