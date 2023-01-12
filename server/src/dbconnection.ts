@@ -5,7 +5,7 @@
 
 import fs from 'fs';
 import sequelize from 'sequelize';
-import {ERROR, INFO, log} from "./utils";
+import {ERROR, INFO, log} from "./utils.js";
 
 
 export default class DBConnection {
