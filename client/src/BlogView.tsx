@@ -10,6 +10,7 @@ import {useQuery} from '@apollo/client/react/hooks/useQuery';
 import {ENTRIES_QUERY} from './graphql/queries';
 import {Entry} from "./graphql/schema";
 import BlogCard from "./BlogCard";
+import BlogColumns from "./BlogColumns";
 
 
 export interface BlogViewProps {
@@ -37,17 +38,7 @@ function BlogView(props: BlogViewProps) {
             <Jumbotron>
             <h1>{data.blog.name}</h1>
             </Jumbotron>
-            <CardColumns>{
-                data.blog.entries?.nodes.map((entry: Entry) => entry ? (
-                    <BlogCard loggedIn={props.loggedIn}
-                          title={entry.title}
-                          content={entry.content}
-                          entryId={entry.id}
-                          handle={handle}
-                          updated={entry.updated}
-                    />
-                ) : null)
-            }</CardColumns>
+            <BlogColumns handle={handle} loggedIn={props.loggedIn} entries={data.blog.entries?.nodes} />
         </>
     );
 }

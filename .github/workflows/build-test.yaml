@@ -26,15 +26,20 @@ jobs:
         cache: npm
         cache-dependency-path: ./server/yarn.lock
 
-    # install dependencies and build server
+    # install dependencies, build and test server
     - run: |
         yarn install
-        yarn run build
-        yarn run test
+        yarn build
+        yarn test
       working-directory: server
 
-    # install dependencies and build client, TODO: client-side tests
+    # install dependencies, build and test client
     - run: |
+        cat > src/googlecid.ts << EOF
+        export const GOOGLE_SIGNON_CID='dummy';
+        EOF
         yarn install
-        yarn run build
+        yarn build
+        yarn test
+        npx chromatic --project-token=8b67da320546
       working-directory: client

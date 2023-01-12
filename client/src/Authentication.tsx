@@ -7,8 +7,7 @@ import {Redirect, Route, useHistory} from 'react-router-dom';
 import React, {Context, createContext, useContext} from 'react';
 import GoogleLogin, {GoogleLoginResponse, GoogleLoginResponseOffline} from 'react-google-login';
 import {RouteProps} from "react-router";
-
-const clientId='1075139484035-artm82biuaj81lcjlru9j0ojhlvns4vi.apps.googleusercontent.com';
+import {GOOGLE_SIGNON_CID} from "./googlecid";
 
 export interface User {
     id: string;
@@ -121,7 +120,7 @@ export function LoginButton(props : LoginProps) {
     };
 
     return (
-        <GoogleLogin clientId={clientId}
+        <GoogleLogin clientId={GOOGLE_SIGNON_CID}
                      buttonText='Log in with Google'
                      onSuccess={login}
                      onFailure={login}

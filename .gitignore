@@ -19,5 +19,6 @@ node_modules
 schema.graphql
 deploy/local/create-secrets.sh
 bundle.*
-client/storybook-static
-client/.storybook/public
+/client/storybook-static
+/client/.storybook/public
+/client/src/googlecid.ts

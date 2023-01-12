@@ -10,6 +10,7 @@ import {DRAFTS_QUERY} from "./graphql/queries";
 import {Link, useHistory, useParams} from "react-router-dom";
 import {Entry} from "./graphql/schema";
 import {SimpleDateTime} from "./DateTime";
+import DraftList from "./DraftList";
 
 
 function Drafts() {
@@ -33,30 +34,14 @@ function Drafts() {
         history.push(`/blogs/${handle}/edit`);
     }
 
-    return (<>
-            <Form>
-                <Form.Group>
-                    <Button onClick={() => {
-                        newEntry();
-                    }}>New</Button>
-                </Form.Group>
-            </Form>
-
-            <Table striped bordered hover>
-                <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Updated</th>
-                </tr>
-                </thead>
-                <tbody>{ data.blog?.drafts?.nodes.map((entry: Entry) => entry ? (
-                    <tr key={entry.id}>
-                        <td><Link className='nav-link' to={`/blogs/${handle}/edit/${entry.id}`}>{entry.title}</Link></td>
-                        <td><span className="nav-link"><SimpleDateTime when={entry.updated}/></span></td>
-                    </tr> ) : null)
-                }</tbody>
-            </Table>
-        </>);
+    return <>
+        <Form>
+            <Form.Group>
+                <Button onClick={() => { newEntry(); }}>New</Button>
+            </Form.Group>
+        </Form>
+        <DraftList handle={handle} drafts={data.blog?.drafts?.nodes}/>
+    </>;
 }
 
 export default Drafts;

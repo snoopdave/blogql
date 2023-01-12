@@ -3,23 +3,24 @@
  * Licensed under Apache Software License v2.
  */
 
-import {BlogList} from "./BlogList";
 import {BrowserRouter as Router, Route} from 'react-router-dom';
 import {client} from "./setupTests";
 import {ApolloProvider} from "@apollo/client";
 import {ComponentMeta, ComponentStory} from "@storybook/react";
+import DraftList from "./DraftList";
+import {entriesData} from "./mocks/handlers";
 
 export default {
-    title: 'BlogList',
-    component: BlogList,
-} as ComponentMeta<typeof BlogList>;
+    title: 'DraftList',
+    component: DraftList,
+} as ComponentMeta<typeof DraftList>;
 
-export const Primary: ComponentStory<typeof BlogList> = () =>
+export const Primary: ComponentStory<typeof DraftList> = () =>
     <ApolloProvider client={client}>
         <Router>
-            <Route path='*'>
-                <BlogList />
+            <Route exact path='*'>
+                <DraftList drafts={entriesData} handle='daves' />
             </Route>
         </Router>
-    </ApolloProvider>;
+    </ApolloProvider>
 
