@@ -3,8 +3,9 @@ import {ComponentStory} from '@storybook/react';
 import {RelativeDateTime} from "./DateTime";
 import DraftList from "./DraftList";
 
+
 export default {
-    title: 'RelativeDateTime',
+    title: 'DateTime',
     component: RelativeDateTime,
 }
 
@@ -21,4 +22,5 @@ let threeMonthsAgo = new Date();
 threeMonthsAgo.setTime(threeMonthsAgo.getTime() - (3 * 4 * 7 * 24 * 60 * 60 * 1000));
 export const MonthsAgo: ComponentStory<typeof RelativeDateTime> = () =>
     <RelativeDateTime when={threeMonthsAgo} />
+
 

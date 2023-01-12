@@ -3,7 +3,6 @@
  * Licensed under Apache Software License v2.
  */
 
-// src/mocks/handlers.js
 import {graphql} from 'msw';
 import {Entry} from "../graphql/schema";
 
@@ -77,3 +76,4 @@ export const entriesData: Entry[] = [{
         'updated': new Date('2022-07-08T12:23:36.697Z'),
         'published': new Date('2022-11-20T20:25:40.974Z')
     }];
+

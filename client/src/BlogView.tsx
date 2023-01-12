@@ -4,12 +4,10 @@
  */
 
 import React from 'react';
-import {CardColumns, Jumbotron} from 'react-bootstrap';
+import {Jumbotron} from 'react-bootstrap';
 import {useParams} from 'react-router-dom';
 import {useQuery} from '@apollo/client/react/hooks/useQuery';
 import {ENTRIES_QUERY} from './graphql/queries';
-import {Entry} from "./graphql/schema";
-import BlogCard from "./BlogCard";
 import BlogColumns from "./BlogColumns";
 
 
