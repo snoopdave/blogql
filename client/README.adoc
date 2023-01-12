@@ -8,21 +8,24 @@ Use Yarn to build, test and run this client.
 
 Before you can build the client you need to build and run the server because the client build process needs to introspect the server's GraphQL Schema.
 
-    yarn run build
+    yarn build
 
 == Testing the client
 
-    yarn run test
+There are couple of Jest tests that you can run as follows:
+
+    yarn test
+
+There are also some Storybook stories. Launch Storybook like this:
+
+    yarn storybook
 
 == Running the client
 
 BlogQL uses Google Authentication and requires a Google Client ID.
-Before running the client app, you must obtain a Client ID and then create a file named `.env` in the `client` directory with that client ID:
-
-Contents of `client/.env`:
-
-    REACT_APP_CLIENT_ID=Your Client ID goes here
+Before building the client app, you must obtain a Client ID and then create a file named `src/googlecid.ts` that exports a const string GOOGLE_SIGNON_CID with that Client ID.
+There is an example file `googlecid.example.ts` that shows the format.
 
 Run the client like so:
 
-    yarn run start
+    yarn start
