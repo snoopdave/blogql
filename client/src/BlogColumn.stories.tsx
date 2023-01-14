@@ -19,7 +19,7 @@ export default {
 export const Primary: ComponentStory<typeof BlogColumns> = () =>
     <ApolloProvider client={client}>
         <Router>
-            <Route exact path='*'>
+            <Route path='*'>
                 <BlogColumns entries={entriesData} handle='daves' loggedIn={false} />
             </Route>
         </Router>
@@ -28,7 +28,7 @@ export const Primary: ComponentStory<typeof BlogColumns> = () =>
 export const LoggedIn: ComponentStory<typeof BlogColumns> = () =>
     <ApolloProvider client={client}>
         <Router>
-            <Route exact path='*'>
+            <Route path='*'>
                 <BlogColumns entries={entriesData} handle='daves' loggedIn={true} />
             </Route>
         </Router>

@@ -12,7 +12,7 @@ it('BlogList renders without error with Mocked Service Worker', async () => {
     const render1 = render(
         <ApolloProvider client={client}>
             <Router>
-                <Route exact path='/'>
+                <Route path='/'>
                     <BlogList />
                 </Route>
             </Router>

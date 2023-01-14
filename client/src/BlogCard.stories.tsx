@@ -17,7 +17,7 @@ export default {
 export const Primary: ComponentStory<typeof BlogCard> = () =>
     <ApolloProvider client={client}>
         <Router>
-            <Route exact path='*'>
+            <Route path='*'>
                 <BlogCard
                     loggedIn={false}
                     handle='daves'
@@ -33,7 +33,7 @@ export const Primary: ComponentStory<typeof BlogCard> = () =>
 export const LoggedIn: ComponentStory<typeof BlogCard> = () =>
     <ApolloProvider client={client}>
         <Router>
-            <Route exact path='*'>
+            <Route path='*'>
                 <BlogCard
                     loggedIn={true}
                     handle='daves'
@@ -49,7 +49,7 @@ export const LoggedIn: ComponentStory<typeof BlogCard> = () =>
 export const ExcessTitleContent : ComponentStory<typeof BlogCard> = () =>
     <ApolloProvider client={client}>
         <Router>
-            <Route exact path='*'>
+            <Route path='*'>
                 <BlogCard
                     loggedIn={false}
                     handle='daves'
@@ -65,7 +65,7 @@ export const ExcessTitleContent : ComponentStory<typeof BlogCard> = () =>
 export const ExcessContent : ComponentStory<typeof BlogCard> = () =>
     <ApolloProvider client={client}>
         <Router>
-            <Route exact path='*'>
+            <Route path='*'>
                 <BlogCard
                     loggedIn={false}
                     handle='daves'

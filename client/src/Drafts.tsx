@@ -40,7 +40,7 @@ function Drafts() {
                 <Button onClick={() => { newEntry(); }}>New</Button>
             </Form.Group>
         </Form>
-        <DraftList handle={handle} drafts={data.blog?.drafts?.nodes}/>
+        <DraftList handle={handle!} drafts={data.blog?.drafts?.nodes}/>
     </>;
 }
 

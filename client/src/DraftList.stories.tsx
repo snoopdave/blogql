@@ -18,7 +18,7 @@ export default {
 export const Primary: ComponentStory<typeof DraftList> = () =>
     <ApolloProvider client={client}>
         <Router>
-            <Route exact path='*'>
+            <Route path='*'>
                 <DraftList drafts={entriesData} handle='daves' />
             </Route>
         </Router>

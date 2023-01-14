@@ -36,7 +36,7 @@ function BlogView(props: BlogViewProps) {
             <Jumbotron>
             <h1>{data.blog.name}</h1>
             </Jumbotron>
-            <BlogColumns handle={handle} loggedIn={props.loggedIn} entries={data.blog.entries?.nodes} />
+            <BlogColumns handle={handle!} loggedIn={props.loggedIn} entries={data.blog.entries?.nodes} />
         </>
     );
 }

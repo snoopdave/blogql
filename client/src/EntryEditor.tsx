@@ -37,7 +37,7 @@ export function EditorFormViaEntryId() {
     if (!error && data?.blog.id) {
         return (loading ? <p>Loading...</p> :
             <EditorForm blogId={data.blog.id}
-                id={id}
+                id={id!}
                 title={data.blog.entry.title}
                 content={data.blog.entry.content}
                 created={data.blog.entry.created}
@@ -85,6 +85,9 @@ export function EditorForm(props: EditorFormProps) {
 
     const id = props.id;
     const { handle } = useParams<{handle : string}>(); // get handle param from router route
+    if (handle === undefined) {
+        return <p>Error loading blog</p>;
+    }
 
     const [title, setTitle] = useState(props.title);
     const [content, setContent] = useState(props.content);
