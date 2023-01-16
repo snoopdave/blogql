@@ -9,8 +9,10 @@ import {useMutation} from '@apollo/client';
 import {Blog} from './graphql/schema';
 import {BLOG_CREATE_MUTATION} from './graphql/mutations';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {Link, useHistory} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import {RequireAuth} from "./Authentication";
+import {useNavigate} from "react-router";
+import {BLOGS_QUERY} from "./graphql/queries";
 
 
 export interface BlogCreateProps {
@@ -25,10 +27,12 @@ export function BlogCreate(props: BlogCreateProps) {
     const [failure, setFailure] = useState(false);
     const [toast, setToast] = useState('');
 
-    const history = useHistory();
+    const navigate = useNavigate();
 
-    const [blogCreateMutation] = useMutation<Blog, { handle: string | undefined, name: string | undefined }>(
-        BLOG_CREATE_MUTATION, { variables: { handle, name } });
+    const [blogCreateMutation] = useMutation<Blog, { handle: string | undefined, name: string | undefined }>(BLOG_CREATE_MUTATION, {
+        variables: { handle, name },
+        refetchQueries: [{query:BLOGS_QUERY}],
+    });
 
     function onHandleChange(event: ChangeEvent<HTMLInputElement>) {
         setHandle(event.target.value.toLowerCase());
@@ -56,7 +60,7 @@ export function BlogCreate(props: BlogCreateProps) {
                 setToast('New blog created');
                 setTimeout(() => {
                     props.onBlogUpdated(true);
-                    history.push('/blogs');
+                    navigate('/blogs');
                 }, 500);
             })
             .catch(() => {

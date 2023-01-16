@@ -9,9 +9,10 @@ import {useQuery, useMutation} from '@apollo/client/react/hooks';
 import {Entry} from './graphql/schema';
 import {BLOG_DELETE_MUTATION, BLOG_UPDATE_MUTATION, ISSUE_API_KEY_MUTATION} from './graphql/mutations';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {Link, useHistory, useParams} from 'react-router-dom';
-import {BLOG_BY_HANDLE_QUERY} from './graphql/queries';
+import {Link, useParams} from 'react-router-dom';
+import {BLOG_BY_HANDLE_QUERY, BLOGS_QUERY} from './graphql/queries';
 import {RequireAuth} from "./Authentication";
+import {useNavigate} from "react-router";
 
 
 export interface BlogSettingsProps {
@@ -51,13 +52,21 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
     const [toast, setToast] = useState('');
     const [deleting, setDeleting] = useState(false);
 
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const [blogUpdateMutation] = useMutation<Entry, { id: string, name: string }>(
-        BLOG_UPDATE_MUTATION, { variables: { id: props.id, name } });
+        BLOG_UPDATE_MUTATION, {
+            variables: { id: props.id, name },
+            refetchQueries: [{query: BLOGS_QUERY}],
+            awaitRefetchQueries: true,
+        });
 
     const [blogDeleteMutation] = useMutation<Entry, { id: string }>(
-        BLOG_DELETE_MUTATION, { variables: { id: props.id } });
+        BLOG_DELETE_MUTATION, {
+            variables: { id: props.id },
+            refetchQueries: [{query: BLOGS_QUERY}],
+            awaitRefetchQueries: true,
+        });
 
     const [issueApiKeyMutation] = useMutation(ISSUE_API_KEY_MUTATION, { variables: {} })
 
@@ -80,7 +89,7 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
                 setSuccess(true);
                 setToast('Blog updated');
                 setTimeout(() => {
-                    history.push('/blogs');
+                    navigate('/blogs');
                 }, 500);
             })
             .catch(() => {
@@ -108,7 +117,7 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
                 setToast('Blog deleted');
                 setTimeout(() => {
                     props.onBlogUpdated(false);
-                    history.push('/blogs');
+                    navigate('/blogs');
                 }, 500);
             })
             .catch(() => {

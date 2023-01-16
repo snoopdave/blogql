@@ -25,7 +25,12 @@ const client = new ApolloClient({
     cache: new InMemoryCache(),
     credentials: 'include',
     name: 'blogql-web',
-    version: '1.0'
+    version: '1.0',
+    defaultOptions: {
+        watchQuery: {
+            nextFetchPolicy: 'network-only',
+        },
+    },
 });
 
 ReactDOM.render(

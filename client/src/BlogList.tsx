@@ -26,7 +26,6 @@ export function BlogList() {
         return (<p>no data!</p>);
     }
 
-    console.log('BlogList: rendering');
     return (
         <>
             <Jumbotron>

@@ -5,20 +5,21 @@
 
 import React, {useState} from 'react';
 import Container from 'react-bootstrap/Container';
-import {Col, Jumbotron, Nav, Navbar, Row} from 'react-bootstrap';
+import {Col, Nav, Navbar, Row} from 'react-bootstrap';
 import './App.css';
 import {EditorFormViaBlogHandle, EditorFormViaEntryId} from './EntryEditor';
 import BlogView from './BlogView';
 import Drafts from './Drafts';
-import {BrowserRouter as Router, Link, Route} from 'react-router-dom';
-import {LoginButton, logout, ProvideAuth, useAuth, User} from './Authentication';
+import {BrowserRouter as Router} from 'react-router-dom';
+import {logout, ProvideAuth, useAuth, User} from './Authentication';
 import {BlogList} from './BlogList';
 import {useQuery} from '@apollo/client';
 import {USER_BLOG_QUERY} from './graphql/queries';
 import {BlogCreate} from './BlogCreate';
 import {BlogSettings} from './BlogSettings';
-import {Routes} from "react-router";
-
+import {Routes, Route} from "react-router";
+import {Welcome} from "./Welcome";
+import {LinkContainer} from 'react-router-bootstrap'
 
 function App() {
     const [loggedIn, setLoggedIn] = useState(false);
@@ -45,7 +46,7 @@ function App() {
     return (
         <Container>
             <ProvideAuth onLogin={onLogin}>
-                <Router forceRefresh={false}>
+                <Router>
 
                     <Row>
                         <Col>
@@ -58,45 +59,22 @@ function App() {
                         <Col xs={10}>
 
                             <Routes>
-
-                                <Route path='/' element={<BlogList/>} >
-
-                                    <Route path='blogs' children={<BlogList/>} />
-
-                                    <Route path='login'>
-                                        <Jumbotron>
-                                            <h1>Welcome to BlogQL!</h1>
-                                            <p>Please login via your favorite Google Account</p>
-                                            <LoginButton onLogin={onLogin} destination='/blogs'/>
-                                        </Jumbotron>
-                                    </Route>
-
-                                    <Route path='/create-blog'
-                                        children={<BlogCreate onBlogUpdated={onBlogUpdated}/>} />
-
-                                    <Route path='/blogs/:handle'
-                                        children={<BlogView loggedIn={loggedIn}/>} />
-
-                                    <Route path='/blogs/:handle/settings'
-                                        children={<BlogSettings onBlogUpdated={onBlogUpdated}/>} />
-
-                                    <Route path='/blogs/:handle/drafts'
-                                        children={<Drafts/>} />
-
-                                    <Route path='/blogs/:handle/edit'
-                                        children={<EditorFormViaBlogHandle/>} />
-
-                                    <Route path='/blogs/:handle/edit/:id'
-                                        children={<EditorFormViaEntryId/>} />
-
-                                </Route>
-
+                                <Route path='/'                       element={<BlogList/>} />
+                                <Route path='/login'                  element={<Welcome onLogin={onLogin}/>} />
+                                <Route path='/create-blog'            element={<BlogCreate onBlogUpdated={onBlogUpdated}/>} />
+                                <Route path='/blogs'                  element={<BlogList/>} />
+                                <Route path='/blogs/:handle'          element={<BlogView loggedIn={loggedIn}/>} />
+                                <Route path='/blogs/:handle/settings' element={<BlogSettings onBlogUpdated={onBlogUpdated}/>} />
+                                <Route path='/blogs/:handle/drafts'   element={<Drafts/>} />
+                                <Route path='/blogs/:handle/edit'     element={<EditorFormViaBlogHandle/>} />
+                                <Route path='/blogs/:handle/edit/:id' element={<EditorFormViaEntryId/>} />
                             </Routes>
 
                         </Col>
                         <Col/>
                     </Row>
                 </Router>
+
             </ProvideAuth>
         </Container>
     );
@@ -129,10 +107,16 @@ function App() {
                         <Navbar.Toggle aria-controls='basic-navbar-nav'/>
                         <Navbar.Collapse id='basic-navbar-nav'>
                             <Nav className='mr-auto'>
-                                <Link className='nav-link' to={`/blogs/${handle}`}>Blog</Link>
-                                <Link className='nav-link' to={`/blogs/${handle}/drafts`}>Drafts</Link>
-                                <Link className='nav-link' to={`/blogs/${handle}/settings`}>Settings</Link>
-                                <Link className='nav-link' onClick={onLogout} to={`/logout`}>Logout</Link>
+                                <LinkContainer to={`/blogs/${handle}`}>
+                                    <Nav.Link className='nav-link' >Blog</Nav.Link>
+                                </LinkContainer>
+                                <LinkContainer to={`/blogs/${handle}/drafts`}>
+                                    <Nav.Link className='nav-link' >Drafts</Nav.Link>
+                                </LinkContainer>
+                                <LinkContainer  to={`/blogs/${handle}/settings`}>
+                                    <Nav.Link className='nav-link'>Settings</Nav.Link>
+                                </LinkContainer>
+                                <Nav.Link className='nav-link' onClick={onLogout}>Logout</Nav.Link>
                             </Nav>
                         </Navbar.Collapse>
                     </Container>
@@ -147,8 +131,10 @@ function App() {
                         <Navbar.Toggle aria-controls='basic-navbar-nav'/>
                         <Navbar.Collapse id='basic-navbar-nav'>
                             <Nav className='mr-auto'>
-                                <Link className='nav-link' to={'/create-blog'}>Create a blog</Link>
-                                <Link className='nav-link' onClick={onLogout} to={`/logout`}>Logout</Link>
+                                <LinkContainer to={'/create-blog'}>
+                                    <Nav.Link className='nav-link'>Create a blog</Nav.Link>
+                                </LinkContainer>
+                                <Nav.Link className='nav-link' onClick={onLogout}>Logout</Nav.Link>
                             </Nav>
                         </Navbar.Collapse>
                     </Container>
@@ -163,8 +149,12 @@ function App() {
                         <Navbar.Toggle aria-controls='basic-navbar-nav'/>
                         <Navbar.Collapse id='basic-navbar-nav'>
                             <Nav className='mr-auto'>
-                                <Link className='nav-link' to={`/blogs`}>Blogs</Link>
-                                <Link className='nav-link' to={'/login'}>Login</Link>
+                                <LinkContainer to={'/blogs'}>
+                                    <Nav.Link className='nav-link'>Blogs</Nav.Link>
+                                </LinkContainer>
+                                <LinkContainer to={'/login'}>
+                                    <Nav.Link className='nav-link'>Login</Nav.Link>
+                                </LinkContainer>
                             </Nav>
                         </Navbar.Collapse>
                     </Container>

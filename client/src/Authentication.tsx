@@ -3,11 +3,10 @@
  * Licensed under Apache Software License v2.
  */
 
-import {Redirect, Route, useHistory} from 'react-router-dom';
-import React, {Context, createContext, PropsWithChildren, ReactChildren, ReactNode, useContext} from 'react';
+import React, {Context, createContext, ReactNode, useContext} from 'react';
 import GoogleLogin, {GoogleLoginResponse, GoogleLoginResponseOffline} from 'react-google-login';
-import {RouteProps} from "react-router";
 import {GOOGLE_SIGNON_CID} from "./googlecid";
+import {useNavigate} from "react-router";
 
 export interface User {
     id: string;
@@ -69,8 +68,9 @@ interface RequireAuthProps {
 
 export function RequireAuth(props: RequireAuthProps): JSX.Element {
     let isAuthenticated = useAuth();
+    const navigate = useNavigate();
     console.log(`Required Auth auth = ${isAuthenticated}`);
-    return (isAuthenticated ? props.children : <Redirect to={props.redirectTo}/>) as JSX.Element;
+    return (isAuthenticated ? props.children : navigate(props.redirectTo)) as JSX.Element;
 }
 
 interface LoginProps {
@@ -80,7 +80,7 @@ interface LoginProps {
 
 export function LoginButton(props : LoginProps) {
     let auth = useAuth();
-    const history = useHistory();
+    const navigate = useNavigate();
 
     let login = async (googleData: GoogleLoginResponse | GoogleLoginResponseOffline) => {
         if ('tokenId' in googleData) {
@@ -94,10 +94,10 @@ export function LoginButton(props : LoginProps) {
             })
             auth.user = await res.json();
             props.onLogin(auth.user);
-            history.push(props.destination);
+            navigate(props.destination);
         } else {
             props.onLogin(null);
-            history.push(props.destination);
+            navigate(props.destination);
         }
     };
 
