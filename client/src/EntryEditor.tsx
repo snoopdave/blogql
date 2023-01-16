@@ -21,6 +21,7 @@ import {
 } from './graphql/mutations';
 import {BLOG_BY_HANDLE_QUERY, ENTRY_QUERY} from './graphql/queries';
 import {SimpleDateTime} from "./DateTime";
+import {RequireAuth} from "./Authentication";
 
 
 export function EditorWelcome() {
@@ -216,7 +217,9 @@ export function EditorForm(props: EditorFormProps) {
     }
 
     return (
-        <>
+        <RequireAuth redirectTo="/login">
+
+            <EditorWelcome/>R
             <Toast show={success} autohide={true} delay={3000}
                    style={{ position: 'absolute', top: 0, right: 0, }} onClose={clearToast} >
                 <Toast.Header>
@@ -312,7 +315,8 @@ export function EditorForm(props: EditorFormProps) {
                     }}>Yes - Delete</Button>
                 </Modal.Footer>
             </Modal>
-        </>
+
+        </RequireAuth>
     )
 }
 

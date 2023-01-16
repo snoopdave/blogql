@@ -1,3 +1,8 @@
+/**
+ * Copyright David M. Johnson (snoopdave@gmail.com).
+ * Licensed under Apache Software License v2.
+ */
+
 import '@testing-library/jest-dom'
 import '@testing-library/react';
 import {BlogList} from '../BlogList';
@@ -50,10 +55,7 @@ it('BlogList renders without error with Apollo MockedProvider', async () => {
             </Router>
         </MockedProvider>
     );
-    screen.debug();
     expect(await screen.findByText('Loading...')).toBeInTheDocument();
-    screen.debug();
     expect(await screen.findByText('Blog One')).toBeInTheDocument();
-    screen.debug();
     expect(await screen.findByText('Blog Two')).toBeInTheDocument();
 });

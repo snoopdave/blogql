@@ -3,7 +3,7 @@
  * Licensed under Apache Software License v2.
  */
 
-import {Button, Form, Modal, Toast, Tabs, Tab} from 'react-bootstrap';
+import {Button, Form, Modal, Toast, Tabs, Tab, Jumbotron} from 'react-bootstrap';
 import React, {ChangeEvent, useState} from 'react';
 import {useQuery, useMutation} from '@apollo/client/react/hooks';
 import {Entry} from './graphql/schema';
@@ -11,6 +11,7 @@ import {BLOG_DELETE_MUTATION, BLOG_UPDATE_MUTATION, ISSUE_API_KEY_MUTATION} from
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {Link, useHistory, useParams} from 'react-router-dom';
 import {BLOG_BY_HANDLE_QUERY} from './graphql/queries';
+import {RequireAuth} from "./Authentication";
 
 
 export interface BlogSettingsProps {
@@ -124,7 +125,13 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
     }
 
     return (
-        <>
+        <RequireAuth redirectTo="/login">
+
+            <Jumbotron>
+                <h1>Settings</h1>
+                <p>This is where you configure your blog</p>
+            </Jumbotron>
+
             <Toast show={success} autohide={true} delay={3000}
                    style={{ position: 'absolute', top: 0, right: 0, }} onClose={clearToast} >
                 <Toast.Header>
@@ -212,6 +219,7 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
                     }}>Yes - Delete</Button>
                 </Modal.Footer>
             </Modal>
-        </>
+
+        </RequireAuth>
     );
 }

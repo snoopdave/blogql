@@ -7,11 +7,11 @@ import React, {useState} from 'react';
 import Container from 'react-bootstrap/Container';
 import {Col, Jumbotron, Nav, Navbar, Row} from 'react-bootstrap';
 import './App.css';
-import {EditorFormViaBlogHandle, EditorFormViaEntryId, EditorWelcome} from './EntryEditor';
+import {EditorFormViaBlogHandle, EditorFormViaEntryId} from './EntryEditor';
 import BlogView from './BlogView';
 import Drafts from './Drafts';
-import {BrowserRouter as Router, Link, Redirect, Route} from 'react-router-dom';
-import {LoginButton, logout, ProvideAuth, RequireAuth, useAuth, User} from './Authentication';
+import {BrowserRouter as Router, Link, Route} from 'react-router-dom';
+import {LoginButton, logout, ProvideAuth, useAuth, User} from './Authentication';
 import {BlogList} from './BlogList';
 import {useQuery} from '@apollo/client';
 import {USER_BLOG_QUERY} from './graphql/queries';
@@ -56,82 +56,42 @@ function App() {
                     <Row>
                         <Col/>
                         <Col xs={10}>
-                            {/*<Routes>*/}
 
-                                <Route path='/'>
-                                    <Redirect to={'/blogs'}/>
-                                </Route>
+                            <Routes>
 
-                                <Route path='/logout'>
-                                    <Redirect to={'/blogs'}/>
-                                </Route>
+                                <Route path='/' element={<BlogList/>} >
 
-                                <Route path='/login'>
-                                    <Jumbotron>
-                                        <h1>Welcome to BlogQL!</h1>
-                                        <p>Please login via your favorite Google Account</p>
-                                        <LoginButton onLogin={onLogin} destination='/blogs'/>
-                                    </Jumbotron>
-                                </Route>
+                                    <Route path='blogs' children={<BlogList/>} />
 
-                                <Route path='/create-blog'>
-                                    <RequireAuth redirectTo="/login">
+                                    <Route path='login'>
                                         <Jumbotron>
-                                            <h1>Create your blog</h1>
-                                            <p>All you need is a name and a simple text handle that be used in the
-                                                blog's URL.</p>
+                                            <h1>Welcome to BlogQL!</h1>
+                                            <p>Please login via your favorite Google Account</p>
+                                            <LoginButton onLogin={onLogin} destination='/blogs'/>
                                         </Jumbotron>
-                                        <BlogCreate onBlogUpdated={onBlogUpdated}/>
-                                    </RequireAuth>
+                                    </Route>
+
+                                    <Route path='/create-blog'
+                                        children={<BlogCreate onBlogUpdated={onBlogUpdated}/>} />
+
+                                    <Route path='/blogs/:handle'
+                                        children={<BlogView loggedIn={loggedIn}/>} />
+
+                                    <Route path='/blogs/:handle/settings'
+                                        children={<BlogSettings onBlogUpdated={onBlogUpdated}/>} />
+
+                                    <Route path='/blogs/:handle/drafts'
+                                        children={<Drafts/>} />
+
+                                    <Route path='/blogs/:handle/edit'
+                                        children={<EditorFormViaBlogHandle/>} />
+
+                                    <Route path='/blogs/:handle/edit/:id'
+                                        children={<EditorFormViaEntryId/>} />
+
                                 </Route>
 
-                                <Route path='/blogs/:handle/settings'>
-                                    <RequireAuth redirectTo="/login">
-                                        <Jumbotron>
-                                            <h1>Settings</h1>
-                                            <p>This is where you configure your blog</p>
-                                        </Jumbotron>
-                                        <BlogSettings onBlogUpdated={onBlogUpdated}/>
-                                    </RequireAuth>
-                                </Route>
-
-                                <Route path='/blogs/:handle/drafts'>
-                                    <RequireAuth redirectTo="/login">
-                                        <Jumbotron>
-                                            <h1>Drafts</h1>
-                                            <p>This is where you find your unpublished draft blog entries.</p>
-                                        </Jumbotron>
-                                        <Drafts/>
-                                    </RequireAuth>
-                                </Route>
-
-                                <Route path='/blogs/:handle/edit'>
-                                    <RequireAuth redirectTo="/login">
-                                        <EditorWelcome/>
-                                        <EditorFormViaBlogHandle/>
-                                    </RequireAuth>
-                                </Route>
-
-                                <Route path='/blogs/:handle/edit/:id'>
-                                    <RequireAuth redirectTo="/login">
-                                        <EditorWelcome/>
-                                        <EditorFormViaEntryId/>
-                                    </RequireAuth>
-                                </Route>
-
-                                <Route path='/blogs/:handle'>
-                                    <BlogView loggedIn={loggedIn}/>
-                                </Route>
-
-                                <Route path='/blogs'>
-                                    <Jumbotron>
-                                        <h1>BlogQL Blogs page</h1>
-                                        <p>This is where you can find a list of all the blogs in the system.</p>
-                                    </Jumbotron>
-                                    <BlogList/>
-                                </Route>
-
-                            {/*</Routes>*/}
+                            </Routes>
 
                         </Col>
                         <Col/>

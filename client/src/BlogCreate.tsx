@@ -3,13 +3,14 @@
  * Licensed under Apache Software License v2.
  */
 
-import {Button, Form, Toast} from 'react-bootstrap';
+import {Button, Form, Jumbotron, Toast} from 'react-bootstrap';
 import React, {ChangeEvent, useState} from 'react';
 import {useMutation} from '@apollo/client';
 import {Blog} from './graphql/schema';
 import {BLOG_CREATE_MUTATION} from './graphql/mutations';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {Link, useHistory} from 'react-router-dom';
+import {RequireAuth} from "./Authentication";
 
 
 export interface BlogCreateProps {
@@ -72,7 +73,14 @@ export function BlogCreate(props: BlogCreateProps) {
     }
 
     return (
-        <>
+        <RequireAuth redirectTo="/login">
+
+            <Jumbotron>
+                <h1>Create your blog</h1>
+                <p>All you need is a name and a simple text handle that be used in the
+                    blog's URL.</p>
+            </Jumbotron>
+
             <Toast show={success} autohide={true} delay={3000}
                    style={{ position: 'absolute', top: 0, right: 0, }} onClose={clearToast} >
                 <Toast.Header>
@@ -111,7 +119,8 @@ export function BlogCreate(props: BlogCreateProps) {
                     </Link>
                 </Form.Group>
             </Form>
-        </>
+
+        </RequireAuth>
     );
 }
 

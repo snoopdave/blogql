@@ -4,13 +4,12 @@
  */
 
 import React from 'react';
-import {Button, Form, Table} from "react-bootstrap";
+import {Button, Form, Jumbotron} from "react-bootstrap";
 import {useQuery} from '@apollo/client/react/hooks/useQuery';
 import {DRAFTS_QUERY} from "./graphql/queries";
-import {Link, useHistory, useParams} from "react-router-dom";
-import {Entry} from "./graphql/schema";
-import {SimpleDateTime} from "./DateTime";
+import {useHistory, useParams} from "react-router-dom";
 import DraftList from "./DraftList";
+import {RequireAuth} from "./Authentication";
 
 
 function Drafts() {
@@ -34,14 +33,18 @@ function Drafts() {
         history.push(`/blogs/${handle}/edit`);
     }
 
-    return <>
-        <Form>
-            <Form.Group>
-                <Button onClick={() => { newEntry(); }}>New</Button>
-            </Form.Group>
-        </Form>
-        <DraftList handle={handle!} drafts={data.blog?.drafts?.nodes}/>
-    </>;
+    return <RequireAuth redirectTo="/login">
+            <Jumbotron>
+                <h1>Drafts</h1>
+                <p>This is where you find your unpublished draft blog entries.</p>
+            </Jumbotron>
+            <Form>
+                <Form.Group>
+                    <Button onClick={() => { newEntry(); }}>New</Button>
+                </Form.Group>
+            </Form>
+            <DraftList handle={handle!} drafts={data.blog?.drafts?.nodes}/>
+        </RequireAuth>;
 }
 
 export default Drafts;
