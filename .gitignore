@@ -26,3 +26,4 @@ bundle.*
 /client/storybook-static
 /client/.storybook/public
 /client/src/googlecid.ts
+/server/jest.config.js
