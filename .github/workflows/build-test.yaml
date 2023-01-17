@@ -41,5 +41,4 @@ jobs:
         yarn install
         yarn build
         yarn test
-        npx chromatic --project-token=8b67da320546
       working-directory: client
