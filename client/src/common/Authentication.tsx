@@ -5,7 +5,7 @@
 
 import React, {Context, createContext, ReactNode, useContext} from 'react';
 import GoogleLogin, {GoogleLoginResponse, GoogleLoginResponseOffline} from 'react-google-login';
-import {GOOGLE_SIGNON_CID} from "./googlecid";
+import {GOOGLE_SIGNON_CID} from "../googlecid";
 import {useNavigate} from "react-router";
 
 export interface User {

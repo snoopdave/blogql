@@ -4,7 +4,7 @@
  */
 
 import {Jumbotron} from "react-bootstrap";
-import {LoginButton, User} from "./Authentication";
+import {LoginButton, User} from "./common/Authentication";
 import React from "react";
 
 export interface WelcomeProps {

@@ -4,11 +4,11 @@
  */
 
 import {useQuery} from '@apollo/client/react/hooks/useQuery';
-import {BLOGS_QUERY} from './graphql/queries';
+import {BLOGS_QUERY} from '../graphql/queries';
 import React from 'react';
 import {Jumbotron, Table} from 'react-bootstrap';
 import {Link} from "react-router-dom";
-import {Blog} from "./graphql/schema";
+import {Blog} from "../graphql/schema";
 
 
 export function BlogList() {

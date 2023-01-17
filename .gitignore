@@ -7,6 +7,10 @@
 env.sh
 node_modules
 */src/*.js
+*/src/common/*.js
+*/src/blogs/*.js
+*/src/entries/*.js
+*/src/types/*.js
 */src/types/*.js
 */src/graphql/*.js
 */src/stories/*.js

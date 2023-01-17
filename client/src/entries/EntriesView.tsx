@@ -7,15 +7,15 @@ import React from 'react';
 import {Jumbotron} from 'react-bootstrap';
 import {useParams} from 'react-router-dom';
 import {useQuery} from '@apollo/client/react/hooks/useQuery';
-import {ENTRIES_QUERY} from './graphql/queries';
-import BlogColumns from "./BlogColumns";
+import {ENTRIES_QUERY} from '../graphql/queries';
+import EntriesColumns from "./EntriesColumns";
 
 
 export interface BlogViewProps {
     loggedIn: boolean;
 }
 
-function BlogView(props: BlogViewProps) {
+function EntriesView(props: BlogViewProps) {
     const { handle } = useParams<{handle : string}>(); // get handle param from router route
     const { loading, error, data } = useQuery(ENTRIES_QUERY, {
         variables: { handle, limit: 50 } // TODO: pagination!
@@ -36,9 +36,9 @@ function BlogView(props: BlogViewProps) {
             <Jumbotron>
             <h1>{data.blog.name}</h1>
             </Jumbotron>
-            <BlogColumns handle={handle!} loggedIn={props.loggedIn} entries={data.blog.entries?.nodes} />
+            <EntriesColumns handle={handle!} loggedIn={props.loggedIn} entries={data.blog.entries?.nodes} />
         </>
     );
 }
 
-export default BlogView;
+export default EntriesView;

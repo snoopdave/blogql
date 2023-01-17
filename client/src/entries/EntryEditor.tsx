@@ -12,16 +12,16 @@ import ReactQuill, {UnprivilegedEditor} from 'react-quill';
 import { Sources } from 'quill';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {useMutation, useQuery} from '@apollo/client/react/hooks';
-import {Entry} from './graphql/schema';
+import {Entry} from '../graphql/schema';
 import {
     ENTRY_CREATE_MUTATION,
     ENTRY_DELETE_MUTATION,
     ENTRY_PUBLISH_MUTATION,
     ENTRY_UPDATE_MUTATION
-} from './graphql/mutations';
-import {BLOG_BY_HANDLE_QUERY, DRAFTS_QUERY, ENTRIES_QUERY, ENTRY_QUERY} from './graphql/queries';
-import {SimpleDateTime} from "./DateTime";
-import {RequireAuth} from "./Authentication";
+} from '../graphql/mutations';
+import {BLOG_BY_HANDLE_QUERY, DRAFTS_QUERY, ENTRIES_QUERY, ENTRY_QUERY} from '../graphql/queries';
+import {SimpleDateTime} from "../common/DateTime";
+import {RequireAuth} from "../common/Authentication";
 import {useNavigate} from "react-router";
 
 export function EditorWelcome() {

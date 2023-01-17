@@ -6,12 +6,12 @@
 import {Button, Form, Modal, Toast, Tabs, Tab, Jumbotron} from 'react-bootstrap';
 import React, {ChangeEvent, useState} from 'react';
 import {useQuery, useMutation} from '@apollo/client/react/hooks';
-import {Entry} from './graphql/schema';
-import {BLOG_DELETE_MUTATION, BLOG_UPDATE_MUTATION, ISSUE_API_KEY_MUTATION} from './graphql/mutations';
+import {Entry} from '../graphql/schema';
+import {BLOG_DELETE_MUTATION, BLOG_UPDATE_MUTATION, ISSUE_API_KEY_MUTATION} from '../graphql/mutations';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {Link, useParams} from 'react-router-dom';
-import {BLOG_BY_HANDLE_QUERY, BLOGS_QUERY} from './graphql/queries';
-import {RequireAuth} from "./Authentication";
+import {BLOG_BY_HANDLE_QUERY, BLOGS_QUERY} from '../graphql/queries';
+import {RequireAuth} from "../common/Authentication";
 import {useNavigate} from "react-router";
 
 

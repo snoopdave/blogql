@@ -7,16 +7,16 @@ import React, {useState} from 'react';
 import Container from 'react-bootstrap/Container';
 import {Col, Nav, Navbar, Row} from 'react-bootstrap';
 import './App.css';
-import {EditorFormViaBlogHandle, EditorFormViaEntryId} from './EntryEditor';
-import BlogView from './BlogView';
-import Drafts from './Drafts';
+import {EditorFormViaBlogHandle, EditorFormViaEntryId} from './entries/EntryEditor';
+import EntriesView from './entries/EntriesView';
+import Drafts from './entries/Drafts';
 import {BrowserRouter as Router} from 'react-router-dom';
-import {logout, ProvideAuth, useAuth, User} from './Authentication';
-import {BlogList} from './BlogList';
+import {logout, ProvideAuth, useAuth, User} from './common/Authentication';
+import {BlogList} from './blogs/BlogList';
 import {useQuery} from '@apollo/client';
 import {USER_BLOG_QUERY} from './graphql/queries';
-import {BlogCreate} from './BlogCreate';
-import {BlogSettings} from './BlogSettings';
+import {BlogCreate} from './blogs/BlogCreate';
+import {BlogSettings} from './blogs/BlogSettings';
 import {Routes, Route} from "react-router";
 import {Welcome} from "./Welcome";
 import {LinkContainer} from 'react-router-bootstrap'
@@ -59,15 +59,32 @@ function App() {
                         <Col xs={10}>
 
                             <Routes>
-                                <Route path='/'                       element={<BlogList/>} />
-                                <Route path='/login'                  element={<Welcome onLogin={onLogin}/>} />
-                                <Route path='/create-blog'            element={<BlogCreate onBlogUpdated={onBlogUpdated}/>} />
-                                <Route path='/blogs'                  element={<BlogList/>} />
-                                <Route path='/blogs/:handle'          element={<BlogView loggedIn={loggedIn}/>} />
-                                <Route path='/blogs/:handle/settings' element={<BlogSettings onBlogUpdated={onBlogUpdated}/>} />
-                                <Route path='/blogs/:handle/drafts'   element={<Drafts/>} />
-                                <Route path='/blogs/:handle/edit'     element={<EditorFormViaBlogHandle/>} />
-                                <Route path='/blogs/:handle/edit/:id' element={<EditorFormViaEntryId/>} />
+                                <Route path='/'
+                                       element={<BlogList/>} />
+
+                                <Route path='/login'
+                                       element={<Welcome onLogin={onLogin}/>} />
+
+                                <Route path='/create-blog'
+                                       element={<BlogCreate onBlogUpdated={onBlogUpdated}/>} />
+
+                                <Route path='/blogs'
+                                       element={<BlogList/>} />
+
+                                <Route path='/blogs/:handle'
+                                       element={<EntriesView loggedIn={loggedIn}/>} />
+
+                                <Route path='/blogs/:handle/settings'
+                                       element={<BlogSettings onBlogUpdated={onBlogUpdated}/>} />
+
+                                <Route path='/blogs/:handle/drafts'
+                                       element={<Drafts/>} />
+
+                                <Route path='/blogs/:handle/edit'
+                                       element={<EditorFormViaBlogHandle/>} />
+
+                                <Route path='/blogs/:handle/edit/:id'
+                                       element={<EditorFormViaEntryId/>} />
                             </Routes>
 
                         </Col>

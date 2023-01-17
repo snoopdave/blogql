@@ -6,10 +6,10 @@
 import React from 'react';
 import {Button, Form, Jumbotron} from "react-bootstrap";
 import {useQuery} from '@apollo/client/react/hooks/useQuery';
-import {DRAFTS_QUERY} from "./graphql/queries";
+import {DRAFTS_QUERY} from "../graphql/queries";
 import {useParams} from "react-router-dom";
 import DraftList from "./DraftList";
-import {RequireAuth} from "./Authentication";
+import {RequireAuth} from "../common/Authentication";
 import {useNavigate} from "react-router";
 
 

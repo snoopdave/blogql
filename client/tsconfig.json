@@ -28,6 +28,8 @@
     "src/tests/*.ts",
     "src/tests/*.tsx",
     "src/graphql/*.ts",
-    "src/stories/*.tsx",
+    "src/blogs/*.tsx",
+    "src/entries/*.tsx",
+    "src/stories/*.tsx"
   ]
 }

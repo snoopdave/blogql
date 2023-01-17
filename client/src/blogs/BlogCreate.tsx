@@ -6,13 +6,13 @@
 import {Button, Form, Jumbotron, Toast} from 'react-bootstrap';
 import React, {ChangeEvent, useState} from 'react';
 import {useMutation} from '@apollo/client';
-import {Blog} from './graphql/schema';
-import {BLOG_CREATE_MUTATION} from './graphql/mutations';
+import {Blog} from '../graphql/schema';
+import {BLOG_CREATE_MUTATION} from '../graphql/mutations';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {Link} from 'react-router-dom';
-import {RequireAuth} from "./Authentication";
+import {RequireAuth} from "../common/Authentication";
 import {useNavigate} from "react-router";
-import {BLOGS_QUERY} from "./graphql/queries";
+import {BLOGS_QUERY} from "../graphql/queries";
 
 
 export interface BlogCreateProps {

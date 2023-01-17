@@ -1,6 +1,6 @@
 import React, {CSSProperties} from "react";
 import {Button, Card} from "react-bootstrap";
-import {RelativeDateTime} from "./DateTime";
+import {RelativeDateTime} from "../common/DateTime";
 import {Link} from "react-router-dom";
 
 export interface BlogCardProps {
@@ -13,7 +13,7 @@ export interface BlogCardProps {
 
 }
 
-function BlogCard(props: BlogCardProps) {
+function EntryCard(props: BlogCardProps) {
 
     const showIfLoggedIn = () : CSSProperties => {
         if (props.loggedIn) {
@@ -38,4 +38,4 @@ function BlogCard(props: BlogCardProps) {
     </Card>);
 }
 
-export default BlogCard;
+export default EntryCard;
