@@ -1,4 +1,9 @@
-import React, {Component, ErrorInfo, ReactNode} from 'react';
+/**
+ * Copyright David M. Johnson (snoopdave@gmail.com).
+ * Licensed under Apache Software License v2.
+ */
+
+import {Component, ErrorInfo, ReactNode} from 'react';
 
 interface Props {
     children: ReactNode;

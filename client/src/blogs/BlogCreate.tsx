@@ -3,13 +3,16 @@
  * Licensed under Apache Software License v2.
  */
 
-import {Button, Form, Toast} from 'react-bootstrap';
+import {Button, Form, Jumbotron, Toast} from 'react-bootstrap';
 import React, {ChangeEvent, useState} from 'react';
 import {useMutation} from '@apollo/client';
-import {Blog} from './graphql/schema';
-import {BLOG_CREATE_MUTATION} from './graphql/mutations';
+import {Blog} from '../graphql/schema';
+import {BLOG_CREATE_MUTATION} from '../graphql/mutations';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {Link, useHistory} from 'react-router-dom';
+import {Link} from 'react-router-dom';
+import {RequireAuth} from "../common/Authentication";
+import {useNavigate} from "react-router";
+import {BLOGS_QUERY} from "../graphql/queries";
 
 
 export interface BlogCreateProps {
@@ -24,10 +27,12 @@ export function BlogCreate(props: BlogCreateProps) {
     const [failure, setFailure] = useState(false);
     const [toast, setToast] = useState('');
 
-    const history = useHistory();
+    const navigate = useNavigate();
 
-    const [blogCreateMutation] = useMutation<Blog, { handle: string | undefined, name: string | undefined }>(
-        BLOG_CREATE_MUTATION, { variables: { handle, name } });
+    const [blogCreateMutation] = useMutation<Blog, { handle: string | undefined, name: string | undefined }>(BLOG_CREATE_MUTATION, {
+        variables: { handle, name },
+        refetchQueries: [{query:BLOGS_QUERY}],
+    });
 
     function onHandleChange(event: ChangeEvent<HTMLInputElement>) {
         setHandle(event.target.value.toLowerCase());
@@ -55,7 +60,7 @@ export function BlogCreate(props: BlogCreateProps) {
                 setToast('New blog created');
                 setTimeout(() => {
                     props.onBlogUpdated(true);
-                    history.push('/blogs');
+                    navigate('/blogs');
                 }, 500);
             })
             .catch(() => {
@@ -72,7 +77,14 @@ export function BlogCreate(props: BlogCreateProps) {
     }
 
     return (
-        <>
+        <RequireAuth redirectTo="/login">
+
+            <Jumbotron>
+                <h1>Create your blog</h1>
+                <p>All you need is a name and a simple text handle that be used in the
+                    blog's URL.</p>
+            </Jumbotron>
+
             <Toast show={success} autohide={true} delay={3000}
                    style={{ position: 'absolute', top: 0, right: 0, }} onClose={clearToast} >
                 <Toast.Header>
@@ -111,7 +123,8 @@ export function BlogCreate(props: BlogCreateProps) {
                     </Link>
                 </Form.Group>
             </Form>
-        </>
+
+        </RequireAuth>
     );
 }
 

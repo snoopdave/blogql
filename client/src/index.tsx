@@ -7,9 +7,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import * as serviceWorker from './serviceWorker';
+import * as serviceWorker from './tests/serviceWorker';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {checkLoginStatus} from './Authentication';
+import {checkLoginStatus} from './common/Authentication';
 import {ApolloClient, ApolloProvider, InMemoryCache} from '@apollo/client';
 
 console.log('BlogQL starting');
@@ -25,7 +25,12 @@ const client = new ApolloClient({
     cache: new InMemoryCache(),
     credentials: 'include',
     name: 'blogql-web',
-    version: '1.0'
+    version: '1.0',
+    defaultOptions: {
+        watchQuery: {
+            nextFetchPolicy: 'network-only',
+        },
+    },
 });
 
 ReactDOM.render(

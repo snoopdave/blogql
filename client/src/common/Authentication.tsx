@@ -3,11 +3,10 @@
  * Licensed under Apache Software License v2.
  */
 
-import {Redirect, Route, useHistory} from 'react-router-dom';
-import React, {Context, createContext, useContext} from 'react';
+import React, {Context, createContext, ReactNode, useContext} from 'react';
 import GoogleLogin, {GoogleLoginResponse, GoogleLoginResponseOffline} from 'react-google-login';
-import {RouteProps} from "react-router";
-import {GOOGLE_SIGNON_CID} from "./googlecid";
+import {GOOGLE_SIGNON_CID} from "../googlecid";
+import {useNavigate} from "react-router";
 
 export interface User {
     id: string;
@@ -16,35 +15,6 @@ export interface User {
     updated?: string;
 }
 
-// A wrapper for <Route> that redirects to the login
-// screen if you're not yet authenticated.
-export function PrivateRoute({ children, ...rest }: RouteProps ) {
-    const auth = useAuth();
-    return (
-        <Route
-            {...rest}
-            // @ts-ignore
-            render = { (props) => {
-                const storedUser = localStorage.getItem('BlogQlUser');
-                if (storedUser) {
-                    auth.user = JSON.parse(storedUser);
-                } else {
-                    auth.user = null;
-                }
-                return auth.user ? (children) : (
-                    <Redirect to={{
-                        pathname: '/login',
-                        state: {from: props.location}
-                    }}
-                    />);
-                }
-            }
-        />
-    );
-}
-
-// For more details on `authContext`, `ProvideAuth`, `useAuth` and `useProvideAuth` concepts
-// refer to: https://usehooks.com/useAuth/
 const authContext : Context<UserContext> = createContext<UserContext>({
     user: null
 });
@@ -55,11 +25,6 @@ interface UserContext {
 
 export function useAuth() {
     return useContext(authContext);
-}
-
-interface ProvideAuthProps {
-    onLogin: (user: User) => void;
-    children?: React.ReactNode;
 }
 
 export function checkLoginStatus(callback: (user: User | null) => void) {
@@ -74,6 +39,11 @@ export function checkLoginStatus(callback: (user: User | null) => void) {
         }).catch((error)  => {
             callback(null);
     });
+}
+
+interface ProvideAuthProps {
+    onLogin: (user: User) => void;
+    children?: React.ReactNode;
 }
 
 export function ProvideAuth(props: ProvideAuthProps) {
@@ -91,6 +61,18 @@ export function ProvideAuth(props: ProvideAuthProps) {
     );
 }
 
+interface RequireAuthProps {
+    children: ReactNode;
+    redirectTo: string;
+}
+
+export function RequireAuth(props: RequireAuthProps): JSX.Element {
+    let isAuthenticated = useAuth();
+    const navigate = useNavigate();
+    console.log(`Required Auth auth = ${isAuthenticated}`);
+    return (isAuthenticated ? props.children : navigate(props.redirectTo)) as JSX.Element;
+}
+
 interface LoginProps {
     destination: string
     onLogin: (user: User | null | undefined) => void;
@@ -98,7 +80,7 @@ interface LoginProps {
 
 export function LoginButton(props : LoginProps) {
     let auth = useAuth();
-    const history = useHistory();
+    const navigate = useNavigate();
 
     let login = async (googleData: GoogleLoginResponse | GoogleLoginResponseOffline) => {
         if ('tokenId' in googleData) {
@@ -112,10 +94,10 @@ export function LoginButton(props : LoginProps) {
             })
             auth.user = await res.json();
             props.onLogin(auth.user);
-            history.push(props.destination);
+            navigate(props.destination);
         } else {
             props.onLogin(null);
-            history.push(props.destination);
+            navigate(props.destination);
         }
     };
 
@@ -130,6 +112,7 @@ export function LoginButton(props : LoginProps) {
 }
 
 export function logout(cb: (message: string) => void) {
+    console.log(`Logging out`);
     fetch('http://localhost:4000/logout', {
         method: 'DELETE',
         credentials: 'include',

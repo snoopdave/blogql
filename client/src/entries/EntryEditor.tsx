@@ -6,22 +6,23 @@
 import React, {ChangeEvent, useState} from 'react';
 import {Button, Form, Jumbotron, Modal, Toast} from 'react-bootstrap';
 import './EntryEditor.css';
-import {Link, useHistory, useParams} from 'react-router-dom';
+import {Link, useParams} from 'react-router-dom';
 import 'react-quill/dist/quill.snow.css';
 import ReactQuill, {UnprivilegedEditor} from 'react-quill';
 import { Sources } from 'quill';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {useMutation, useQuery} from '@apollo/client/react/hooks';
-import {Entry} from './graphql/schema';
+import {Entry} from '../graphql/schema';
 import {
     ENTRY_CREATE_MUTATION,
     ENTRY_DELETE_MUTATION,
     ENTRY_PUBLISH_MUTATION,
     ENTRY_UPDATE_MUTATION
-} from './graphql/mutations';
-import {BLOG_BY_HANDLE_QUERY, ENTRY_QUERY} from './graphql/queries';
-import {SimpleDateTime} from "./DateTime";
-
+} from '../graphql/mutations';
+import {BLOG_BY_HANDLE_QUERY, DRAFTS_QUERY, ENTRIES_QUERY, ENTRY_QUERY} from '../graphql/queries';
+import {SimpleDateTime} from "../common/DateTime";
+import {RequireAuth} from "../common/Authentication";
+import {useNavigate} from "react-router";
 
 export function EditorWelcome() {
     return <Jumbotron>
@@ -37,7 +38,7 @@ export function EditorFormViaEntryId() {
     if (!error && data?.blog.id) {
         return (loading ? <p>Loading...</p> :
             <EditorForm blogId={data.blog.id}
-                id={id}
+                id={id!}
                 title={data.blog.entry.title}
                 content={data.blog.entry.content}
                 created={data.blog.entry.created}
@@ -81,10 +82,13 @@ interface EditorFormProps {
 }
 
 export function EditorForm(props: EditorFormProps) {
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const id = props.id;
     const { handle } = useParams<{handle : string}>(); // get handle param from router route
+    if (handle === undefined) {
+        return <p>Error loading blog</p>;
+    }
 
     const [title, setTitle] = useState(props.title);
     const [content, setContent] = useState(props.content);
@@ -100,16 +104,26 @@ export function EditorForm(props: EditorFormProps) {
     let editor: UnprivilegedEditor | null = null; // assigned a value below in handleContentFocus()
 
     const [createEntryMutation] = useMutation<Entry, { handle: string, title: string, content: string }>(
-        ENTRY_CREATE_MUTATION, {variables: {handle, title, content}});
+        ENTRY_CREATE_MUTATION, {
+            variables: {handle, title, content},
+            refetchQueries: [{
+                query: DRAFTS_QUERY,
+                variables: { handle },
+            }, {
+                query: ENTRIES_QUERY,
+                variables: { handle },
+            }],
+            awaitRefetchQueries: true,
+        });
 
     function createEntry() {
         createEntryMutation()
             .then(() => {
                 setSuccess(true);
                 setToast('New entry created');
-                setTimeout(() => {
-                    history.push(`/blogs/${handle}`);
-                }, 500);
+                // setTimeout(() => {
+                //    navigate(`/blogs/${handle}`);
+                // }, 500);
             })
             .catch(() => {
                 setFailure(true);
@@ -117,8 +131,17 @@ export function EditorForm(props: EditorFormProps) {
             });
     }
 
-    const [updateEntryMutation] = useMutation<Entry, { handle: string, id: string, title: string, content: string }>(
-        ENTRY_UPDATE_MUTATION, { variables: {handle, id, title, content }});
+    const [updateEntryMutation] = useMutation<Entry, { handle: string, id: string, title: string, content: string }>(ENTRY_UPDATE_MUTATION, {
+            variables: { handle, id, title, content },
+            refetchQueries: [{
+                query: DRAFTS_QUERY,
+                variables: { handle },
+            }, {
+                query: ENTRIES_QUERY,
+                variables: { handle },
+            }],
+            awaitRefetchQueries: true,
+        });
 
     function updateEntry() {
         updateEntryMutation()
@@ -136,8 +159,17 @@ export function EditorForm(props: EditorFormProps) {
             });
     }
 
-    const [publishEntryMutation] = useMutation<Entry, { handle: string, id: string, title: string, content: string }>(
-        ENTRY_PUBLISH_MUTATION, { variables: {handle, id, title, content }});
+    const [publishEntryMutation] = useMutation<Entry, { handle: string, id: string, title: string, content: string }>(ENTRY_PUBLISH_MUTATION, {
+        variables: {handle, id, title, content },
+        refetchQueries: [{
+            query: DRAFTS_QUERY,
+            variables: { handle },
+        }, {
+            query: ENTRIES_QUERY,
+            variables: { handle },
+        }],
+        awaitRefetchQueries: true,
+    });
 
     function publishEntry() {
         publishEntryMutation()
@@ -158,7 +190,17 @@ export function EditorForm(props: EditorFormProps) {
     }
 
     const [deleteEntryMutation] = useMutation<Entry, { handle: string, id: string }>(
-        ENTRY_DELETE_MUTATION, {variables: {handle, id}});
+        ENTRY_DELETE_MUTATION, {
+            variables: {handle, id},
+            refetchQueries: [{
+                query: DRAFTS_QUERY,
+                variables: { handle },
+            }, {
+                query: ENTRIES_QUERY,
+                variables: { handle },
+            }],
+            awaitRefetchQueries: true,
+        });
 
     function deleteEntry() {
         deleteEntryMutation()
@@ -166,7 +208,7 @@ export function EditorForm(props: EditorFormProps) {
                 setSuccess(true);
                 setToast('Entry deleted');
                 setTimeout(() => {
-                    history.push(`/blogs/${handle}`);
+                    navigate(`/blogs/${handle}`);
                 }, 1000);
             })
             .catch(() => {
@@ -213,7 +255,10 @@ export function EditorForm(props: EditorFormProps) {
     }
 
     return (
-        <>
+        <RequireAuth redirectTo="/login">
+
+            <EditorWelcome/>
+
             <Toast show={success} autohide={true} delay={3000}
                    style={{ position: 'absolute', top: 0, right: 0, }} onClose={clearToast} >
                 <Toast.Header>
@@ -309,7 +354,8 @@ export function EditorForm(props: EditorFormProps) {
                     }}>Yes - Delete</Button>
                 </Modal.Footer>
             </Modal>
-        </>
+
+        </RequireAuth>
     )
 }
 

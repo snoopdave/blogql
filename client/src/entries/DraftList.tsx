@@ -3,10 +3,10 @@
  * Licensed under Apache Software License v2.
  */
 
-import {Entry} from "./graphql/schema";
+import {Entry} from "../graphql/schema";
 import {Table} from "react-bootstrap";
 import {Link} from "react-router-dom";
-import {SimpleDateTime} from "./DateTime";
+import {SimpleDateTime} from "../common/DateTime";
 import React from "react";
 
 interface DraftListProps {

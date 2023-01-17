@@ -4,17 +4,17 @@
  */
 
 import React from 'react';
-import {Button, Form, Table} from "react-bootstrap";
+import {Button, Form, Jumbotron} from "react-bootstrap";
 import {useQuery} from '@apollo/client/react/hooks/useQuery';
-import {DRAFTS_QUERY} from "./graphql/queries";
-import {Link, useHistory, useParams} from "react-router-dom";
-import {Entry} from "./graphql/schema";
-import {SimpleDateTime} from "./DateTime";
+import {DRAFTS_QUERY} from "../graphql/queries";
+import {useParams} from "react-router-dom";
 import DraftList from "./DraftList";
+import {RequireAuth} from "../common/Authentication";
+import {useNavigate} from "react-router";
 
 
 function Drafts() {
-    const history = useHistory();
+    const navigate = useNavigate();
     const { handle } = useParams<{handle : string}>(); // get handle param from router route
     const { loading, error, data } = useQuery(DRAFTS_QUERY, {
         variables: { handle, limit: 50 }
@@ -31,17 +31,21 @@ function Drafts() {
     }
 
     function newEntry() {
-        history.push(`/blogs/${handle}/edit`);
+        navigate(`/blogs/${handle}/edit`);
     }
 
-    return <>
+    return <RequireAuth redirectTo="/login">
+        <Jumbotron>
+            <h1>Drafts</h1>
+            <p>This is where you find your unpublished draft blog entries.</p>
+        </Jumbotron>
         <Form>
             <Form.Group>
                 <Button onClick={() => { newEntry(); }}>New</Button>
             </Form.Group>
         </Form>
-        <DraftList handle={handle} drafts={data.blog?.drafts?.nodes}/>
-    </>;
+        <DraftList handle={handle!} drafts={data.blog?.drafts?.nodes}/>
+    </RequireAuth>;
 }
 
 export default Drafts;
