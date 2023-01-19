@@ -14,7 +14,7 @@ interface DraftListProps {
     drafts: Entry[];
 }
 
-function DraftList(props: DraftListProps) {
+function DraftsList(props: DraftListProps) {
     return <Table striped bordered hover>
         <thead>
         <tr>
@@ -31,4 +31,4 @@ function DraftList(props: DraftListProps) {
     </Table>;
 }
 
-export default DraftList;
+export default DraftsList;

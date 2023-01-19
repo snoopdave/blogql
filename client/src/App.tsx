@@ -8,7 +8,7 @@ import Container from 'react-bootstrap/Container';
 import {Col, Nav, Navbar, Row} from 'react-bootstrap';
 import './App.css';
 import {EditorFormViaBlogHandle, EditorFormViaEntryId} from './entries/EntryEditor';
-import EntriesView from './entries/EntriesView';
+import Entries from './entries/Entries';
 import Drafts from './entries/Drafts';
 import {BrowserRouter as Router} from 'react-router-dom';
 import {logout, ProvideAuth, useAuth, User} from './common/Authentication';
@@ -72,7 +72,7 @@ function App() {
                                        element={<BlogList/>} />
 
                                 <Route path='/blogs/:handle'
-                                       element={<EntriesView loggedIn={loggedIn}/>} />
+                                       element={<Entries loggedIn={loggedIn}/>} />
 
                                 <Route path='/blogs/:handle/settings'
                                        element={<BlogSettings onBlogUpdated={onBlogUpdated}/>} />

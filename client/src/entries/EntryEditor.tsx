@@ -208,7 +208,7 @@ export function EditorForm(props: EditorFormProps) {
                 setSuccess(true);
                 setToast('Entry deleted');
                 setTimeout(() => {
-                    navigate(`/blogs/${handle}`);
+                    navigate(`/`);
                 }, 1000);
             })
             .catch(() => {
