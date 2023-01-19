@@ -5,11 +5,17 @@ name: build-test
 
 on:
   workflow_call:
-
+    secrets:
+      CHROMATIC_PROJECT_TOKEN:
+        required: true
 jobs:
 
   build-test:
     runs-on: ubuntu-latest
+
+    env:
+      CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+
     strategy:
       matrix:
         node-version: [16.x]
@@ -41,4 +47,5 @@ jobs:
         yarn install
         yarn build
         yarn test
+        npx chromatic --project-token=${CHROMATIC_PROJECT_TOKEN}
       working-directory: client
