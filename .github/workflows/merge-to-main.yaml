@@ -15,11 +15,11 @@ on:
 jobs:
 
   build-test:
-    uses: "snoopdave/blogql/.github/workflows/build-test.yaml@main"
+    uses: "snoopdave/blogql/.github/workflows/wf-build-test.yaml@main"
 
   check-schema:
     needs: build-test
-    uses: "snoopdave/blogql/.github/workflows/check-schema.yaml@main"
+    uses: "snoopdave/blogql/.github/workflows/wf-check-schema.yaml@main"
     with:
       working-dir: server
       schema-path: "schema.graphql"
@@ -29,7 +29,7 @@ jobs:
 
   docker-build:
     needs: build-test
-    uses: "snoopdave/blogql/.github/workflows/docker-build.yaml@main"
+    uses: "snoopdave/blogql/.github/workflows/wf-docker-build.yaml@main"
     with:
       push: true
       tags: "snoopdave/blogql"
@@ -39,7 +39,7 @@ jobs:
 
   publish-schema:
     needs: docker-build
-    uses: "snoopdave/blogql/.github/workflows/publish-schema.yaml@main"
+    uses: "snoopdave/blogql/.github/workflows/wf-publish-schema.yaml@main"
     with:
       schema-path: "schema.graphql"
       working-dir: server
