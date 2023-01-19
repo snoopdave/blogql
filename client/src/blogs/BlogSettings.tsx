@@ -3,7 +3,7 @@
  * Licensed under Apache Software License v2.
  */
 
-import {Button, Form, Modal, Toast, Tabs, Tab, Jumbotron} from 'react-bootstrap';
+import {Button, Form, Modal, Toast, Tabs, Tab} from 'react-bootstrap';
 import React, {ChangeEvent, useState} from 'react';
 import {useQuery, useMutation} from '@apollo/client/react/hooks';
 import {Entry} from '../graphql/schema';
@@ -13,6 +13,7 @@ import {Link, useParams} from 'react-router-dom';
 import {BLOG_BY_HANDLE_QUERY, BLOGS_QUERY} from '../graphql/queries';
 import {RequireAuth} from "../common/Authentication";
 import {useNavigate} from "react-router";
+import {Heading} from "../common/Heading";
 
 
 export interface BlogSettingsProps {
@@ -136,10 +137,7 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
     return (
         <RequireAuth redirectTo="/login">
 
-            <Jumbotron>
-                <h1>Settings</h1>
-                <p>This is where you configure your blog</p>
-            </Jumbotron>
+            <Heading title='Settings' heading='This is where you configure your blog' />
 
             <Toast show={success} autohide={true} delay={3000}
                    style={{ position: 'absolute', top: 0, right: 0, }} onClose={clearToast} >

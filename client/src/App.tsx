@@ -49,9 +49,11 @@ function App() {
                 <Router>
 
                     <Row>
-                        <Col>
+                        <Col/>
+                        <Col xs={10}>
                             <BlogNav/>
                         </Col>
+                        <Col/>
                     </Row>
 
                     <Row>

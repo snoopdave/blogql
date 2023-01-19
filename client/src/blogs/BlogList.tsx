@@ -6,9 +6,10 @@
 import {useQuery} from '@apollo/client/react/hooks/useQuery';
 import {BLOGS_QUERY} from '../graphql/queries';
 import React from 'react';
-import {Jumbotron, Table} from 'react-bootstrap';
+import {Table} from 'react-bootstrap';
 import {Link} from "react-router-dom";
 import {Blog} from "../graphql/schema";
+import {Heading} from "../common/Heading";
 
 
 export function BlogList() {
@@ -28,21 +29,23 @@ export function BlogList() {
 
     return (
         <>
-            <Jumbotron>
-                <h1>BlogQL Blogs page</h1>
-                <p>This is where you can find a list of all the blogs in the system.</p>
-            </Jumbotron>
+            <Heading title='BlogQL Blogs page' heading='This is where you can find a list of all the blogs in the system' />
+
             <Table striped bordered hover>
                 <thead>
                 <tr>
-                    <th>Handle</th>
                     <th>Name</th>
+                    <th>Handle</th>
                 </tr>
                 </thead>
                 <tbody>{ data.blogs?.nodes.map((blog: Blog) => blog ? (
                     <tr key={blog.id}>
-                        <td><Link className='nav-link' to={`/blogs/${blog.handle}`}>{blog.name}</Link></td>
-                        <td><Link className='nav-link' to={`/blogs/${blog.handle}`}>TODO</Link></td>
+                        <td>
+                            <Link className='nav-link' to={`/blogs/${blog.handle}`}>{blog.name}</Link>
+                        </td>
+                        <td>
+                            <Link className='nav-link' to={`/blogs/${blog.handle}`}>{blog.handle}</Link>
+                        </td>
                     </tr> ) : null)
                 }</tbody>
             </Table>

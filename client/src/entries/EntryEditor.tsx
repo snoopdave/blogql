@@ -4,7 +4,7 @@
  */
 
 import React, {ChangeEvent, useState} from 'react';
-import {Button, Form, Jumbotron, Modal, Toast} from 'react-bootstrap';
+import {Button, Form, Modal, Toast} from 'react-bootstrap';
 import './EntryEditor.css';
 import {Link, useParams} from 'react-router-dom';
 import 'react-quill/dist/quill.snow.css';
@@ -23,12 +23,11 @@ import {BLOG_BY_HANDLE_QUERY, DRAFTS_QUERY, ENTRIES_QUERY, ENTRY_QUERY} from '..
 import {SimpleDateTime} from "../common/DateTime";
 import {RequireAuth} from "../common/Authentication";
 import {useNavigate} from "react-router";
+import {Heading} from "../common/Heading";
 
 export function EditorWelcome() {
-    return <Jumbotron>
-        <h1>Welcome to BlogQL!</h1>
-        <p>This is where you create a new entry or edit your old ones.</p>
-    </Jumbotron>;
+    return <Heading title='Welcome to BlogQL!'
+                    heading='This is where you create a new entry or edit your old ones' />;
 }
 
 export function EditorFormViaEntryId() {
@@ -313,10 +312,12 @@ export function EditorForm(props: EditorFormProps) {
                     }}>Save
                     </Button>
 
-                    <Button disabled={!valid || published !== undefined} onClick={() => {
-                        publishEntry();
-                    }}>Publish
-                    </Button>
+                    { !published &&
+                        <Button disabled={!valid} onClick={() => {
+                            publishEntry();
+                        }}>Publish
+                        </Button>
+                    }
 
                     { saved &&
                         <Link to={`/blogs/${handle}`}>
