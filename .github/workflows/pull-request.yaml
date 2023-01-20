@@ -15,21 +15,22 @@ on:
 jobs:
 
   build-test:
-    uses: "snoopdave/blogql/.github/workflows/build-test.yaml@main"
+    uses: "snoopdave/blogql/.github/workflows/wf-build-test.yaml@main"
 
   check-schema:
     needs: build-test
-    uses: "snoopdave/blogql/.github/workflows/check-schema.yaml@main"
+    uses: "snoopdave/blogql/.github/workflows/wf-check-schema.yaml@main"
     with:
       working-dir: server
       schema-path: "schema.graphql"
     secrets:
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
       APOLLO_GRAPH_REF: ${{ secrets.APOLLO_GRAPH_REF }}
+      CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
 
   docker-build:
     needs: check-schema
-    uses: "snoopdave/blogql/.github/workflows/docker-build.yaml@main"
+    uses: "snoopdave/blogql/.github/workflows/wf-docker-build.yaml@main"
     with:
       push: false
       tags: "snoopdave/blogql"
