@@ -16,6 +16,8 @@ jobs:
 
   build-test:
     uses: "snoopdave/blogql/.github/workflows/wf-build-test.yaml@main"
+    secrets:
+      CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
 
   check-schema:
     needs: build-test
@@ -26,7 +28,6 @@ jobs:
     secrets:
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
       APOLLO_GRAPH_REF: ${{ secrets.APOLLO_GRAPH_REF }}
-      CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
 
   docker-build:
     needs: check-schema
