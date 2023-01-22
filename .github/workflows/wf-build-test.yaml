@@ -21,12 +21,11 @@ jobs:
         node-version: [16.x]
 
     steps:
-    # checkout project  code
-    - uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
-    # setup node
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
@@ -34,15 +33,16 @@ jobs:
         cache: npm
         cache-dependency-path: ./server/yarn.lock
 
-    # install dependencies, build and test server
-    - run: |
+    - name: Build and test server
+      run: |
         yarn install
         yarn build
         yarn test
       working-directory: server
 
     # install dependencies, build and test client
-    - run: |
+    - name: Build and test client
+      run: |
         cat > src/googlecid.ts << EOF
         export const GOOGLE_SIGNON_CID='dummy';
         EOF
@@ -51,7 +51,7 @@ jobs:
         yarn test
       working-directory: client
 
-    - name: Publish to Chromatic
+    - name: Run Chromatic publish and check
       uses: chromaui/action@v1
       with:
         projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
