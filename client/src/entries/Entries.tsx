@@ -15,7 +15,7 @@ export interface BlogViewProps {
     loggedIn: boolean;
 }
 
-function EntriesView(props: BlogViewProps) {
+function Entries(props: BlogViewProps) {
     const { handle } = useParams<{handle : string}>(); // get handle param from router route
     const { loading, error, data } = useQuery(ENTRIES_QUERY, {
         variables: { handle, limit: 50 } // TODO: pagination!
@@ -41,4 +41,4 @@ function EntriesView(props: BlogViewProps) {
     );
 }
 
-export default EntriesView;
+export default Entries;

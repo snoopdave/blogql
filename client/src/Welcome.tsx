@@ -3,9 +3,9 @@
  * Licensed under Apache Software License v2.
  */
 
-import {Jumbotron} from "react-bootstrap";
 import {LoginButton, User} from "./common/Authentication";
 import React from "react";
+import {Jumbotron} from "react-bootstrap";
 
 export interface WelcomeProps {
     onLogin: (user: User | null | undefined) => void;
