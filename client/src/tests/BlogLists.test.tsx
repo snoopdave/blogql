@@ -6,7 +6,7 @@
 import '@testing-library/jest-dom'
 import '@testing-library/jest-dom/extend-expect';
 import '@testing-library/react';
-import {BlogList} from '../blogs/BlogList';
+import {BlogsList} from '../blogs/BlogsList';
 import {BrowserRouter as Router} from 'react-router-dom';
 import {screen, render} from '@testing-library/react';
 import {Routes, Route} from "react-router";
@@ -14,12 +14,12 @@ import {ApolloProvider} from '@apollo/client';
 import {client} from '../setupTests';
 import React from "react";
 
-it('BlogList renders without error with Mocked Service Worker', async () => {
+it('BlogsList renders without error with Mocked Service Worker', async () => {
     const render1 = render(
         <ApolloProvider client={client}>
             <Router>
                 <Routes>
-                    <Route path='/' element={<BlogList />} />
+                    <Route path='/' element={<BlogsList />} />
                 </Routes>
             </Router>
         </ApolloProvider>

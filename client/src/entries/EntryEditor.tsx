@@ -1,17 +1,20 @@
-/**
+/*
  * Copyright David M. Johnson (snoopdave@gmail.com).
  * Licensed under Apache Software License v2.
  */
 
 import React, {ChangeEvent, useState} from 'react';
-import {Button, Form, Jumbotron, Modal, Toast} from 'react-bootstrap';
-import './EntryEditor.css';
+import {useNavigate} from "react-router";
 import {Link, useParams} from 'react-router-dom';
-import 'react-quill/dist/quill.snow.css';
-import ReactQuill, {UnprivilegedEditor} from 'react-quill';
+import {Button, Form, Jumbotron, Modal, Toast} from 'react-bootstrap';
+
 import { Sources } from 'quill';
+import ReactQuill, {UnprivilegedEditor} from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {useMutation, useQuery} from '@apollo/client/react/hooks';
+
 import {Entry} from '../graphql/schema';
 import {
     ENTRY_CREATE_MUTATION,
@@ -20,9 +23,12 @@ import {
     ENTRY_UPDATE_MUTATION
 } from '../graphql/mutations';
 import {BLOG_BY_HANDLE_QUERY, DRAFTS_QUERY, ENTRIES_QUERY, ENTRY_QUERY} from '../graphql/queries';
+
 import {SimpleDateTime} from "../common/DateTime";
 import {RequireAuth} from "../common/Authentication";
-import {useNavigate} from "react-router";
+
+// import BlogQL CSS last to ensure it appears at the end of bundle.css
+import './EntryEditor.css';
 
 export function EditorWelcome() {
     return <Jumbotron>

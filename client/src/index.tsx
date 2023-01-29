@@ -1,16 +1,14 @@
-/**
+/*
  * Copyright David M. Johnson (snoopdave@gmail.com).
  * Licensed under Apache Software License v2.
  */
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
+import {ApolloClient, ApolloProvider, InMemoryCache} from '@apollo/client';
 import App from './App';
 import * as serviceWorker from './tests/serviceWorker';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import {checkLoginStatus} from './common/Authentication';
-import {ApolloClient, ApolloProvider, InMemoryCache} from '@apollo/client';
 
 console.log('BlogQL starting');
 

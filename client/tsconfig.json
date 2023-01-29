@@ -25,11 +25,7 @@
   "include": [
     "src/*.ts",
     "src/*.tsx",
-    "src/tests/*.ts",
-    "src/tests/*.tsx",
-    "src/graphql/*.ts",
-    "src/blogs/*.tsx",
-    "src/entries/*.tsx",
-    "src/stories/*.tsx"
+    "src/**/*.ts",
+    "src/**/*.tsx"
   ]
 }

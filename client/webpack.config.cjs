@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright David M. Johnson (snoopdave@gmail.com).
  * Licensed under Apache Software License v2.
  */
@@ -40,5 +40,7 @@ module.exports = {
             directory: path.join(__dirname, 'public'),
         },
         port: 3000,
+        historyApiFallback: true,
+        hot: true
     },
 };

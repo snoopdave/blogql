@@ -1,7 +1,7 @@
 
 import {ComponentStory} from '@storybook/react';
 import {RelativeDateTime} from "./DateTime";
-import DraftList from "../entries/DraftList";
+import DraftsList from "../entries/DraftsList";
 
 
 export default {
