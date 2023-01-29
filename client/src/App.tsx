@@ -12,7 +12,7 @@ import {Col, Row} from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import {EditorFormViaBlogHandle, EditorFormViaEntryId} from './entries/EntryEditor';
-import EntriesView from './entries/EntriesView';
+import Entries from './entries/Entries';
 import Drafts from './entries/Drafts';
 import {logout, ProvideAuth, User} from './common/Authentication';
 import {BlogsList} from './blogs/BlogsList';
@@ -78,7 +78,7 @@ function App() {
                                        element={<BlogsList/>} />
 
                                 <Route path='/blogs/:handle'
-                                       element={<EntriesView loggedIn={loggedIn}/>} />
+                                       element={<Entries loggedIn={loggedIn}/>} />
 
                                 <Route path='/blogs/:handle/settings'
                                        element={<BlogSettings onBlogUpdated={onBlogUpdated}/>} />

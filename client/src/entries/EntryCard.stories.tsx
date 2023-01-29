@@ -11,7 +11,7 @@ import {ComponentMeta, ComponentStory} from "@storybook/react";
 import EntryCard from "./EntryCard";
 
 export default {
-    title: 'BlogCard',
+    title: 'EntryCard',
     component: EntryCard,
 } as ComponentMeta<typeof EntryCard>;
 

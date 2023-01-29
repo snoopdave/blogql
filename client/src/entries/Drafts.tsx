@@ -3,7 +3,7 @@
  * Licensed under Apache Software License v2.
  */
 
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Button, Form, Jumbotron} from 'react-bootstrap';
 import {useQuery} from '@apollo/client/react/hooks/useQuery';
 import {DRAFTS_QUERY} from '../graphql/queries';
@@ -16,8 +16,10 @@ import {useNavigate} from 'react-router';
 function Drafts() {
     const navigate = useNavigate();
     const { handle } = useParams<{handle : string}>(); // get handle param from router route
-    const { loading, error, data } = useQuery(DRAFTS_QUERY, {
-        variables: { handle, limit: 50 }
+    const { loading, error, data } = useQuery(DRAFTS_QUERY, { variables: { handle, limit: 50 } });
+
+    useEffect(() => {
+        console.log("useEffect called for Drafts");
     });
 
     if (loading) {
@@ -39,12 +41,14 @@ function Drafts() {
             <h1>Drafts</h1>
             <p>This is where you find your unpublished draft blog entries.</p>
         </Jumbotron>
+
         <Form>
             <Form.Group>
                 <Button onClick={() => { newEntry(); }}>New</Button>
             </Form.Group>
         </Form>
         <DraftsList handle={handle!} drafts={data.blog?.drafts?.nodes}/>
+
     </RequireAuth>;
 }
 

@@ -9,7 +9,7 @@ export type DateTimeProps = {
     when: Date,
 }
 
-// for use on EntriesView page, e.g. "4 days ago"
+// for use on Entries page, e.g. "4 days ago"
 export function RelativeDateTime(props: DateTimeProps) {
     const updated = new Date(props.when).getTime();
     const span = Date.now() - updated;
