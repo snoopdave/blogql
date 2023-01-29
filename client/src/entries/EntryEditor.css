@@ -12,3 +12,11 @@ img.spinner {
    justify-content: center;
    align-items: center;
 }
+
+.ql-container {
+    font-size: 1em;
+}
+
+.ql-editor p {
+    margin-bottom: 0.5em;
+}
