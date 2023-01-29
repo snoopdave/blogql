@@ -5,7 +5,7 @@
 
 import React, {ChangeEvent, useState} from 'react';
 import {Button, Form, Modal, Toast} from 'react-bootstrap';
-import './EntryEditor.css';
+import {useNavigate} from "react-router";
 import {Link, useParams} from 'react-router-dom';
 
 import { Sources } from 'quill';
@@ -26,11 +26,10 @@ import {BLOG_BY_HANDLE_QUERY, DRAFTS_QUERY, ENTRIES_QUERY, ENTRY_QUERY} from '..
 
 import {SimpleDateTime} from "../common/DateTime";
 import {RequireAuth} from "../common/Authentication";
+import {Heading} from "../common/Heading";
 
 // import BlogQL CSS last to ensure it appears at the end of bundle.css
 import './EntryEditor.css';
-import {useNavigate} from "react-router";
-import {Heading} from "../common/Heading";
 
 export function EditorWelcome() {
     return <Heading title='Welcome to BlogQL!'
