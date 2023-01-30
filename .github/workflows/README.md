@@ -15,4 +15,5 @@ The re-usable actions:
 * `wf-build-test.yaml`: (no parameters) runs a Yarn build/test and a Docker build (no publish).
 * `wf-check-schema.yaml`: takes inputs working-dir & schema-path, uses secrets APOLLO_KEY & APOLLO_GRAPH_REF and then runs a rover graph check.
 * `wf-publish-schema.yaml`: takes inputs working-dir & schema-path, uses secrets APOLLO_KEY & APOLLO_GRAPH_REF and then runs a rover graph publish.
+* `wf-publish-stories.yaml`: takes secret CHROMATIC_PROJECT_TOKEN and publishes Storybook Stories to Chromatic to be checked. 
 * `wf-docker-build.yaml`: takes inputs push (boolean), tags, DOCKER_USERNAME and DOCKER_PASSWORD and runs a Docker build and optionally a push to associated DockerHub account.
