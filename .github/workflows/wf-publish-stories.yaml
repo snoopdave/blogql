@@ -1,7 +1,7 @@
 # Copyright David M. Johnson (snoopdave@gmail.com).
 # Licensed under Apache Software License v2.
 
-name: publish-schema
+name: publish-stories
 
 # Publish Stories to Chromatic
 
@@ -16,6 +16,10 @@ jobs:
   publish:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        node-version: [16.x]
+
     env:
       CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
 
@@ -24,6 +28,22 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: yarn
+          cache-dependency-path: ./client/yarn.lock
+
+      - name: Build client
+        run: |
+          cat > src/googlecid.ts << EOF
+          export const GOOGLE_SIGNON_CID='dummy';
+          EOF
+          yarn install
+          yarn build
+        working-directory: client
 
       - name: Run Chromatic publish/check
         uses: chromaui/action@v1

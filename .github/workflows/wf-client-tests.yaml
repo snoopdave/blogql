@@ -1,7 +1,7 @@
 # Copyright David M. Johnson (snoopdave@gmail.com).
 # Licensed under Apache Software License v2.
 
-name: build-test
+name: client-tests
 
 on:
   workflow_call:
@@ -25,17 +25,9 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
-        cache: npm
-        cache-dependency-path: ./server/yarn.lock
+        cache: yarn
+        cache-dependency-path: ./client/yarn.lock
 
-    - name: Build and test server
-      run: |
-        yarn install
-        yarn build
-        yarn test
-      working-directory: server
-
-    # install dependencies, build and test client
     - name: Build and test client
       run: |
         cat > src/googlecid.ts << EOF

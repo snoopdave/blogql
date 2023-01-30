@@ -11,33 +11,10 @@ on:
   push:
     branches: [ main ]
 
-
 jobs:
 
   build-test:
-    uses: "snoopdave/blogql/.github/workflows/wf-build-test.yaml@main"
-    secrets:
-      CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-
-  check-schema:
-    needs: build-test
-    uses: "snoopdave/blogql/.github/workflows/wf-check-schema.yaml@main"
-    with:
-      working-dir: server
-      schema-path: "schema.graphql"
-    secrets:
-      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
-      APOLLO_GRAPH_REF: ${{ secrets.APOLLO_GRAPH_REF }}
-
-  docker-build:
-    needs: build-test
-    uses: "snoopdave/blogql/.github/workflows/wf-docker-build.yaml@main"
-    with:
-      push: true
-      tags: "snoopdave/blogql"
-    secrets:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    uses: "snoopdave/blogql/.github/workflows/wf-client-tests.yaml@main"
 
   publish-schema:
     needs: docker-build
@@ -48,3 +25,18 @@ jobs:
     secrets:
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
       APOLLO_GRAPH_REF: ${{ secrets.APOLLO_GRAPH_REF }}
+
+  publish-stories:
+    uses: "snoopdave/blogql/.github/workflows/wf-publish-stories.yaml@main"
+    secrets:
+      CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+
+  docker-build:
+    needs: build-test
+    uses: "snoopdave/blogql/.github/workflows/wf-docker-build.yaml@main"
+    with:
+      push: true
+      tags: "snoopdave/blogql"
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
