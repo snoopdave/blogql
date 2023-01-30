@@ -3,7 +3,7 @@
  * Licensed under Apache Software License v2.
  */
 
-import {BlogList} from "./BlogList";
+import {BlogsList} from "./BlogsList";
 import {BrowserRouter as Router} from 'react-router-dom';
 import {client} from "../setupTests";
 import {ApolloProvider} from "@apollo/client";
@@ -12,14 +12,14 @@ import {Routes, Route} from "react-router";
 
 export default {
     title: 'BlogList',
-    component: BlogList,
-} as ComponentMeta<typeof BlogList>;
+    component: BlogsList,
+} as ComponentMeta<typeof BlogsList>;
 
-export const Primary: ComponentStory<typeof BlogList> = () =>
+export const Primary: ComponentStory<typeof BlogsList> = () =>
     <ApolloProvider client={client}>
         <Router>
             <Routes>
-                <Route path='*' element={<BlogList />} />
+                <Route path='*' element={<BlogsList />} />
             </Routes>
         </Router>
     </ApolloProvider>;

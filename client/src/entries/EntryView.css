@@ -1,0 +1,10 @@
+/*
+ * Copyright David M. Johnson (snoopdave@gmail.com).
+ * Licensed under Apache Software License v2.
+ */
+
+img.profile-pic {
+    width: 3em;
+    height: 3em;
+    margin-right: 0.75em;
+}

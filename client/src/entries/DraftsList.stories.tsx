@@ -4,12 +4,12 @@
  */
 
 import {BrowserRouter as Router} from 'react-router-dom';
-import {client} from "../setupTests";
-import {ApolloProvider} from "@apollo/client";
-import {ComponentMeta, ComponentStory} from "@storybook/react";
-import DraftsList from "./DraftsList";
-import {entriesData} from "../mocks/handlers";
-import {Routes, Route} from "react-router";
+import {client} from '../setupTests';
+import {ApolloProvider} from '@apollo/client';
+import {ComponentMeta, ComponentStory} from '@storybook/react';
+import DraftsList from './DraftsList';
+import {entriesData} from '../mocks/handlers';
+import {Routes, Route} from 'react-router';
 
 export default {
     title: 'DraftsList',

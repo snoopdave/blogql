@@ -12,18 +12,18 @@ import {Blog} from "../graphql/schema";
 import {Heading} from "../common/Heading";
 
 
-export function BlogList() {
+export function BlogsList() {
     const { loading, error, data } = useQuery(BLOGS_QUERY);
     if (loading) {
-        console.log('BlogList: Loading...');
+        console.log('BlogsList: Loading...');
         return (<p>Loading...</p>);
     }
     if (error) {
-        console.log('BlogList: Error');
+        console.log('BlogsList: Error');
         return (<p>error!</p>);
     }
     if (!data) {
-        console.log('BlogList: No data');
+        console.log('BlogsList: No data');
         return (<p>no data!</p>);
     }
 
@@ -40,12 +40,8 @@ export function BlogList() {
                 </thead>
                 <tbody>{ data.blogs?.nodes.map((blog: Blog) => blog ? (
                     <tr key={blog.id}>
-                        <td>
-                            <Link className='nav-link' to={`/blogs/${blog.handle}`}>{blog.name}</Link>
-                        </td>
-                        <td>
-                            <Link className='nav-link' to={`/blogs/${blog.handle}`}>{blog.handle}</Link>
-                        </td>
+                        <td><Link className='nav-link' to={`/blogs/${blog.handle}`}>{blog.name}</Link></td>
+                        <td><Link className='nav-link' to={`/blogs/${blog.handle}`}>{blog.handle}</Link></td>
                     </tr> ) : null)
                 }</tbody>
             </Table>
