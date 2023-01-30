@@ -7,13 +7,15 @@ There are also four reusable actions.
 
 The main actions:
 
-* `merge-to-main.yaml`: triggered when merge is made to main. Runs builds, tests, GraphQL schema check and publishes schema and Docker image.
-* `pull-request.yaml`: triggered when a Pull Request is created or updated. Runs builds, tests, GraphQL schema check and verifies that Docker build works.
+* `merge-to-main.yaml`: Triggered when merge is made to main. Runs builds, tests, Apollo GraphQL schema publish, Chromatic Stories publish and Docker image build/publish.
+* `pull-request.yaml`: Triggered when a Pull Request is created or updated. Runs builds, tests, Apollo GraphQL schema check, Chromatic Story check and verifies that Docker build works.
 
 The re-usable actions:
 
-* `wf-build-test.yaml`: (no parameters) runs a Yarn build/test and a Docker build (no publish).
-* `wf-check-schema.yaml`: takes inputs working-dir & schema-path, uses secrets APOLLO_KEY & APOLLO_GRAPH_REF and then runs a rover graph check.
-* `wf-publish-schema.yaml`: takes inputs working-dir & schema-path, uses secrets APOLLO_KEY & APOLLO_GRAPH_REF and then runs a rover graph publish.
-* `wf-publish-stories.yaml`: takes secret CHROMATIC_PROJECT_TOKEN and publishes Storybook Stories to Chromatic to be checked. 
-* `wf-docker-build.yaml`: takes inputs push (boolean), tags, DOCKER_USERNAME and DOCKER_PASSWORD and runs a Docker build and optionally a push to associated DockerHub account.
+* `wf-client-tests.yaml`: Build and test client. (no parameters)
+* `wf-server-tests.yaml`: Build and test server. (no parameters)
+* `wf-check-schema.yaml`: Runs Apollo GraphQL schema check. Takes inputs working-dir & schema-path, uses secrets APOLLO_KEY & APOLLO_GRAPH_REF and then runs a rover graph check.
+* `wf-publish-schema.yaml`: Publishes schema to Apollo. Takes inputs working-dir & schema-path, uses secrets APOLLO_KEY & APOLLO_GRAPH_REF.
+* `wf-publish-stories.yaml`: Publishes Stories to Chromatic to be checked. Takes secret CHROMATIC_PROJECT_TOKEN.
+* `wf-docker-build.yaml`: Runs Docker build and optionally publishes to Docker. Takes inputs push (boolean), tags, DOCKER_USERNAME and DOCKER_PASSWORD. 
+
