@@ -1,7 +1,7 @@
 # Copyright David M. Johnson (snoopdave@gmail.com).
 # Licensed under Apache Software License v2.
 
-name: publish-schema
+name: publish-stories
 
 # Publish Stories to Chromatic
 
@@ -35,6 +35,12 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: yarn
           cache-dependency-path: ./client/yarn.lock
+
+      - name: Build client
+        run: |
+          yarn install
+          yarn build
+        working-directory: client
 
       - name: Run Chromatic publish/check
         uses: chromaui/action@v1
