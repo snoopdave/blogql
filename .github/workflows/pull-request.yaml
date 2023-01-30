@@ -16,6 +16,9 @@ jobs:
 
   build-test:
     uses: "snoopdave/blogql/.github/workflows/wf-build-test.yaml@main"
+
+  publish-stories:
+    uses: "snoopdave/blogql/.github/workflows/wf-publish-stories.yaml@main"
     secrets:
       CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
 

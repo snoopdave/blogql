@@ -1,0 +1,32 @@
+# Copyright David M. Johnson (snoopdave@gmail.com).
+# Licensed under Apache Software License v2.
+
+name: publish-schema
+
+# Publish Stories to Chromatic
+
+on:
+  workflow_call:
+    secrets:
+      CHROMATIC_PROJECT_TOKEN:
+        required: true
+
+jobs:
+
+  publish:
+    runs-on: ubuntu-latest
+
+    env:
+      CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Run Chromatic publish/check
+        uses: chromaui/action@v1
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          workingDir: client
