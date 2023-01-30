@@ -13,11 +13,21 @@ on:
 
 jobs:
 
-  build-test:
+  build-test-server:
+    uses: "snoopdave/blogql/.github/workflows/wf-server-tests.yaml@main"
+
+  build-test-client:
+    needs: build-test-server
     uses: "snoopdave/blogql/.github/workflows/wf-client-tests.yaml@main"
 
+  publish-stories:
+    needs: build-test-client
+    uses: "snoopdave/blogql/.github/workflows/wf-publish-stories.yaml@main"
+    secrets:
+      CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+
   publish-schema:
-    needs: docker-build
+    needs: publish-stories
     uses: "snoopdave/blogql/.github/workflows/wf-publish-schema.yaml@main"
     with:
       schema-path: "schema.graphql"
@@ -26,13 +36,8 @@ jobs:
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
       APOLLO_GRAPH_REF: ${{ secrets.APOLLO_GRAPH_REF }}
 
-  publish-stories:
-    uses: "snoopdave/blogql/.github/workflows/wf-publish-stories.yaml@main"
-    secrets:
-      CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-
   docker-build:
-    needs: build-test
+    needs: publish-schema
     uses: "snoopdave/blogql/.github/workflows/wf-docker-build.yaml@main"
     with:
       push: true
