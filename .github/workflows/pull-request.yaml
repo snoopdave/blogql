@@ -14,14 +14,14 @@ on:
 
 jobs:
 
-  build-test-client:
-    uses: "snoopdave/blogql/.github/workflows/wf-client-tests.yaml@main"
-
   build-test-server:
     uses: "snoopdave/blogql/.github/workflows/wf-server-tests.yaml@main"
 
+  build-test-client:
+    uses: "snoopdave/blogql/.github/workflows/wf-client-tests.yaml@main"
+
   check-schema:
-    needs: build-test
+    needs: build-test-server, build-test-client
     uses: "snoopdave/blogql/.github/workflows/wf-check-schema.yaml@main"
     with:
       working-dir: server
@@ -31,6 +31,7 @@ jobs:
       APOLLO_GRAPH_REF: ${{ secrets.APOLLO_GRAPH_REF }}
 
   publish-stories:
+    needs: check-schema
     uses: "snoopdave/blogql/.github/workflows/wf-publish-stories.yaml@main"
     secrets:
       CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
