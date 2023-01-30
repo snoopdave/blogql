@@ -31,13 +31,13 @@ jobs:
       APOLLO_GRAPH_REF: ${{ secrets.APOLLO_GRAPH_REF }}
 
   publish-stories:
-    needs: check-schema
+    needs: build-test-server, build-test-client
     uses: "snoopdave/blogql/.github/workflows/wf-publish-stories.yaml@main"
     secrets:
       CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
 
   docker-build:
-    needs: check-schema
+    needs: build-test-server, build-test-client
     uses: "snoopdave/blogql/.github/workflows/wf-docker-build.yaml@main"
     with:
       push: false

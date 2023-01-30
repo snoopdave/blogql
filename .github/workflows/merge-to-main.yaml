@@ -20,7 +20,7 @@ jobs:
     uses: "snoopdave/blogql/.github/workflows/wf-client-tests.yaml@main"
 
   publish-schema:
-    needs: docker-build
+    needs: build-test-server, build-test-client
     uses: "snoopdave/blogql/.github/workflows/wf-publish-schema.yaml@main"
     with:
       schema-path: "schema.graphql"
