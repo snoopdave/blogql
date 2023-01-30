@@ -5,16 +5,11 @@ name: build-test
 
 on:
   workflow_call:
-    secrets:
-      CHROMATIC_PROJECT_TOKEN:
-        required: true
+
 jobs:
 
   build-test:
     runs-on: ubuntu-latest
-
-    env:
-      CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
 
     strategy:
       matrix:
@@ -50,9 +45,3 @@ jobs:
         yarn build
         yarn test
       working-directory: client
-
-    - name: Run Chromatic publish and check
-      uses: chromaui/action@v1
-      with:
-        projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-        workingDir: client
