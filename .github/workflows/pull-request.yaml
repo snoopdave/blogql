@@ -15,7 +15,7 @@ on:
 jobs:
 
   build-test:
-    uses: "snoopdave/blogql/.github/workflows/wf-build-test.yaml@main"
+    uses: "snoopdave/blogql/.github/workflows/wf-client-tests.yaml@main"
 
   check-schema:
     needs: build-test
