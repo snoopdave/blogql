@@ -16,6 +16,7 @@ import BlogStore from './blogstore.js';
 import {readFileSync} from 'fs';
 import {config} from './config.js';
 import {ApiKeyStore} from "./apikeystore.js";
+import {BlogService, BlogServiceSequelizeImpl} from "./blogservice";
 
 // Data sources
 let appConn = new DBConnection(undefined);
@@ -37,7 +38,7 @@ export interface BlogQLDataSources {
 }
 
 export interface BlogQLContext {
-    readonly dataSources: BlogQLDataSources;
+    readonly blogService: BlogService;
     readonly user: User | undefined;
 }
 
@@ -67,7 +68,13 @@ const apolloServer = new ApolloServer({
                 const user = await userStore.retrieve(req.session.userId);
                 if (user) {
                     log(DEBUG, `Logged in as ${req.session.userId}`);
-                    return { user }; // Adds user to the context
+                    const blogService: BlogService = new BlogServiceSequelizeImpl(user, {
+                        blogStore,
+                        entryStore,
+                        userStore,
+                        apiKeyStore,
+                    });
+                    return { user, blogService }; // Add to context
                 }
                 throw new AuthenticationError('User not found');
             }
