@@ -8,6 +8,7 @@ export interface Config {
     corsOrigin: string;
     logLevel: LogLevel;
     auth: boolean;
+    filePath: string | undefined;
 }
 
 export const config: Config = {
@@ -15,4 +16,5 @@ export const config: Config = {
     corsOrigin: 'http://localhost:3000',
     // corsOrigin: 'https://studio.apollographql.com',
     logLevel: 0, // DEBUG
+    filePath: undefined
 }

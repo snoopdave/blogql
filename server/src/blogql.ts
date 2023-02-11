@@ -11,7 +11,7 @@ import session from 'express-session';
 import {DEBUG, log} from './utils.js';
 import {config} from './config.js';
 import {User, UserStore} from "./userstore";
-import {EntryStore} from "./entrystore";
+import DBConnection from "./dbconnection";
 
 
 export default class BlogQL {
@@ -19,7 +19,7 @@ export default class BlogQL {
     client = new OAuth2Client(process.env.CLIENT_ID);
     jsonParser = bodyParser.json();
 
-    constructor(entryStore: EntryStore, userStore: UserStore) {
+    constructor() {
         dotenv.config();
 
         this.app.use('*', function(req, res, next) {
@@ -42,6 +42,8 @@ export default class BlogQL {
             async (req, res) => {
                 //console.log(JSON.stringify(req.session, null, 4));
                 if (req.session?.userId) {
+                    const userStore = new UserStore(new DBConnection(undefined));
+                    await userStore.init();
                     const user = await userStore.retrieve(req.session?.userId);
                     if (!user) {
                         res.status(500);
@@ -68,6 +70,8 @@ export default class BlogQL {
                     audience: process.env.CLIENT_ID
                 });
                 const {name, email, picture} = ticket.getPayload()!;
+                const userStore = new UserStore(new DBConnection(undefined));
+                await userStore.init();
                 const user: User = await userStore.upsert(name!, email!, picture!);
                 req.session.userId = user.id;
                 log(DEBUG, `Logged in as username 

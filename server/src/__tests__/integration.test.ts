@@ -15,6 +15,7 @@ import {User, UserStore} from '../userstore.js';
 import DBConnection from '../dbconnection.js';
 import { readFileSync } from 'fs';
 import {gql} from 'apollo-server';
+import {BlogService, BlogServiceSequelizeImpl} from "../blogservice";
 
 describe('Test the GraphQL API integration', () => {
 
@@ -39,21 +40,23 @@ describe('Test the GraphQL API integration', () => {
                 `test-user-${slug}@example.com`,
                 'dummy.png'));
         }
-        const blogStore = new BlogStore(conn);
-        await blogStore.init();
-        const entryStore = new EntryStore(conn);
-        await entryStore.init();
+
         const typeDefs = gql(readFileSync('schema.graphql', 'utf8'));
         const server = new ApolloServer({
             typeDefs,
             resolvers,
-            dataSources: () => ({
-                userStore, blogStore, entryStore
-            }),
             context: () => {
-                return {user: authUsers[0]}
+                const user = authUsers[0];
+                const blogService: BlogService = new BlogServiceSequelizeImpl(user, conn);
+                return { user, blogService }
             }
         });
+
+        const blogStore = new BlogStore(conn);
+        await blogStore.init();
+        const entryStore = new EntryStore(conn);
+        await entryStore.init();
+
         return {server, conn, userStore, blogStore, entryStore, authUsers};
     }
 
