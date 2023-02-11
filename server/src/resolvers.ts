@@ -8,9 +8,8 @@ import {Response} from './pagination.js';
 import {Node} from './node.js';
 import {Blog} from './blogstore.js';
 import {User} from './userstore.js';
-import {BlogService, BlogServiceSequelizeImpl} from './blogservice.js';
 import {BlogQLContext} from './index.js';
-import {DEBUG, log, LogLevel} from './utils.js';
+
 const resolvers = {
     Node: {
         __resolveType: (node: Node) => {
@@ -20,85 +19,69 @@ const resolvers = {
     },
     Query: {
         blogForUser: async (_: undefined, args: { userId: string }, ctx: BlogQLContext): Promise<Blog | null> => {
-            const blogService: BlogService = new BlogServiceSequelizeImpl(ctx.user, ctx.dataSources);
-            return await blogService.getBlogForUser(args.userId);
+            return await ctx.blogService.getBlogForUser(args.userId);
         },
         blog: async (_: undefined, args: { handle: string }, ctx: BlogQLContext): Promise<Blog | null> => {
-            const blogService: BlogService = new BlogServiceSequelizeImpl(ctx.user, ctx.dataSources);
-            return await blogService.getBlog(args.handle);
+            return await ctx.blogService.getBlog(args.handle);
         },
         blogs: async (_: undefined, args: { limit: number, offset: number, cursor: string }, ctx: BlogQLContext):
             Promise<Response<Blog>> => {
-                const blogService = new BlogServiceSequelizeImpl(ctx.user, ctx.dataSources);
-                    return await blogService.getBlogs(args.limit, args.offset, args.cursor);
+                return await ctx.blogService.getBlogs(args.limit, args.offset, args.cursor);
         },
     },
     Blog: {
         entry: async (blog: Blog, args: { id: string }, ctx: BlogQLContext): Promise<Entry | null> => {
-            const blogService: BlogService = new BlogServiceSequelizeImpl(ctx.user, ctx.dataSources);
-            return await blogService.getEntry(blog, args.id);
+            return await ctx.blogService.getEntry(blog, args.id);
         },
         user: async (blog: Blog, args: { id: string}, ctx: BlogQLContext): Promise<User | null> => {
-            const blogService: BlogService = new BlogServiceSequelizeImpl(ctx.user, ctx.dataSources);
-            return await blogService.getUser(blog, args.id)
+            return await ctx.blogService.getUser(blog, args.id)
         },
         entries: async (blog: Blog, args: { limit: number, offset: number, cursor: string }, ctx: BlogQLContext):
             Promise<Response<Entry>> => {
-            const blogService: BlogService = new BlogServiceSequelizeImpl(ctx.user, ctx.dataSources);
-                return await blogService.getEntries(blog, args.limit, args.offset, args.cursor);
+                return await ctx.blogService.getEntries(blog, args.limit, args.offset, args.cursor);
         },
         drafts: async (blog: Blog, args: { limit: number, offset: number, cursor: string }, ctx: BlogQLContext):
             Promise<Response<Entry>> => {
-            const blogService: BlogService = new BlogServiceSequelizeImpl(ctx.user, ctx.dataSources);
-            return await blogService.getDrafts(blog, args.limit, args.offset, args.cursor);
+            return await ctx.blogService.getDrafts(blog, args.limit, args.offset, args.cursor);
         },
     },
     BlogMutation: {
         update: async (parent: BlogMutation, args: { name: string }, ctx: BlogQLContext): Promise<Blog | null> => {
-            const blogService: BlogService = new BlogServiceSequelizeImpl(ctx.user, ctx.dataSources);
-            return await blogService.updateBlog(parent.blog.id, args.name);
+            return await ctx.blogService.updateBlog(parent.blog.id, args.name);
         },
         delete: async (parent: BlogMutation, args: {}, ctx: BlogQLContext): Promise<Node> => {
-            const blogService: BlogService = new BlogServiceSequelizeImpl(ctx.user, ctx.dataSources);
-            return await blogService.deleteBlog(parent.blog.id);
+            return await ctx.blogService.deleteBlog(parent.blog.id);
         },
         entry: async (parent: BlogMutation, args: { id: string }, ctx: BlogQLContext): Promise<EntryMutation | null> => {
-            const blogService: BlogService = new BlogServiceSequelizeImpl(ctx.user, ctx.dataSources);
-            const entry: Entry | null = await blogService.getEntry(parent.blog, args.id);
+            const entry: Entry | null = await ctx.blogService.getEntry(parent.blog, args.id);
             if (entry) {
                 return { blog: parent.blog, entry };
             }
             throw Error(`Entry ${args.id} not found`);
         },
         createEntry: async (parent: BlogMutation, args: { title: string, content: string, publish: boolean }, ctx: BlogQLContext): Promise<Entry> => {
-            const blogService: BlogService = new BlogServiceSequelizeImpl(ctx.user, ctx.dataSources);
-            return await blogService.createEntry(parent.blog.id, args.title, args.content);
+            return await ctx.blogService.createEntry(parent.blog.id, args.title, args.content);
         },
     },
     EntryMutation: {
         update: async (parent: EntryMutation, args: { title: string, content: string}, ctx: BlogQLContext):
             Promise<Entry | null> => {
-            const blogService: BlogService = new BlogServiceSequelizeImpl(ctx.user, ctx.dataSources);
-            return await blogService.updateEntry(parent.entry.id, args.title, args.content);
+            return await ctx.blogService.updateEntry(parent.entry.id, args.title, args.content);
         },
         publish: async (parent: EntryMutation, args: { entry: Entry }, ctx: BlogQLContext):
             Promise<Entry | null> => {
-            const blogService: BlogService = new BlogServiceSequelizeImpl(ctx.user, ctx.dataSources);
-            return await blogService.publishEntry(parent.entry.id);
+            return await ctx.blogService.publishEntry(parent.entry.id);
         },
         delete: async (parent: EntryMutation, args: {}, ctx: BlogQLContext): Promise<Node> => {
-            const blogService: BlogService = new BlogServiceSequelizeImpl(ctx.user, ctx.dataSources);
-            return await blogService.deleteEntry(parent.entry.id);
+            return await ctx.blogService.deleteEntry(parent.entry.id);
         },
     },
     Mutation: {
         createBlog: async (_: undefined, args: { handle: string, name: string }, ctx: BlogQLContext): Promise<Blog> => {
-            const blogService: BlogService = new BlogServiceSequelizeImpl(ctx.user, ctx.dataSources);
-            return await blogService.createBlog(args.handle, args.name);
+            return await ctx.blogService.createBlog(args.handle, args.name);
         },
         blog: async (_: undefined, args: { handle: string }, ctx: BlogQLContext): Promise<BlogMutation | null> => {
-            const blogService: BlogService = new BlogServiceSequelizeImpl(ctx.user, ctx.dataSources);
-            const blog: Blog | null = await blogService.getBlog(args.handle);
+            const blog: Blog | null = await ctx.blogService.getBlog(args.handle);
             if (blog) {
                 return  { blog };
             } else {
@@ -106,8 +89,7 @@ const resolvers = {
             }
         },
         blogByID: async (_: undefined, args: { id: string }, ctx: BlogQLContext): Promise<BlogMutation | null> => {
-            const blogService: BlogService = new BlogServiceSequelizeImpl(ctx.user, ctx.dataSources);
-            const blog: Blog | null = await blogService.getBlogById(args.id);
+            const blog: Blog | null = await ctx.blogService.getBlogById(args.id);
             if (blog) {
                 return  { blog };
             } else {
@@ -115,8 +97,7 @@ const resolvers = {
             }
         },
         issueApiKey: async (_: undefined, args: {}, ctx: BlogQLContext): Promise<string | null> => {
-            const blogService: BlogService = new BlogServiceSequelizeImpl(ctx.user, ctx.dataSources);
-            const apiKey: string | null = await blogService.issueApiKey();
+            const apiKey: string | null = await ctx.blogService.issueApiKey();
             if (apiKey) {
                 return apiKey;
             } else {
