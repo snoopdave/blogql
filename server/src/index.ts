@@ -14,11 +14,11 @@ import {DEBUG, INFO, log} from './utils.js';
 import {readFileSync} from 'fs';
 import {config} from './config.js';
 import {ApiKeyStore} from "./apikeystore.js";
-import {BlogService, BlogServiceSequelizeImpl} from "./blogservice";
+import {BlogService, BlogServiceSequelizeImpl} from "./blogservice.js";
 
 export interface BlogQLContext {
     readonly blogService: BlogService;
-    readonly user: User | undefined;
+    readonly user: User | null;
 }
 
 const plugins = process.env.APOLLO_KEY ? [
@@ -37,43 +37,54 @@ const apolloServer = new ApolloServer({
     typeDefs,
     resolvers,
     context: async ({ req }) => {
+
+        let user: User | null = null;
+        const conn = new DBConnection(config.filePath);
+        const userStore = new UserStore(conn);
+        await userStore.init();
+
         if (req.session) {
             log(DEBUG, `Session: ${req.session.id}`);
             if (req.session.userId) {
-                const conn = new DBConnection(config.filePath);
-                const userStore = new UserStore(conn);
-                await userStore.init();
-
-                const user = await userStore.retrieve(req.session.userId);
+                user = await userStore.retrieve(req.session.userId);
                 if (user) {
-                    log(DEBUG, `Logged in as ${req.session.userId}`);
-                    const blogService: BlogService = new BlogServiceSequelizeImpl(user, conn);
-                    return { user, blogService }; // Add to context
+                    log(DEBUG, `User login ${req.session.userId}`);
+                } else {
+                    throw new AuthenticationError('User not found');
                 }
+            }
+        }
+
+        const apiKey = req.get('x-api-key');
+        if (apiKey) {
+            const apiKeyStore = new ApiKeyStore(conn);
+            await apiKeyStore.init();
+            const userId = await apiKeyStore.lookupUserId(apiKey);
+            user = await userStore.retrieve(userId);
+            if (user) {
+                log(DEBUG, `API key auth ${req.session.userId}`);
+            } else {
                 throw new AuthenticationError('User not found');
             }
         }
-        const apiKey = req.get('x-api-key');
-        if (apiKey) {
-            const conn = new DBConnection(config.filePath);
-            const userStore = new UserStore(conn);
-            await userStore.init();
-            const apiKeyStore = new ApiKeyStore(conn);
-            await apiKeyStore.init();
 
-            const userId = await apiKeyStore.lookupUserId(apiKey);
-            const user = await userStore.retrieve(userId);
-            return { user };
-        }
+        return {
+            user: undefined,
+            blogService: new BlogServiceSequelizeImpl(user, conn)
+        };
     },
     plugins,
 });
 
-// Express app provides REST API for authentication
-const blogQL = new BlogQL();
+// This oddness is working around the lack of top-level await
+(async () => {
+    await apolloServer.start();
+})();
 
 // Wait a sec for the server.start() to be called
 setTimeout(function() {
+    // Express app provides REST API for authentication
+    const blogQL = new BlogQL();
     apolloServer.applyMiddleware({
         app: blogQL.app,
         cors: { // There is also some CORS setup in blogql.ts
@@ -82,7 +93,7 @@ setTimeout(function() {
         },
     });
     let port = 4000;
-    log(INFO, `🚀 BlogQL running at http://localhost:${port}/graphql`);
+    log(INFO, `🚀 BlogQL starting at http://localhost:${port}/graphql`);
     blogQL.startBlogQL(port);
 }, 2000);
 

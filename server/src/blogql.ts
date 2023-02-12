@@ -10,8 +10,8 @@ import bodyParser from 'body-parser';
 import session from 'express-session';
 import {DEBUG, log} from './utils.js';
 import {config} from './config.js';
-import {User, UserStore} from "./userstore";
-import DBConnection from "./dbconnection";
+import {User, UserStore} from "./userstore.js";
+import DBConnection from "./dbconnection.js";
 
 
 export default class BlogQL {

@@ -10,8 +10,8 @@ import {Node} from './node.js';
 import {Response, Cursor, resolveCollection} from './pagination.js';
 import {AuthenticationError, ForbiddenError} from 'apollo-server-express';
 import {DEBUG, log} from "./utils.js";
-import DBConnection from "./dbconnection";
-import {ApiKeyStore} from "./apikeystore";
+import DBConnection from "./dbconnection.js";
+import {ApiKeyStore} from "./apikeystore.js";
 
 
 export interface BlogService {
@@ -47,14 +47,14 @@ export interface BlogService {
 
 export class BlogServiceSequelizeImpl implements BlogService {
 
-    user: User | undefined;
+    user: User | null;
 
     blogStore: BlogStore;
     entryStore: EntryStore;
     userStore: UserStore;
     apiKeyStore: ApiKeyStore;
 
-    constructor(user: User | undefined, conn: DBConnection) {
+    constructor(user: User | null, conn: DBConnection) {
         this.user = user;
         this.blogStore = new BlogStore(conn);
         this.entryStore = new EntryStore(conn);
