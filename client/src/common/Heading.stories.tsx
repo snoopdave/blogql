@@ -14,6 +14,9 @@ export default {
 export const Primary: ComponentStory<typeof Heading> = () =>
     <Heading title='Short title' heading='Short heading' />
 
+export const NoTitle: ComponentStory<typeof Heading> = () =>
+    <Heading heading='No title' />
+
 export const MediumContent: ComponentStory<typeof Heading> = () =>
     <Heading title='This title is a little longer than a title really should be'
              heading='This heading is a doozy as well, maybe just a little to long for a component of this size and shape you know. Who knows?' />
@@ -22,3 +25,8 @@ export const LongerContent: ComponentStory<typeof Heading> = () =>
     <Heading title='This title is a little longer than a title really should be and then this title is a little longer than a title really should be'
              heading='This heading is a doozy as well, maybe just a little to long for a component of this size and shape you know. Who knows? This heading is a doozy as well, maybe just a little to long for a component of this size and shape you know. Who knows? This heading is a doozy as well, maybe just a little to long for a component of this size and shape you know. Who knows?' />
 
+export const MediumContentNoTitle: ComponentStory<typeof Heading> = () =>
+    <Heading heading='This heading is a doozy as well, maybe just a little to long for a component of this size and shape you know. Who knows?' />
+
+export const LongerContentNoTitle: ComponentStory<typeof Heading> = () =>
+    <Heading heading='This heading is a doozy as well, maybe just a little to long for a component of this size and shape you know. Who knows? This heading is a doozy as well, maybe just a little to long for a component of this size and shape you know. Who knows? This heading is a doozy as well, maybe just a little to long for a component of this size and shape you know. Who knows?' />

@@ -4,8 +4,8 @@
  */
 
 import React, {ChangeEvent, useState} from 'react';
-import {Button, Form, Modal, Toast} from 'react-bootstrap';
-import {useNavigate} from "react-router";
+import {Button, Col, Container, Form, Modal, Row, Toast} from 'react-bootstrap';
+import {useNavigate} from 'react-router';
 import {Link, useParams} from 'react-router-dom';
 
 import { Sources } from 'quill';
@@ -24,15 +24,15 @@ import {
 } from '../graphql/mutations';
 import {BLOG_BY_HANDLE_QUERY, DRAFTS_QUERY, ENTRIES_QUERY, ENTRY_QUERY} from '../graphql/queries';
 
-import {SimpleDateTime} from "../common/DateTime";
-import {RequireAuth} from "../common/Authentication";
-import {Heading} from "../common/Heading";
+import {SimpleDateTime} from '../common/DateTime';
+import {RequireAuth} from '../common/Authentication';
+import {Heading} from '../common/Heading';
 
 // import BlogQL CSS last to ensure it appears at the end of bundle.css
 import './EntryEditor.css';
 
 export function EditorWelcome() {
-    return <Heading title='Welcome to BlogQL!'
+    return <Heading title='Entry editor'
                     heading='This is where you create a new entry or edit your old ones' />;
 }
 
@@ -260,7 +260,7 @@ export function EditorForm(props: EditorFormProps) {
     }
 
     return (
-        <RequireAuth redirectTo="/login">
+        <RequireAuth redirectTo='/login'>
 
             <EditorWelcome/>
 
@@ -287,62 +287,101 @@ export function EditorForm(props: EditorFormProps) {
                     <Form.Label>Title</Form.Label>
                     <Form.Control type='text' value={title} placeholder='Title...' onChange={onTitleChange} />
                 </Form.Group>
-                { props.id.length > 0 && props.created &&
-                    <Form.Group controlId='formCreated'>
-                        <Form.Label><span className="form-label">Created: <SimpleDateTime when={props.created}/></span></Form.Label>
-                    </Form.Group>
-                }
-                { props.id.length > 0 && props.updated &&
-                    <Form.Group controlId='formUpdated'>
-                        <Form.Label><span className="form-label">Updated: <SimpleDateTime when={props.updated}/></span></Form.Label>
-                    </Form.Group>
-                }
-                { props.published &&
-                    <Form.Group controlId='formUpdated'>
-                    <Form.Label><span className="form-label">Published: <SimpleDateTime when={props.published}/></span></Form.Label>
-                    </Form.Group>
-                }
+
+                {/*
+                    Quill Rich Text Editor
+                */}
                 <Form.Group controlId='formContent' className='form-group-quill'>
                     <Form.Label>Content</Form.Label>
                     <ReactQuill theme='snow' value={content} placeholder='Content...'
                                 onChange={onContentChange} onFocus={handleContentFocus} />
                 </Form.Group>
-                <Form.Group>
 
-                    <Button disabled={!valid || saved} onClick={() => {
-                        if (id) {
-                            updateEntry();
-                        } else {
-                            createEntry();
-                        }
-                    }}>Save
-                    </Button>
+                {/*
+                    Bootstrap Grid Layout below with two rows:
+                    Row one:
+                        Left: Save, Cancel and Done buttons depending on state
+                        Right: Entry created, updated published and published dates if available
+                    Row two:
+                        Delete button
+                */}
+                <Container>
+                   <Row>
+                       <Col>
+                           {/*
+                                Save, Cancel and Done buttons
+                           */}
+                           <Form.Group>
+                               <Button disabled={!valid || saved} onClick={() => {
+                                   if (id) {
+                                       updateEntry();
+                                   } else {
+                                       createEntry();
+                                   }
+                               }}>Save
+                               </Button>
 
-                    { !published &&
-                        <Button disabled={!valid} onClick={() => {
-                            publishEntry();
-                        }}>Publish
-                        </Button>
+                               { !published &&
+                                   <Button disabled={!valid} onClick={() => {
+                                       publishEntry();
+                                   }}>Publish
+                                   </Button>
+                               }
+
+                               { saved &&
+                                   <Link to={`/blogs/${handle}`}>
+                                       <Button>Done</Button>
+                                   </Link>
+                               }
+
+                               { !saved &&
+                                   <Link to={`/blogs/${handle}`}>
+                                       <Button>Cancel</Button>
+                                   </Link>
+                               }
+                           </Form.Group>
+
+                       </Col>
+                       <Col xs={2} />
+                       <Col>
+                           {/*
+                                Entry dates
+                           */}
+                           { props.id.length > 0 && props.created &&
+                               <Form.Group controlId='formCreated' className='readonly-date'>
+                                   <Form.Label><span><b>Created</b>: <SimpleDateTime when={props.created}/></span></Form.Label>
+                               </Form.Group>
+                           }
+                           { props.id.length > 0 && props.updated &&
+                               <Form.Group controlId='formUpdated' className='readonly-date'>
+                                   <Form.Label><span><b>Updated</b>: <SimpleDateTime when={props.updated}/></span></Form.Label>
+                               </Form.Group>
+                           }
+                           { props.published &&
+                               <Form.Group controlId='formPublished' className='readonly-date'>
+                                   <Form.Label><span><b>Published</b>: <SimpleDateTime when={props.published}/></span></Form.Label>
+                               </Form.Group>
+                           }
+                       </Col>
+                    </Row>
+                    { props.id.length > 0 &&
+                        <Row>
+                            <Col>
+                                {/*
+                                    Delete button
+                                */}
+                                Deleting an entry is an irreversible action
+                                <Form.Group>
+                                    <Button variant='danger' disabled={!id} onClick={() => {
+                                        setDeleting(true);
+                                    }}>Delete</Button>
+                                </Form.Group>
+
+                            </Col>
+                        </Row>
                     }
+                </Container>
 
-                    { saved &&
-                        <Link to={`/blogs/${handle}`}>
-                            <Button>Done</Button>
-                        </Link>
-                    }
-
-                    { !saved &&
-                        <Link to={`/blogs/${handle}`}>
-                            <Button>Cancel</Button>
-                        </Link>
-                    }
-
-                </Form.Group>
-                <Form.Group>
-                    <Button variant='danger' disabled={!id} onClick={() => {
-                        setDeleting(true);
-                    }}>Delete</Button>
-                </Form.Group>
             </Form>
 
             <Modal show={deleting} onHide={() => { setDeleting(false) }}>

@@ -6,12 +6,14 @@
 import {Jumbotron} from "react-bootstrap";
 
 interface HeadingProps {
-    title: String;
+    title?: String;
     heading: String;
 }
 export function Heading(props: HeadingProps) {
     return <Jumbotron>
-        <h1>{props.title}</h1>
+        { props.title &&
+            <h1>{props.title}</h1>
+        }
         <p>{props.heading}</p>
     </Jumbotron>;
 }

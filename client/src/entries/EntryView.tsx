@@ -46,7 +46,7 @@ export function EntryView(props: EntryViewProps) {
             </Jumbotron>
             <h2>{data.blog.entry.title}</h2>
             <p>
-                <img className='profile-pic' src={data.blog.user.picture} alt={data.blog.user.username} />
+                { /* <img style={showIfLoggedIn()} className='profile-pic' src={data.blog.user.picture} alt={data.blog.user.username} /> */ }
                 By {data.blog.user.username}
             </p>
             <hr />

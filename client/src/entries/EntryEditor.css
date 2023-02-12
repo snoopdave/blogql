@@ -20,3 +20,9 @@ img.spinner {
 .ql-editor p {
     margin-bottom: 0.5em;
 }
+
+.readonly-date {
+    font-size: 0.8em;
+    margin-bottom: 0.3em;
+    margin-left: 1em;
+}
