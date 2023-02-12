@@ -39,7 +39,7 @@ export class ApiKeyStore implements DataSource<ApiKey> {
             allowNull: false,
             primaryKey: true
          },
-         apiKey: {
+         apiKey: { // TODO: encryption
             type: DataTypes.STRING,
             allowNull: false,
             field: 'api_key',

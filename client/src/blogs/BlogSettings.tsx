@@ -187,8 +187,9 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>
-                                <b>API Key</b>: {apiKey}
+                                API Key
                             </Form.Label>
+                            <Form.Control type='text' value={apiKey} readOnly placeholder='No key issued' />
                         </Form.Group>
                         <Form.Group>
                             <Button onClick={() => {
