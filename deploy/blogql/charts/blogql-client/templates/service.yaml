@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: blogql
+  name: blogql-client
   labels:
-    app: blogql
+    app: blogql-client
 spec:
   selector:
-    app: blogql
+    app: blogql-client
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 4000
+      targetPort: 3000

@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: blogql
+  name: blogql-server
 spec:
   selector:
     matchLabels:
-      app: blogql
+      app: blogq-server
   replicas: 1
   template:
     metadata:
-      name: blogql
+      name: blogql-server
       labels:
-        app: blogql
+        app: blogql-server
     spec:
       containers:
-        - name: blogql
-          image: "snoopdave/blogql:latest"
+        - name: blogql-server
+          image: "snoopdave/blogql-server:latest"
           imagePullPolicy: Always
           resources:
             limits:
