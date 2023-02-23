@@ -51,7 +51,7 @@ jobs:
     needs: publish-schema
     uses: "snoopdave/blogql/.github/workflows/wf-docker-build.yaml@main"
     with:
-      dir: "server"
+      dir: "./server"
       push: true
       tags: "snoopdave/blogql-server"
     secrets:
