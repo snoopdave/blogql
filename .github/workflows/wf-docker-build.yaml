@@ -8,6 +8,9 @@ name: docker-build
 on:
   workflow_call:
     inputs:
+      dir:
+        required: true
+        type: string
       push: # true will cause push to Docker hub
         required: true
         type: boolean
@@ -41,5 +44,6 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v3
         with:
+          context: ${{ inputs.dir }}
           push: ${{ inputs.push }}
           tags: ${{ inputs.tags }}
