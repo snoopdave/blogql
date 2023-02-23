@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blogql-client
+spec:
+  selector:
+    matchLabels:
+      app: blogql-client
+  replicas: 1
+  template:
+    metadata:
+      name: blogql-client
+      labels:
+        app: blogql-client
+    spec:
+      containers:
+        - name: blogql-client
+          image: "snoopdave/blogql-client:latest"
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: "200m"
+              memory: "200Mi"
+            requests:
+              cpu: "200m"
+              memory: "200Mi"
+          ports:
+            - containerPort: 3000
+
+
+

@@ -1,19 +1,19 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: blogql
+  name: blogql-server
   annotations:
     kubernetes.io/ingress.class: "nginx"
     ingress.kubernetes.io/preserve-host: "true"
 spec:
   rules:
-    - host: {{ .Values.ingress.blogQlHost }}
+    - host: {{ .Values.ingress.blogQlServer }}
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: blogql
+                name: blogql-server
                 port:
                   number: 80

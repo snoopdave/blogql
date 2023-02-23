@@ -1,3 +1,11 @@
-apiVersion: v1
+apiVersion: v2
 name: blogql
 version: 1.0.0
+dependencies:
+  - name: blogql-server
+    version: 1.0.0
+  - name: blogql-client
+    version: 1.0.0
+  - name: postgresql
+    version: 12.2.1
+    repository: https://charts.bitnami.com/bitnami
