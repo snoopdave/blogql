@@ -44,6 +44,6 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v3
         with:
-          context: ${{ inputs.dir }}
+          context: ${{ defaultContext }}:${{ inputs.dir }}
           push: ${{ inputs.push }}
           tags: ${{ inputs.tags }}
