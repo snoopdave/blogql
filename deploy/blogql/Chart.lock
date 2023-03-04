@@ -1,0 +1,12 @@
+dependencies:
+- name: blogql-server
+  repository: ""
+  version: 1.0.0
+- name: blogql-client
+  repository: ""
+  version: 1.0.0
+- name: postgresql
+  repository: https://charts.bitnami.com/bitnami
+  version: 12.2.1
+digest: sha256:cb7b9f1e3d04ed25026fd073b26008992aa48d95b404e96caea60a8c4b987d8a
+generated: "2023-02-21T17:32:25.499666-05:00"

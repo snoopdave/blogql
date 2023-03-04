@@ -37,12 +37,24 @@ jobs:
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
       APOLLO_GRAPH_REF: ${{ secrets.APOLLO_GRAPH_REF }}
 
-  docker-build:
+  docker-build-server:
     needs: publish-stories
     uses: "snoopdave/blogql/.github/workflows/wf-docker-build.yaml@main"
     with:
+      dir: "server"
       push: false
-      tags: "snoopdave/blogql"
+      tags: "snoopdave/blogql-server"
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+  docker-build-client:
+    needs: publish-stories
+    uses: "snoopdave/blogql/.github/workflows/wf-docker-build.yaml@main"
+    with:
+      dir: "./client"
+      push: false
+      tags: "snoopdave/blogql-client"
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
