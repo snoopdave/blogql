@@ -40,7 +40,7 @@ jobs:
     needs: publish-schema
     uses: "snoopdave/blogql/.github/workflows/wf-docker-build.yaml@main"
     with:
-      dir: "client"
+      dir: "{{defaultContext}}:client"
       push: true
       tags: "snoopdave/blogql-client"
     secrets:
@@ -51,7 +51,7 @@ jobs:
     needs: publish-schema
     uses: "snoopdave/blogql/.github/workflows/wf-docker-build.yaml@main"
     with:
-      dir: "./server"
+      dir: "{{defaultContext}}:server"
       push: true
       tags: "snoopdave/blogql-server"
     secrets:
