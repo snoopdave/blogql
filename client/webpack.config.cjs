@@ -5,6 +5,7 @@
 
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const Dotenv = require('dotenv-webpack');
 
 const prod = process.env.NODE_ENV === 'production';
 
@@ -34,6 +35,7 @@ module.exports = {
         new MiniCssExtractPlugin({
             filename: 'bundle.css',
         }),
+        new Dotenv(),
     ],
     devServer: {
         static: {
@@ -43,4 +45,11 @@ module.exports = {
         historyApiFallback: true,
         hot: true
     },
+    resolve: {
+        fallback: {
+            "fs": false,
+            "path": require.resolve("path-browserify"),
+            "os": require.resolve("os-browserify/browser"),
+        }
+    }
 };
