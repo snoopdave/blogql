@@ -41,13 +41,6 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       -
-        name: Setup dummy Google CID file
-        run: |
-          cat > src/googlecid.ts << EOF
-          export const GOOGLE_SIGNON_CID='dummy';
-          EOF
-        working-directory: client
-      -
         name: Build and push
         uses: docker/build-push-action@v4
         with:

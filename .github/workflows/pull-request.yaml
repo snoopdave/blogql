@@ -50,11 +50,21 @@ jobs:
 
   docker-build-client:
     needs: publish-stories
-    uses: "snoopdave/blogql/.github/workflows/wf-docker-build.yaml@main"
-    with:
-      dir: "{{defaultContext}}:client"
-      push: false
-      tags: "snoopdave/blogql-client"
-    secrets:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    steps:
+      -
+        name: Setup dummy Google CID file
+        run: |
+          cat > src/googlecid.ts << EOF
+          export const GOOGLE_SIGNON_CID='dummy';
+          EOF
+        working-directory: client
+      -
+        name: Docker build
+        uses: "snoopdave/blogql/.github/workflows/wf-docker-build.yaml@main"
+        with:
+          dir: "{{defaultContext}}:client"
+          push: false
+          tags: "snoopdave/blogql-client"
+        secrets:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
