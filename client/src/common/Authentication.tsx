@@ -5,7 +5,6 @@
 
 import React, {Context, createContext, ReactNode, useContext} from 'react';
 import GoogleLogin, {GoogleLoginResponse, GoogleLoginResponseOffline} from 'react-google-login';
-import {GOOGLE_SIGNON_CID} from "../googlecid";
 import {useNavigate} from "react-router";
 
 export interface User {
@@ -81,6 +80,7 @@ interface LoginProps {
 export function LoginButton(props : LoginProps) {
     let auth = useAuth();
     const navigate = useNavigate();
+    const cid = process.env.GOOGLE_SIGNON_CID!;
 
     let login = async (googleData: GoogleLoginResponse | GoogleLoginResponseOffline) => {
         if ('tokenId' in googleData) {
@@ -102,7 +102,7 @@ export function LoginButton(props : LoginProps) {
     };
 
     return (
-        <GoogleLogin clientId={GOOGLE_SIGNON_CID}
+        <GoogleLogin clientId={cid}
                      buttonText='Log in with Google'
                      onSuccess={login}
                      onFailure={login}
