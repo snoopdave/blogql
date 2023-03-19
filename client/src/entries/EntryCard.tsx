@@ -4,14 +4,13 @@
  */
 
 import React, {CSSProperties} from 'react';
-import {Button, Card} from 'react-bootstrap';
 import {RelativeDateTime} from '../common/DateTime';
 import {Link} from 'react-router-dom';
 import {stripHtml} from 'string-strip-html';
 
-import './EntryCard.css';
+import {Button, List} from "antd";
 
-export interface BlogCardProps {
+export interface EntryCardProps {
     loggedIn: boolean;
     handle: string;
     title: string;
@@ -21,7 +20,7 @@ export interface BlogCardProps {
 
 }
 
-function EntryCard(props: BlogCardProps) {
+function EntryCard(props: EntryCardProps) {
 
     const showIfLoggedIn = () : CSSProperties => {
         if (props.loggedIn) {
@@ -35,7 +34,18 @@ function EntryCard(props: BlogCardProps) {
         ? strippedContent.substring(0, 150) + '...'
         : strippedContent;
 
-    return (<Card style={{width: '18em'}} key={props.entryId}>
+    return <List.Item key={props.title}>
+        <List.Item.Meta
+            title={<Link to={`/blogs/${props.handle}/entries/${props.entryId}`}>{props.title}</Link>}
+        />
+        <div className='entry-card-content' dangerouslySetInnerHTML={{__html: truncatedContent}}/>
+        <i><RelativeDateTime when={props.updated as Date} /></i>
+        <Link style={showIfLoggedIn()} to={`/blogs/${props.handle}/edit/${props.entryId}`}>
+            <Button type='primary'>Edit</Button>
+        </Link>
+    </List.Item>;
+
+    {/* (<Card style={{width: '18em'}} key={props.entryId}>
         <Card.Img variant='top'
                   src={`https://picsum.photos/seed/picsum/215/160?random=${props.entryId}`} />
         <Card.Body>
@@ -50,7 +60,7 @@ function EntryCard(props: BlogCardProps) {
                 <Button variant='primary'>Edit</Button>
             </Link>
         </Card.Body>
-    </Card>);
+    </Card>); */ }
 }
 
 export default EntryCard;

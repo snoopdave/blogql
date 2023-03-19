@@ -4,10 +4,10 @@
  */
 
 import {Entry} from '../graphql/schema';
-import {Table} from 'react-bootstrap';
 import {Link} from 'react-router-dom';
 import {SimpleDateTime} from '../common/DateTime';
 import React from 'react';
+import {Table} from "antd";
 
 interface DraftListProps {
     handle: string;
@@ -15,20 +15,20 @@ interface DraftListProps {
 }
 
 function DraftsList(props: DraftListProps) {
-    return <Table striped bordered hover>
-        <thead>
-        <tr>
-            <th>Title</th>
-            <th>Updated</th>
-        </tr>
-        </thead>
-        <tbody>{ props.drafts.map((entry: Entry) => entry ? (
-            <tr key={entry.id}>
-                <td><Link className='nav-link' to={`/blogs/${props.handle}/edit/${entry.id}`}>{entry.title}</Link></td>
-                <td><span className='nav-link'><SimpleDateTime when={entry.updated}/></span></td>
-            </tr> ) : null)
-        }</tbody>
-    </Table>;
+    const dataSource: Entry[] = props.drafts;
+    console.table(dataSource);
+    const tableStyle: React.CSSProperties = {
+        marginTop: '1em',
+    };
+    const columns = [
+        { title:'Title', dataIndex:'title', key:'title', render: (_: any, entry: Entry) =>
+            <Link className='nav-link' to={`/blogs/${props.handle}/edit/${entry.id}`}>{entry.title}</Link>
+        },
+        { title:'Updated', dataIndex:'updated', key:'updated', render: (_: any, entry: Entry) =>
+            <span className='nav-link'><SimpleDateTime when={entry.updated}/></span>
+        },
+    ];
+    return <Table style={tableStyle} dataSource={dataSource} columns={columns} />;
 }
 
 export default DraftsList;

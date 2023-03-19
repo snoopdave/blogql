@@ -4,11 +4,11 @@
  */
 
 import React from 'react';
-import {Jumbotron} from 'react-bootstrap';
 import {useParams} from 'react-router-dom';
 import {useQuery} from '@apollo/client/react/hooks/useQuery';
 import {ENTRIES_QUERY} from '../graphql/queries';
 import EntriesColumns from "./EntriesColumns";
+import {Heading} from "../common/Heading";
 
 
 export interface BlogViewProps {
@@ -33,9 +33,7 @@ function Entries(props: BlogViewProps) {
 
     return (
         <>
-            <Jumbotron>
-            <h1>{data.blog.name}</h1>
-            </Jumbotron>
+            <Heading title={data.blog.name} heading={'Tagline coming soon'} />
             <EntriesColumns handle={handle!} loggedIn={props.loggedIn} entries={data.blog.entries?.nodes} />
         </>
     );

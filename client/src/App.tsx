@@ -4,12 +4,9 @@
  */
 
 import React, {useState} from 'react';
-import Container from 'react-bootstrap/Container';
-import {Routes, Route} from 'react-router';
+import {Route, Routes} from 'react-router';
 import {BrowserRouter as Router} from 'react-router-dom';
-
-import {Col, Row} from 'react-bootstrap'
-import 'bootstrap/dist/css/bootstrap.min.css';
+import {Layout} from "antd";
 
 import {EditorFormViaBlogHandle, EditorFormViaEntryId} from './entries/EntryEditor';
 import Entries from './entries/Entries';
@@ -19,11 +16,12 @@ import {BlogsList} from './blogs/BlogsList';
 import {BlogCreate} from './blogs/BlogCreate';
 import {BlogSettings} from './blogs/BlogSettings';
 import {Welcome} from './Welcome';
-
-// import BlogQL CSS last to ensure it appears at the end of bundle.css
-import './App.css';
 import {BlogNav} from './BlogNav';
 import {EntryView} from './entries/EntryView';
+
+// import BlogQL CSS last to ensure it appears at the end of bundle.css
+import 'antd/dist/reset.css';
+import './App.css';
 
 function App() {
     const [loggedIn, setLoggedIn] = useState(false);
@@ -47,62 +45,67 @@ function App() {
         // no-op
     }
 
+    const headerStyle: React.CSSProperties = {
+    };
+
+    const contentStyle: React.CSSProperties = {
+        padding: 0,
+        margin: '2em 5em 2em 5em'
+    };
+
+    const footerStyle: React.CSSProperties = {
+        padding: 0,
+        margin: '2em 5em 2em 5em'
+    };
+
+    const { Header, Footer, Content } = Layout;
+
     return (
-        <Container>
-            <ProvideAuth onLogin={onLogin}>
-                <Router>
+        <ProvideAuth onLogin={onLogin}>
+            <Router>
 
-                    <Row>
-                        <Col/>
-                        <Col xs={10}>
-                            <BlogNav onLogout={onLogout} />
-                        </Col>
-                        <Col/>
-                    </Row>
+                <Layout>
+                    <Header style={headerStyle}>
+                        <BlogNav onLogout={onLogout} />
+                    </Header>
+                    <Content style={contentStyle}>
+                        <Routes>
+                            <Route path='/'
+                                   element={<BlogsList/>} />
 
-                    <Row>
-                        <Col/>
-                        <Col xs={10}>
+                            <Route path='/login'
+                                   element={<Welcome onLogin={onLogin}/>} />
 
-                            <Routes>
-                                <Route path='/'
-                                       element={<BlogsList/>} />
+                            <Route path='/create-blog'
+                                   element={<BlogCreate onBlogUpdated={onBlogUpdated}/>} />
 
-                                <Route path='/login'
-                                       element={<Welcome onLogin={onLogin}/>} />
+                            <Route path='/blogs'
+                                   element={<BlogsList/>} />
 
-                                <Route path='/create-blog'
-                                       element={<BlogCreate onBlogUpdated={onBlogUpdated}/>} />
+                            <Route path='/blogs/:handle'
+                                   element={<Entries loggedIn={loggedIn}/>} />
 
-                                <Route path='/blogs'
-                                       element={<BlogsList/>} />
+                            <Route path='/blogs/:handle/settings'
+                                   element={<BlogSettings onBlogUpdated={onBlogUpdated}/>} />
 
-                                <Route path='/blogs/:handle'
-                                       element={<Entries loggedIn={loggedIn}/>} />
+                            <Route path='/blogs/:handle/drafts'
+                                   element={<Drafts/>} />
 
-                                <Route path='/blogs/:handle/settings'
-                                       element={<BlogSettings onBlogUpdated={onBlogUpdated}/>} />
+                            <Route path='/blogs/:handle/edit'
+                                   element={<EditorFormViaBlogHandle/>} />
 
-                                <Route path='/blogs/:handle/drafts'
-                                       element={<Drafts/>} />
+                            <Route path='/blogs/:handle/edit/:id'
+                                   element={<EditorFormViaEntryId/>} />
 
-                                <Route path='/blogs/:handle/edit'
-                                       element={<EditorFormViaBlogHandle/>} />
+                            <Route path='/blogs/:handle/entries/:id'
+                                   element={<EntryView loggedIn={loggedIn}/>} />
+                        </Routes>
+                    </Content>
+                    <Footer style={footerStyle}>BlogQL Copyright Dave Johnson 2023</Footer>
+                </Layout>
 
-                                <Route path='/blogs/:handle/edit/:id'
-                                       element={<EditorFormViaEntryId/>} />
-
-                                <Route path='/blogs/:handle/entries/:id'
-                                       element={<EntryView loggedIn={loggedIn}/>} />
-                            </Routes>
-
-                        </Col>
-                        <Col/>
-                    </Row>
-                </Router>
-
-            </ProvideAuth>
-        </Container>
+            </Router>
+        </ProvideAuth>
     );
 }
 

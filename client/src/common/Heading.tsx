@@ -3,17 +3,14 @@
  * Licensed under Apache Software License v2.
  */
 
-import {Jumbotron} from "react-bootstrap";
+import React from "react";
 
 interface HeadingProps {
     title?: String;
     heading: String;
 }
 export function Heading(props: HeadingProps) {
-    return <Jumbotron>
-        { props.title &&
-            <h1>{props.title}</h1>
-        }
-        <p>{props.heading}</p>
-    </Jumbotron>;
+    return <div className='heading'>
+        <h1>{props.title}</h1><p>{props.heading}</p>
+    </div>
 }

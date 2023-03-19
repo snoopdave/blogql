@@ -6,11 +6,11 @@
 import {Link, useParams} from 'react-router-dom';
 import {useQuery} from '@apollo/client/react/hooks/useQuery';
 import {ENTRY_QUERY} from '../graphql/queries';
-import {Button, Jumbotron} from 'react-bootstrap';
 import React, {CSSProperties} from 'react';
 import {SimpleDateTime} from '../common/DateTime';
 
 import './EntryView.css';
+import {Button, Card} from "antd";
 
 export interface EntryViewProps {
     loggedIn: boolean;
@@ -41,9 +41,9 @@ export function EntryView(props: EntryViewProps) {
 
     return (
         <>
-            <Jumbotron>
+            <Card>
                 <h1>{data.blog.name}</h1>
-            </Jumbotron>
+            </Card>
             <h2>{data.blog.entry.title}</h2>
             <p>
                 { /* <img style={showIfLoggedIn()} className='profile-pic' src={data.blog.user.picture} alt={data.blog.user.username} /> */ }
@@ -56,7 +56,7 @@ export function EntryView(props: EntryViewProps) {
                 <b>Published</b>: <SimpleDateTime when={data.blog.entry.published as Date} />
             </p>
             <Link style={showIfLoggedIn()} to={`/blogs/${handle}/edit/${id}`}>
-                <Button variant='primary'>Edit</Button>
+                <Button type='primary'>Edit</Button>
             </Link>
         </>
     );

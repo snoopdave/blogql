@@ -4,15 +4,13 @@
  */
 
 import React, {ChangeEvent, useState} from 'react';
-import {Button, Col, Container, Form, Modal, Row, Toast} from 'react-bootstrap';
 import {useNavigate} from 'react-router';
 import {Link, useParams} from 'react-router-dom';
 
-import { Sources } from 'quill';
+import {Sources} from 'quill';
 import ReactQuill, {UnprivilegedEditor} from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {useMutation, useQuery} from '@apollo/client/react/hooks';
 
 import {Entry} from '../graphql/schema';
@@ -28,48 +26,51 @@ import {SimpleDateTime} from '../common/DateTime';
 import {RequireAuth} from '../common/Authentication';
 import {Heading} from '../common/Heading';
 
+import {Alert, Button, Form, Input, Modal, Space} from "antd";
+import {useForm} from "antd/lib/form/Form";
+
 // import BlogQL CSS last to ensure it appears at the end of bundle.css
 import './EntryEditor.css';
 
 export function EditorWelcome() {
     return <Heading title='Entry editor'
-                    heading='This is where you create a new entry or edit your old ones' />;
+                    heading='This is where you create a new entry or edit your old ones'/>;
 }
 
 export function EditorFormViaEntryId() {
-    const { handle } = useParams<{handle : string}>(); // get handle param from router route
-    const { id } = useParams<{id : string}>(); // get id param from router route
+    const {handle} = useParams<{ handle: string }>(); // get handle param from router route
+    const {id} = useParams<{ id: string }>(); // get id param from router route
     const {loading, error, data} = useQuery(ENTRY_QUERY, {variables: {handle, id}});
     if (!error && data?.blog.id) {
         return (loading ? <p>Loading...</p> :
             <EditorForm blogId={data.blog.id}
-                id={id!}
-                title={data.blog.entry.title}
-                content={data.blog.entry.content}
-                created={data.blog.entry.created}
-                updated={data.blog.entry.updated}
-                published={data.blog.entry.published}
-                publish={!!data.blog.entry.published}
+                        id={id!}
+                        title={data.blog.entry.title}
+                        content={data.blog.entry.content}
+                        created={data.blog.entry.created}
+                        updated={data.blog.entry.updated}
+                        published={data.blog.entry.published}
+                        publish={!!data.blog.entry.published}
             />);
     }
     return (<>An unexpected error has occurred: {error}</>)
 }
 
 export function EditorFormViaBlogHandle() {
-    const { handle } = useParams<{handle : string}>(); // get handle param from router route
-    const {loading, error, data} = useQuery(BLOG_BY_HANDLE_QUERY, { variables: { handle } });
+    const {handle} = useParams<{ handle: string }>(); // get handle param from router route
+    const {loading, error, data} = useQuery(BLOG_BY_HANDLE_QUERY, {variables: {handle}});
     if (!error && data?.blog.id) {
         return (loading ? <p>Loading...</p> :
-            <EditorForm
-                blogId={data.blog.id}
-                id=''
-                title=''
-                content=''
-                created={new Date()}
-                updated={new Date()}
-                published={undefined}
-                publish={false}
-            />
+                <EditorForm
+                    blogId={data.blog.id}
+                    id=''
+                    title=''
+                    content=''
+                    created={new Date()}
+                    updated={new Date()}
+                    published={undefined}
+                    publish={false}
+                />
         );
     }
     return (<>An unexpected error has occurred: {error}</>)
@@ -90,7 +91,7 @@ export function EditorForm(props: EditorFormProps) {
     const navigate = useNavigate();
 
     const id = props.id;
-    const { handle } = useParams<{handle : string}>(); // get handle param from router route
+    const {handle} = useParams<{ handle: string }>(); // get handle param from router route
     if (handle === undefined) {
         return <p>Error loading blog</p>;
     }
@@ -105,6 +106,8 @@ export function EditorForm(props: EditorFormProps) {
     const [saved, setSaved] = useState(id !== null && id !== undefined);
     const [valid, setValid] = useState(isValid());
 
+    const [ form ] = useForm();
+
     // eslint-disable-next-line
     let editor: UnprivilegedEditor | null = null; // assigned a value below in handleContentFocus()
 
@@ -113,10 +116,10 @@ export function EditorForm(props: EditorFormProps) {
             variables: {handle, title, content},
             refetchQueries: [{
                 query: DRAFTS_QUERY,
-                variables: { handle },
+                variables: {handle},
             }, {
                 query: ENTRIES_QUERY,
-                variables: { handle },
+                variables: {handle},
             }],
             awaitRefetchQueries: true,
         });
@@ -137,16 +140,16 @@ export function EditorForm(props: EditorFormProps) {
     }
 
     const [updateEntryMutation] = useMutation<Entry, { handle: string, id: string, title: string, content: string }>(ENTRY_UPDATE_MUTATION, {
-            variables: { handle, id, title, content },
-            refetchQueries: [{
-                query: DRAFTS_QUERY,
-                variables: { handle },
-            }, {
-                query: ENTRIES_QUERY,
-                variables: { handle },
-            }],
-            awaitRefetchQueries: true,
-        });
+        variables: {handle, id, title, content},
+        refetchQueries: [{
+            query: DRAFTS_QUERY,
+            variables: {handle},
+        }, {
+            query: ENTRIES_QUERY,
+            variables: {handle},
+        }],
+        awaitRefetchQueries: true,
+    });
 
     function updateEntry() {
         updateEntryMutation()
@@ -165,13 +168,13 @@ export function EditorForm(props: EditorFormProps) {
     }
 
     const [publishEntryMutation] = useMutation<Entry, { handle: string, id: string, title: string, content: string }>(ENTRY_PUBLISH_MUTATION, {
-        variables: {handle, id, title, content },
+        variables: {handle, id, title, content},
         refetchQueries: [{
             query: DRAFTS_QUERY,
-            variables: { handle },
+            variables: {handle},
         }, {
             query: ENTRIES_QUERY,
-            variables: { handle },
+            variables: {handle},
         }],
         awaitRefetchQueries: true,
     });
@@ -199,10 +202,10 @@ export function EditorForm(props: EditorFormProps) {
             variables: {handle, id},
             refetchQueries: [{
                 query: DRAFTS_QUERY,
-                variables: { handle },
+                variables: {handle},
             }, {
                 query: ENTRIES_QUERY,
-                variables: { handle },
+                variables: {handle},
             }],
             awaitRefetchQueries: true,
         });
@@ -220,6 +223,10 @@ export function EditorForm(props: EditorFormProps) {
                 setFailure(true);
                 setToast('Failed to delete entry');
             });
+    }
+
+    function cancelDelete() {
+        setDeleting(false);
     }
 
     function onTitleChange(event: ChangeEvent<HTMLInputElement>) {
@@ -259,146 +266,94 @@ export function EditorForm(props: EditorFormProps) {
         setDeleting(false);
     }
 
+
     return (
         <RequireAuth redirectTo='/login'>
 
             <EditorWelcome/>
 
-            <Toast show={success} autohide={true} delay={3000}
-                   style={{ position: 'absolute', top: 0, right: 0, }} onClose={clearToast} >
-                <Toast.Header>
-                    <FontAwesomeIcon icon='house' style={{ color: 'green' }} />
-                    Success!
-                </Toast.Header>
-                <Toast.Body>{toast}</Toast.Body>
-            </Toast>
+            {success && (
+                <Alert message={'Success!'} type={'success'} onClose={clearToast}/>
+            )}
 
-            <Toast show={failure} autohide={true} delay={3000}
-                   style={{ position: 'absolute', top: 0, right: 0, }} onClose={clearToast} >
-                <Toast.Header>
-                    <FontAwesomeIcon icon='house' style={{ color: 'red', margin: '1em' }} />
-                    Um... not good!
-                </Toast.Header>
-                <Toast.Body>{toast}</Toast.Body>
-            </Toast>
+            {failure && (
+                <Alert message={'Um... not good!'} type={'error'} onClose={clearToast}/>
+            )}
 
-            <Form>
-                <Form.Group controlId='formTitle'>
-                    <Form.Label>Title</Form.Label>
-                    <Form.Control type='text' value={title} placeholder='Title...' onChange={onTitleChange} />
-                </Form.Group>
+            <Form form={form}
+                  initialValues={ {title: title, content: content} }
+                  labelCol={{ span: 2 }}
+                  wrapperCol={{ span: 12 }} >
 
-                {/*
-                    Quill Rich Text Editor
-                */}
-                <Form.Group controlId='formContent' className='form-group-quill'>
-                    <Form.Label>Content</Form.Label>
-                    <ReactQuill theme='snow' value={content} placeholder='Content...'
-                                onChange={onContentChange} onFocus={handleContentFocus} />
-                </Form.Group>
+                <Form.Item label='Title' name='title'>
+                    <Input onChange={onTitleChange}/>
+                </Form.Item>
 
-                {/*
-                    Bootstrap Grid Layout below with two rows:
-                    Row one:
-                        Left: Save, Cancel and Done buttons depending on state
-                        Right: Entry created, updated published and published dates if available
-                    Row two:
-                        Delete button
-                */}
-                <Container>
-                   <Row>
-                       <Col>
-                           {/*
-                                Save, Cancel and Done buttons
-                           */}
-                           <Form.Group>
-                               <Button disabled={!valid || saved} onClick={() => {
-                                   if (id) {
-                                       updateEntry();
-                                   } else {
-                                       createEntry();
-                                   }
-                               }}>Save
-                               </Button>
+                {props.id.length > 0 && props.created &&
+                    <Form.Item label='Created'>
+                        <SimpleDateTime when={props.created}/>
+                    </Form.Item>
+                }
+                {props.id.length > 0 && props.updated &&
+                    <Form.Item label='Updated'>
+                        <SimpleDateTime when={props.updated}/>
+                    </Form.Item>
+                }
+                {props.published &&
+                    <Form.Item label='Published'>
+                        <SimpleDateTime when={props.published}/>
+                    </Form.Item>
+                }
 
-                               { !published &&
-                                   <Button disabled={!valid} onClick={() => {
-                                       publishEntry();
-                                   }}>Publish
-                                   </Button>
-                               }
+                <Form.Item label='Content' name='content'>
+                    <ReactQuill theme='snow'
+                                value={content} placeholder='Content...'
+                                onChange={onContentChange}
+                                onFocus={handleContentFocus}/>
+                </Form.Item>
 
-                               { saved &&
-                                   <Link to={`/blogs/${handle}`}>
-                                       <Button>Done</Button>
-                                   </Link>
-                               }
+                <Form.Item wrapperCol={{ offset: 2, span: 12 }}>
+                    <Space>
+                    <Button disabled={!valid || saved} onClick={() => {
+                        if (id) {
+                            updateEntry();
+                        } else {
+                            createEntry();
+                        }
+                    }}>Save
+                    </Button>
 
-                               { !saved &&
-                                   <Link to={`/blogs/${handle}`}>
-                                       <Button>Cancel</Button>
-                                   </Link>
-                               }
-                           </Form.Group>
-
-                       </Col>
-                       <Col xs={2} />
-                       <Col>
-                           {/*
-                                Entry dates
-                           */}
-                           { props.id.length > 0 && props.created &&
-                               <Form.Group controlId='formCreated' className='readonly-date'>
-                                   <Form.Label><span><b>Created</b>: <SimpleDateTime when={props.created}/></span></Form.Label>
-                               </Form.Group>
-                           }
-                           { props.id.length > 0 && props.updated &&
-                               <Form.Group controlId='formUpdated' className='readonly-date'>
-                                   <Form.Label><span><b>Updated</b>: <SimpleDateTime when={props.updated}/></span></Form.Label>
-                               </Form.Group>
-                           }
-                           { props.published &&
-                               <Form.Group controlId='formPublished' className='readonly-date'>
-                                   <Form.Label><span><b>Published</b>: <SimpleDateTime when={props.published}/></span></Form.Label>
-                               </Form.Group>
-                           }
-                       </Col>
-                    </Row>
-                    { props.id.length > 0 &&
-                        <Row>
-                            <Col>
-                                {/*
-                                    Delete button
-                                */}
-                                Deleting an entry is an irreversible action
-                                <Form.Group>
-                                    <Button variant='danger' disabled={!id} onClick={() => {
-                                        setDeleting(true);
-                                    }}>Delete</Button>
-                                </Form.Group>
-
-                            </Col>
-                        </Row>
+                    {!published &&
+                        <Button disabled={!valid} onClick={() => { publishEntry(); }}>Publish </Button>
                     }
-                </Container>
+                    {saved &&
+                        <Link to={`/blogs/${handle}`}> <Button>Done</Button> </Link>
+                    }
+                    {!saved &&
+                        <Link to={`/blogs/${handle}`}> <Button>Cancel</Button> </Link>
+                    }
+                    </Space>
+                </Form.Item>
 
+                <br />
+                <Form.Item wrapperCol={{ offset: 2, span: 12 }}>
+                {props.id.length > 0 &&
+                    <>
+                        <p>Deleting an entry is an irreversible action.</p>
+                        <Button danger disabled={!id} onClick={() => {
+                            setDeleting(true);
+                        }}>Delete</Button>
+                    </>
+                }
+                </Form.Item>
             </Form>
 
-            <Modal show={deleting} onHide={() => { setDeleting(false) }}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Delete Entry</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <p>Are you sure you want to do this?</p>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant='secondary' onClick={() => {
-                        setDeleting(false);
-                    }}>Cancel</Button>
-                    <Button variant='danger' onClick={() => {
-                        deleteEntry();
-                    }}>Yes - Delete</Button>
-                </Modal.Footer>
+            <Modal
+                title="Delete Entry"
+                visible={deleting}
+                onOk={deleteEntry}
+                onCancel={cancelDelete}>
+                <p>Are you sure you want to do this?</p>
             </Modal>
 
         </RequireAuth>

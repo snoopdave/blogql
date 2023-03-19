@@ -68,7 +68,6 @@ interface RequireAuthProps {
 export function RequireAuth(props: RequireAuthProps): JSX.Element {
     let isAuthenticated = useAuth();
     const navigate = useNavigate();
-    console.log(`Required Auth auth = ${isAuthenticated}`);
     return (isAuthenticated ? props.children : navigate(props.redirectTo)) as JSX.Element;
 }
 

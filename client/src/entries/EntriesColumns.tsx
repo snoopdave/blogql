@@ -4,9 +4,9 @@
  */
 
 import {Entry} from "../graphql/schema";
-import {CardColumns} from "react-bootstrap";
-import EntryCard from "./EntryCard";
 import React from "react";
+import EntryCard from "./EntryCard";
+import {List} from "antd";
 
 interface EntryColumnsProps {
     loggedIn: boolean;
@@ -15,7 +15,7 @@ interface EntryColumnsProps {
 }
 
 function EntriesColumns(props: EntryColumnsProps) {
-    return <CardColumns>{
+    return <List itemLayout={'vertical'}>{
         props.entries.map((entry: Entry) => entry ? (
             <EntryCard loggedIn={props.loggedIn}
                        title={entry.title}
@@ -25,7 +25,7 @@ function EntriesColumns(props: EntryColumnsProps) {
                        updated={entry.updated}
             />
         ) : null)
-    }</CardColumns>
+    }</List>
 }
 
 export default EntriesColumns;
