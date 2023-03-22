@@ -18,7 +18,7 @@ This is a learning project; something I started to help me learn React, TypeScri
 ## Client
 * [React.js](https://reactjs.org) application
 * [React Router v5](https://v5.reactrouter.com)
-* [React Bootstrap](https://react-bootstrap.github.io)
+* [Ant Design componments](https://ant.design)
 * [Apollo GraphQL client](https://www.apollographql.com/docs/react/)
 * [Quill](https://quilljs.com) (rich text editor)
 * [Webpack](https://webpack.js.org) bundling and dev server
