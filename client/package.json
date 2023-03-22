@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@ant-design/cssinjs": "^1.6.1",
+    "@ant-design/icons": "^5.0.1",
     "@apollo/client": "^3.7.4",
     "@fortawesome/fontawesome-free": "^5.15.3",
     "@fortawesome/free-solid-svg-icons": "^5.15.3",

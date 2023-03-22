@@ -25,8 +25,8 @@ export function BlogsList() {
         return (<p>no data!</p>);
     }
     const columns = [
-        { title: 'Name', dataIndex: 'name', key: 'name' },
-        { title: 'Handle', dataIndex: 'handle', key: 'handle', render: (text: string) => <a href={`/blogs/${text}`}>{text}</a> },
+        { title: 'Name', dataIndex: 'name', key: 'id' },
+        { title: 'Handle', dataIndex: 'handle', key: 'id', render: (text: string) => <a href={`/blogs/${text}`}>{text}</a> },
     ];
     const dataSource = data.blogs?.nodes;
     return (

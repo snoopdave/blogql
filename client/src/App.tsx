@@ -6,7 +6,7 @@
 import React, {useState} from 'react';
 import {Route, Routes} from 'react-router';
 import {BrowserRouter as Router} from 'react-router-dom';
-import {Layout} from "antd";
+import {Divider, Layout} from "antd";
 
 import {EditorFormViaBlogHandle, EditorFormViaEntryId} from './entries/EntryEditor';
 import Entries from './entries/Entries';
@@ -25,10 +25,11 @@ import './App.css';
 
 function App() {
     const [loggedIn, setLoggedIn] = useState(false);
+
     const onLogin = (user: User | null | undefined) => {
         if (user) {
-            setLoggedIn(true);
             localStorage.setItem('BlogQlUser', JSON.stringify(user));
+            setLoggedIn(true);
             console.log(`User ${user.email} (${user.id}) logged in`);
             return;
         }
@@ -36,7 +37,9 @@ function App() {
     };
 
     const onLogout = () => {
-        logout(() => {
+        logout((message) => {
+            console.log(`Logout message: ${message}`);
+            localStorage.removeItem('BlogQlUser');
             setLoggedIn(false);
         });
     };
@@ -50,23 +53,24 @@ function App() {
 
     const contentStyle: React.CSSProperties = {
         padding: 0,
-        margin: '2em 5em 2em 5em'
+        margin: '2em 10em 2em 10em',
     };
 
     const footerStyle: React.CSSProperties = {
         padding: 0,
-        margin: '2em 5em 2em 5em'
+        margin: '2em 5em 2em 5em',
+        textAlign: 'center'
     };
 
     const { Header, Footer, Content } = Layout;
 
     return (
-        <ProvideAuth onLogin={onLogin}>
+        <ProvideAuth onLogin={onLogin} onLogout={onLogout}>
             <Router>
 
                 <Layout>
                     <Header style={headerStyle}>
-                        <BlogNav onLogout={onLogout} />
+                        <BlogNav />
                     </Header>
                     <Content style={contentStyle}>
                         <Routes>
@@ -74,7 +78,7 @@ function App() {
                                    element={<BlogsList/>} />
 
                             <Route path='/login'
-                                   element={<Welcome onLogin={onLogin}/>} />
+                                   element={<Welcome />} />
 
                             <Route path='/create-blog'
                                    element={<BlogCreate onBlogUpdated={onBlogUpdated}/>} />
@@ -101,7 +105,9 @@ function App() {
                                    element={<EntryView loggedIn={loggedIn}/>} />
                         </Routes>
                     </Content>
-                    <Footer style={footerStyle}>BlogQL Copyright Dave Johnson 2023</Footer>
+                    <Footer style={footerStyle}>
+                        <Divider>BlogQL Copyright Dave Johnson 2023</Divider>
+                    </Footer>
                 </Layout>
 
             </Router>

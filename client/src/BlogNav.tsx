@@ -3,24 +3,23 @@
  * Licensed under Apache Software License v2.
  */
 
-import {useAuth} from './common/Authentication';
+import {authContext, UserContext} from './common/Authentication';
 import {useQuery} from '@apollo/client';
 import {USER_BLOG_QUERY} from './graphql/queries';
-import React from 'react';
+import React, {useContext} from 'react';
 import {Menu} from "antd";
 import {MenuItemType} from "antd/lib/menu/hooks/useItems";
 import {Link} from "react-router-dom";
 
 interface BlogNavProps {
-    onLogout: () => void;
 }
 
 export function BlogNav(props: BlogNavProps) {
-    const auth = useAuth();
+    const userContext: UserContext = useContext(authContext);
 
     const { loading, error, data } = useQuery(USER_BLOG_QUERY, {
         variables: {
-            userId: auth?.user?.id ? auth?.user?.id : ''
+            userId: userContext?.user?.id ? userContext?.user?.id : ''
         }
     });
     if (loading) {
@@ -35,20 +34,20 @@ export function BlogNav(props: BlogNavProps) {
 
     let menuItems: MenuItemType[] = [];
 
-    if (!error && data?.blogForUser) { // logged-in user with a blog (one blog per user for now)
+    if (data?.blogForUser) { // logged-in user with a blog (one blog per user for now)
         const handle: string = data.blogForUser.handle;
         menuItems = [
             {label: <Link to={'/blogs'}>Blogs</Link>, key: "create-blog"},
             {label: <Link to={`/blogs/${handle}`}>Blog</Link>, key: "blog"},
             {label: <Link to={`/blogs/${handle}/drafts`}>Drafts</Link>, key: "drafts"},
             {label: <Link to={`/blogs/${handle}/settings`}>Settings</Link>, key: "settings"},
-            {label: <Link to={`/logout`}>Logout</Link>, key: "logout"},
+            {label: <Link to='#' onClick={userContext.logout}>Logout</Link>, key: "logout"},
         ];
 
-    } else if (auth?.user?.id) { // logged-in user without a blog
+    } else if (userContext?.user?.id) { // logged-in user without a blog
         menuItems = [
             {label: <Link to={'/create-blog'}>Create a blog</Link>, key: "create-blog"},
-            {label: <Link to={'/logout'}>Logout</Link>, key: "logout"},
+            {label: <Link to='#' onClick={userContext.logout}>Logout</Link>, key: "logout"},
         ];
 
     } else { // not logged-in
@@ -57,6 +56,8 @@ export function BlogNav(props: BlogNavProps) {
             {label: <Link to={'/login'}>Login</Link>, key: "login"},
         ];
     }
+
+    console.log(`Rendering BlogNav ${userContext.user}`);
     return (
         <Menu
             theme="dark"
