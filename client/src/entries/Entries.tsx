@@ -3,7 +3,7 @@
  * Licensed under Apache Software License v2.
  */
 
-import React, {CSSProperties} from 'react';
+import React, {CSSProperties, useContext} from 'react';
 import {Link, useParams} from 'react-router-dom';
 import {useQuery} from '@apollo/client/react/hooks/useQuery';
 import {ENTRIES_QUERY} from '../graphql/queries';
@@ -13,12 +13,13 @@ import {Avatar, Button, List, Space, Tooltip} from "antd";
 import {stripHtml} from "string-strip-html";
 import {RelativeDateTime, SimpleDateTime} from "../common/DateTime";
 import {ClockCircleOutlined, EditOutlined, LinkOutlined} from "@ant-design/icons";
+import {authContext, UserContext} from "../common/Authentication";
 
-export interface BlogViewProps {
-    loggedIn: boolean;
+export interface EntriesProps {
 }
 
-function Entries(props: BlogViewProps) {
+function Entries(props: EntriesProps) {
+    const userContext: UserContext = useContext(authContext);
     const {handle} = useParams<{ handle: string }>(); // get handle param from router route
     const {loading, error, data} = useQuery(ENTRIES_QUERY, {
         variables: {handle, limit: 50} // TODO: pagination!
@@ -35,7 +36,7 @@ function Entries(props: BlogViewProps) {
     }
 
     const showIfLoggedIn = (): CSSProperties => {
-        if (props.loggedIn) {
+        if (userContext.user?.id) {
             return {'display': 'block'};
         }
         return {'display': 'none'};

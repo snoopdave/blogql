@@ -53,7 +53,7 @@ function App() {
 
     const contentStyle: React.CSSProperties = {
         padding: 0,
-        margin: '2em 10em 2em 10em',
+        margin: '3em 5em 3em 5em', // trbl
     };
 
     const footerStyle: React.CSSProperties = {
@@ -87,7 +87,7 @@ function App() {
                                    element={<BlogsList/>} />
 
                             <Route path='/blogs/:handle'
-                                   element={<Entries loggedIn={loggedIn}/>} />
+                                   element={<Entries />} />
 
                             <Route path='/blogs/:handle/settings'
                                    element={<BlogSettings onBlogUpdated={onBlogUpdated}/>} />
@@ -102,11 +102,11 @@ function App() {
                                    element={<EditorFormViaEntryId/>} />
 
                             <Route path='/blogs/:handle/entries/:id'
-                                   element={<EntryView loggedIn={loggedIn}/>} />
+                                   element={<EntryView/>} />
                         </Routes>
                     </Content>
                     <Footer style={footerStyle}>
-                        <Divider>BlogQL Copyright Dave Johnson 2023</Divider>
+                        <Divider style={{fontSize: '10pt'}}>BlogQL Copyright Dave Johnson 2023</Divider>
                     </Footer>
                 </Layout>
 

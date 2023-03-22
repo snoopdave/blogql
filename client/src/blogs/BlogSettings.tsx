@@ -12,7 +12,7 @@ import {BLOG_BY_HANDLE_QUERY, BLOGS_QUERY} from '../graphql/queries';
 import {RequireAuth} from "../common/Authentication";
 import {useNavigate} from "react-router";
 import {Heading} from "../common/Heading";
-import {Alert, Button, Form, Input, Modal, Tabs} from "antd";
+import {Alert, Button, Form, Input, Modal, Space, Tabs} from "antd";
 import {useForm} from "antd/lib/form/Form";
 
 
@@ -95,8 +95,8 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
                 setSuccess(true);
                 setToast('Blog updated');
                 setTimeout(() => {
-                    navigate('/blogs');
-                }, 500);
+                    clearToast();
+                }, 1000);
             })
             .catch(() => {
                 setFailure(true);
@@ -179,14 +179,19 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
 
             <Heading title='Settings' heading='This is where you configure your blog' />
 
+            <Space direction="vertical" style={{ width: '100%' }}>
             { success && (
                 <Alert message={toast} type={'success'} onClose={clearToast} showIcon />
             )}
+            </Space>
+
+            <Space direction="vertical" style={{ width: '100%' }}>
             { failure && (
                 <Alert message={toast} type={'error'} onClose={clearToast} showIcon />
             )}
+            </Space>
 
-            <Tabs type='card' items={tabItems} />
+            <Tabs defaultActiveKey="name" items={tabItems} />
 
             <Modal
                 title="Delete Blog"

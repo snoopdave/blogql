@@ -6,24 +6,25 @@
 import {Link, useParams} from 'react-router-dom';
 import {useQuery} from '@apollo/client/react/hooks/useQuery';
 import {ENTRY_QUERY} from '../graphql/queries';
-import React, {CSSProperties} from 'react';
+import React, {CSSProperties, useContext} from 'react';
 import {SimpleDateTime} from '../common/DateTime';
 
 import './EntryView.css';
 import {Button, Card} from "antd";
+import {authContext, UserContext} from "../common/Authentication";
 
 export interface EntryViewProps {
-    loggedIn: boolean;
 }
 
 export function EntryView(props: EntryViewProps) {
+    const userContext: UserContext = useContext(authContext);
     const { handle, id } = useParams<{handle : string, id: string}>(); // get handle param from router route
     const { loading, error, data } = useQuery(ENTRY_QUERY, {
         variables: { handle, id }
     });
 
     const showIfLoggedIn = () : CSSProperties => {
-        if (props.loggedIn) {
+        if (userContext.user?.id) {
             return { 'display': 'block' };
         }
         return { 'display': 'none' };

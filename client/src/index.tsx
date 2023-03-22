@@ -10,7 +10,6 @@ import App from './App';
 import * as serviceWorker from './tests/serviceWorker';
 import {checkLoginStatus} from './common/Authentication';
 
-
 console.log('BlogQL starting');
 
 checkLoginStatus( user => {

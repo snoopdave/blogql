@@ -8,6 +8,8 @@ import {BLOGS_QUERY} from '../graphql/queries';
 import React from 'react';
 import {Heading} from "../common/Heading";
 import {Table} from "antd";
+import {Blog} from "../graphql/schema";
+import {Link} from "react-router-dom";
 
 
 export function BlogsList() {
@@ -25,8 +27,12 @@ export function BlogsList() {
         return (<p>no data!</p>);
     }
     const columns = [
-        { title: 'Name', dataIndex: 'name', key: 'id' },
-        { title: 'Handle', dataIndex: 'handle', key: 'id', render: (text: string) => <a href={`/blogs/${text}`}>{text}</a> },
+        { title: 'Name', dataIndex: 'name', key: 'id',
+            render: (_: string, blog: Blog) => <Link to={`/blogs/${blog.handle}`}>{blog.name}</Link>
+        },
+        { title: 'Handle', dataIndex: 'handle', key: 'id',
+            render: (text: string) => <Link to={`/blogs/${text}`}>{text}</Link>
+        },
     ];
     const dataSource = data.blogs?.nodes;
     return (

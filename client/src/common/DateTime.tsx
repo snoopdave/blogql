@@ -32,7 +32,6 @@ export function RelativeDateTime(props: DateTimeProps) {
 
 // for use in editor and drafts page, e.g. "Sunday, July 3, 2022, 10:34 AM"
 export function SimpleDateTime(props: DateTimeProps) {
-    console.log(`date = ${props.when}`);
     return <>{new Intl.DateTimeFormat('en-US', {
         weekday: 'long',
         year: 'numeric',

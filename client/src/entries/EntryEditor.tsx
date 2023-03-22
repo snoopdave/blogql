@@ -283,7 +283,7 @@ export function EditorForm(props: EditorFormProps) {
             <Form form={form}
                   initialValues={ {title: title, content: content} }
                   labelCol={{ span: 2 }}
-                  wrapperCol={{ span: 12 }} >
+                  wrapperCol={{ span: 24 }} >
 
                 <Form.Item label='Title' name='title'>
                     <Input onChange={onTitleChange}/>

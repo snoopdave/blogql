@@ -48,6 +48,11 @@ interface ProvideAuthProps {
 
 export function ProvideAuth(props: ProvideAuthProps) {
     const [user, setUser] = useState(null as User | null);
+    if (!user) {
+        checkLoginStatus((user) => {
+            setUser(user);
+        });
+    }
     const contextValue: UserContext = {
         user,
         login: (user) => {
