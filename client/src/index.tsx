@@ -8,15 +8,8 @@ import ReactDOM from 'react-dom';
 import {ApolloClient, ApolloProvider, InMemoryCache} from '@apollo/client';
 import App from './App';
 import * as serviceWorker from './tests/serviceWorker';
-import {checkLoginStatus} from './common/Authentication';
 
 console.log('BlogQL starting');
-
-checkLoginStatus( user => {
-    if (user) {
-        localStorage.setItem('BlogQlUser', JSON.stringify(user));
-    }
-});
 
 const client = new ApolloClient({
     uri: 'http://localhost:4000/graphql',

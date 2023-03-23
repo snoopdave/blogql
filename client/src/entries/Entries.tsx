@@ -13,13 +13,11 @@ import {Avatar, List, Space, Tooltip} from "antd";
 import {stripHtml} from "string-strip-html";
 import {RelativeDateTime, SimpleDateTime} from "../common/DateTime";
 import {ClockCircleOutlined, EditOutlined, LinkOutlined} from "@ant-design/icons";
-import {authContext, UserContext} from "../common/Authentication";
+import {authContext, AuthContext} from "../common/Authentication";
 
-export interface EntriesProps {
-}
 
-function Entries(props: EntriesProps) {
-    const userContext: UserContext = useContext(authContext);
+function Entries() {
+    const userContext: AuthContext = useContext(authContext);
     const {handle} = useParams<{ handle: string }>(); // get handle param from router route
     const {loading, error, data} = useQuery(ENTRIES_QUERY, {
         variables: {handle, limit: 50} // TODO: pagination!
@@ -45,12 +43,13 @@ function Entries(props: EntriesProps) {
     interface TruncateContentProps {
         content: string;
         link: string;
+        truncateAt: number;
     }
 
     function TruncatedContent(props: TruncateContentProps) {
         const strippedContent = stripHtml(props.content).result;
-        const truncatedContent = strippedContent.length > 150
-            ? strippedContent.substring(0, 150) + '...' : strippedContent;
+        const truncatedContent = strippedContent.length > props.truncateAt
+            ? strippedContent.substring(0, props.truncateAt) + '...' : strippedContent;
         return <>
                 <span className='entry-card-content' dangerouslySetInnerHTML={{__html: truncatedContent}} />
             </>
@@ -95,7 +94,7 @@ function Entries(props: EntriesProps) {
                               )}
                               description={<i>Published <RelativeDateTime when={item.updated as Date}/></i>}
                           ></List.Item.Meta>
-                          <TruncatedContent content={item.content}
+                          <TruncatedContent content={item.content} truncateAt={250}
                               link={`/blogs/${data.blog.handle}/entries/${item.id}`} />
                       </List.Item>
                   )}

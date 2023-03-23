@@ -272,13 +272,17 @@ export function EditorForm(props: EditorFormProps) {
 
             <EditorWelcome/>
 
-            {success && (
+            <Space direction="vertical" style={{ width: '100%' }}>
+            { success && (
                 <Alert message={'Success!'} type={'success'} onClose={clearToast}/>
             )}
+            </Space>
 
-            {failure && (
+            <Space direction="vertical" style={{ width: '100%' }}>
+            { failure && (
                 <Alert message={'Um... not good!'} type={'error'} onClose={clearToast}/>
             )}
+            </Space>
 
             <Form form={form}
                   initialValues={ {title: title, content: content} }
@@ -286,7 +290,7 @@ export function EditorForm(props: EditorFormProps) {
                   wrapperCol={{ span: 24 }} >
 
                 <Form.Item label='Title' name='title'>
-                    <Input onChange={onTitleChange}/>
+                    <Input onChange={onTitleChange} placeholder='Title' />
                 </Form.Item>
 
                 {props.id.length > 0 && props.created &&
@@ -323,13 +327,13 @@ export function EditorForm(props: EditorFormProps) {
                     }}>Save
                     </Button>
 
-                    {!published &&
+                    { !published &&
                         <Button disabled={!valid} onClick={() => { publishEntry(); }}>Publish </Button>
                     }
-                    {saved &&
+                    { saved &&
                         <Link to={`/blogs/${handle}`}> <Button>Done</Button> </Link>
                     }
-                    {!saved &&
+                    { !saved &&
                         <Link to={`/blogs/${handle}`}> <Button>Cancel</Button> </Link>
                     }
                     </Space>
@@ -337,7 +341,7 @@ export function EditorForm(props: EditorFormProps) {
 
                 <br />
                 <Form.Item wrapperCol={{ offset: 2, span: 12 }}>
-                {props.id.length > 0 &&
+                { props.id.length > 0 &&
                     <>
                         <p>Deleting an entry is an irreversible action.</p>
                         <Button danger disabled={!id} onClick={() => {

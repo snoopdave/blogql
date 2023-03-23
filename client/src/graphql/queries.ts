@@ -9,6 +9,7 @@ export const ENTRY_QUERY = gql`query EntryQuery($handle: String!, $id: ID!) {
     blog(handle: $handle) {
         id
         name
+        handle 
         user {
             username
             picture

@@ -3,7 +3,7 @@
  * Licensed under Apache Software License v2.
  */
 
-import {authContext, UserContext} from './common/Authentication';
+import {authContext, AuthContext} from './common/Authentication';
 import {useQuery} from '@apollo/client';
 import {USER_BLOG_QUERY} from './graphql/queries';
 import React, {useContext} from 'react';
@@ -12,10 +12,11 @@ import {MenuItemType} from "antd/lib/menu/hooks/useItems";
 import {Link} from "react-router-dom";
 
 interface BlogNavProps {
+    onBlogUpdated: (hasBlog: boolean) => void;
 }
 
 export function BlogNav(props: BlogNavProps) {
-    const userContext: UserContext = useContext(authContext);
+    const userContext: AuthContext = useContext(authContext);
 
     const { loading, error, data } = useQuery(USER_BLOG_QUERY, {
         variables: {

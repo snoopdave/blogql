@@ -12,7 +12,7 @@ import {RequireAuth} from "../common/Authentication";
 import {useNavigate} from "react-router";
 import {BLOGS_QUERY} from "../graphql/queries";
 import {Heading} from "../common/Heading";
-import {Alert, Button, Form, Input} from "antd";
+import {Alert, Button, Form, Input, Space} from "antd";
 
 
 export interface BlogCreateProps {
@@ -56,6 +56,7 @@ export function BlogCreate(props: BlogCreateProps) {
     function save() {
         blogCreateMutation()
             .then(() => {
+                props.onBlogUpdated(true);
                 setSuccess(true);
                 setToast('New blog created');
                 setTimeout(() => {
@@ -80,7 +81,7 @@ export function BlogCreate(props: BlogCreateProps) {
         <RequireAuth redirectTo="/login">
 
             <Heading title='Create your blog'
-                     heading="All you need is a name and a simple text handle that be used in the blog's URL" />
+                     heading='All you need is a name and a simple text handle (aka "slug") that will be used in the blog URL.' />
 
             { success && (
                 <Alert message={'Success!'} type={'success'} onClose={clearToast}/>
@@ -90,27 +91,32 @@ export function BlogCreate(props: BlogCreateProps) {
                 <Alert message={'Um... not good!'} type={'error'} onClose={clearToast}/>
             )}
 
-            <Form>
-                <Form.Item
-                    label="Handle"
-                    name="handle"
-                    rules={[{ required: true, message: 'Please input a plaintext blog handle' }]} >
-                    <Input onChange={onHandleChange} />
-                </Form.Item>
+            <Form labelCol={{ span: 2 }} wrapperCol={{ span: 24 }}>
 
                 <Form.Item
                     label="Name"
                     name="name"
                     rules={[{ required: true, message: 'Please input a blog name' }]}>
-                    <Input onChange={onHandleChange} />
+                    <Input onChange={onNameChange} placeholder='My Blog Name' />
                 </Form.Item>
 
-                <Button disabled={!valid} onClick={() => {
-                    save();
-                }}>Save</Button>
-                <Link to='/entries'>
-                    <Button>Cancel</Button>
-                </Link>
+                <Form.Item
+                    label="Handle"
+                    name="handle"
+                    rules={[{ required: true, message: 'Please input a plaintext blog handle' }]} >
+                    <Input onChange={onHandleChange} placeholder='mybloghandle' />
+                </Form.Item>
+
+                <Form.Item wrapperCol={{ offset: 2, span: 12 }}>
+                    <Space>
+                        <Button disabled={!valid} onClick={() => {
+                            save();
+                        }}>Save</Button>
+                        <Link to='/blogs'>
+                            <Button>Cancel</Button>
+                        </Link>
+                    </Space>
+                </Form.Item>
             </Form>
 
         </RequireAuth>
