@@ -45,6 +45,12 @@ export interface BlogSettingsByIdProps {
     onBlogUpdated: (hasBlog: boolean) => void;
 }
 
+export interface BlogSettingsByIdProps {
+    id: string;
+    name: string;
+    onBlogUpdated: (hasBlog: boolean) => void;
+}
+
 export function BlogSettingsById(props: BlogSettingsByIdProps) {
     const [name, setName] = useState(props.name);
     const [valid, setValid] = useState(false);

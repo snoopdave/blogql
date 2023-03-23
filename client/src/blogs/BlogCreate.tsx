@@ -3,14 +3,14 @@
  * Licensed under Apache Software License v2.
  */
 
-import React, {ChangeEvent, useEffect, useState} from 'react';
-import {useMutation, useQuery} from '@apollo/client';
+import React, {ChangeEvent, useState} from 'react';
+import {useMutation} from '@apollo/client';
 import {Blog} from '../graphql/schema';
 import {BLOG_CREATE_MUTATION} from '../graphql/mutations';
 import {Link} from 'react-router-dom';
 import {RequireAuth} from "../common/Authentication";
 import {useNavigate} from "react-router";
-import {BLOGS_QUERY, USER_BLOG_QUERY} from "../graphql/queries";
+import {BLOGS_QUERY} from "../graphql/queries";
 import {Heading} from "../common/Heading";
 import {Alert, Button, Form, Input, Space} from "antd";
 
