@@ -3,7 +3,7 @@
  * Licensed under Apache Software License v2.
  */
 
-import React, {Context, createContext, ReactNode, useContext} from 'react';
+import React, {Context, createContext, ReactNode, useContext, useState} from 'react';
 import GoogleLogin, {GoogleLoginResponse, GoogleLoginResponseOffline} from 'react-google-login';
 import {useNavigate} from "react-router";
 
@@ -14,16 +14,16 @@ export interface User {
     updated?: string;
 }
 
-const authContext : Context<UserContext> = createContext<UserContext>({
-    user: null
+export const authContext : Context<UserContext> = createContext<UserContext>({
+    user: null,
+    logout: () => {},
+    login: (user: User | null) => {},
 });
 
-interface UserContext {
+export interface UserContext {
     user?: User | null;
-}
-
-export function useAuth() {
-    return useContext(authContext);
+    login: (user: User) => void;
+    logout: () => void;
 }
 
 export function checkLoginStatus(callback: (user: User | null) => void) {
@@ -42,19 +42,32 @@ export function checkLoginStatus(callback: (user: User | null) => void) {
 
 interface ProvideAuthProps {
     onLogin: (user: User) => void;
+    onLogout: () => void;
     children?: React.ReactNode;
+    user?: User | null;
 }
 
 export function ProvideAuth(props: ProvideAuthProps) {
-    const auth = useAuth();
-    checkLoginStatus((user) => {
-        if (user) {
-            auth.user = user;
-            props.onLogin(user);
-        }
-    });
+    const [user, setUser] = useState(props.user);
+    if (!user) {
+        checkLoginStatus((user) => {
+            setUser(user);
+        });
+    }
+    const contextValue: UserContext = {
+        user,
+        login: (user) => {
+            setUser(user);
+            props.onLogin(user!)
+        },
+        logout: () => {
+            setUser(null);
+            props.onLogout();
+        },
+    };
+
     return (
-        <authContext.Provider value={auth}>
+        <authContext.Provider value={contextValue}>
             {props.children}
         </authContext.Provider>
     );
@@ -66,19 +79,17 @@ interface RequireAuthProps {
 }
 
 export function RequireAuth(props: RequireAuthProps): JSX.Element {
-    let isAuthenticated = useAuth();
+    let auth = useContext(authContext);
     const navigate = useNavigate();
-    console.log(`Required Auth auth = ${isAuthenticated}`);
-    return (isAuthenticated ? props.children : navigate(props.redirectTo)) as JSX.Element;
+    return (auth.user ? props.children : <>{navigate(props.redirectTo)}</>) as JSX.Element;
 }
 
 interface LoginProps {
     destination: string
-    onLogin: (user: User | null | undefined) => void;
 }
 
 export function LoginButton(props : LoginProps) {
-    let auth = useAuth();
+    let userContext = useContext(authContext);
     const navigate = useNavigate();
     const cid = process.env.GOOGLE_SIGNON_CID!;
 
@@ -92,26 +103,25 @@ export function LoginButton(props : LoginProps) {
                     token: googleData.tokenId
                 }),
             })
-            auth.user = await res.json();
-            props.onLogin(auth.user);
+            userContext.user = await res.json();
+            userContext.login(userContext.user!);
             navigate(props.destination);
         } else {
-            props.onLogin(null);
             navigate(props.destination);
         }
     };
 
     return (
         <GoogleLogin clientId={cid}
-                     buttonText='Log in with Google'
-                     onSuccess={login}
-                     onFailure={login}
-                     cookiePolicy={'single_host_origin'}
+            buttonText='Log in with Google'
+            onSuccess={login}
+            onFailure={login}
+            cookiePolicy={'single_host_origin'}
         />
     );
 }
 
-export function logout(cb: (message: string) => void) {
+export function logout(afterLogout: (message: string) => void) {
     console.log(`Logging out`);
     fetch('http://localhost:4000/logout', {
         method: 'DELETE',
@@ -120,8 +130,6 @@ export function logout(cb: (message: string) => void) {
     })
         .then(response => response.json())
         .then(data => {
-            console.log(`logout message: ${data.message}`);
-            localStorage.removeItem('BlogQlUser');
-            cb(data.message);
+            afterLogout(data.message);
         });
 }

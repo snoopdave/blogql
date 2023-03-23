@@ -3,17 +3,16 @@
  * Licensed under Apache Software License v2.
  */
 
-import {Button, Form, Toast} from 'react-bootstrap';
 import React, {ChangeEvent, useState} from 'react';
 import {useMutation} from '@apollo/client';
 import {Blog} from '../graphql/schema';
 import {BLOG_CREATE_MUTATION} from '../graphql/mutations';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {Link} from 'react-router-dom';
 import {RequireAuth} from "../common/Authentication";
 import {useNavigate} from "react-router";
 import {BLOGS_QUERY} from "../graphql/queries";
 import {Heading} from "../common/Heading";
+import {Alert, Button, Form, Input} from "antd";
 
 
 export interface BlogCreateProps {
@@ -80,45 +79,38 @@ export function BlogCreate(props: BlogCreateProps) {
     return (
         <RequireAuth redirectTo="/login">
 
-            <Heading title='Create your blog' heading="All you need is a name and a simple text handle that be used in the blog's URL" />
+            <Heading title='Create your blog'
+                     heading="All you need is a name and a simple text handle that be used in the blog's URL" />
 
-            <Toast show={success} autohide={true} delay={3000}
-                   style={{ position: 'absolute', top: 0, right: 0, }} onClose={clearToast} >
-                <Toast.Header>
-                    <FontAwesomeIcon icon='home' style={{ color: 'green' }} />
-                    Success!
-                </Toast.Header>
-                <Toast.Body>{toast}</Toast.Body>
-            </Toast>
+            { success && (
+                <Alert message={'Success!'} type={'success'} onClose={clearToast}/>
+            )}
 
-            <Toast show={failure} autohide={true} delay={3000}
-                   style={{ position: 'absolute', top: 0, right: 0, }} onClose={clearToast} >
-                <Toast.Header>
-                    <FontAwesomeIcon icon='home' style={{ color: 'red', margin: '1em' }} />
-                    Um... not good!
-                </Toast.Header>
-                <Toast.Body>{toast}</Toast.Body>
-            </Toast>
+            { failure && (
+                <Alert message={'Um... not good!'} type={'error'} onClose={clearToast}/>
+            )}
 
             <Form>
-                <Form.Group controlId='formHandle'>
-                    <Form.Label>Handle</Form.Label>
-                    <Form.Control type='text' value={handle} placeholder='handle...' onChange={onHandleChange} />
-                </Form.Group>
+                <Form.Item
+                    label="Handle"
+                    name="handle"
+                    rules={[{ required: true, message: 'Please input a plaintext blog handle' }]} >
+                    <Input onChange={onHandleChange} />
+                </Form.Item>
 
-                <Form.Group controlId='formName'>
-                    <Form.Label>Name</Form.Label>
-                    <Form.Control type='text' value={name} placeholder='Name...' onChange={onNameChange} />
-                </Form.Group>
+                <Form.Item
+                    label="Name"
+                    name="name"
+                    rules={[{ required: true, message: 'Please input a blog name' }]}>
+                    <Input onChange={onHandleChange} />
+                </Form.Item>
 
-                <Form.Group>
-                    <Button disabled={!valid} onClick={() => {
-                        save();
-                    }}>Save</Button>
-                    <Link to='/entries'>
-                        <Button>Cancel</Button>
-                    </Link>
-                </Form.Group>
+                <Button disabled={!valid} onClick={() => {
+                    save();
+                }}>Save</Button>
+                <Link to='/entries'>
+                    <Button>Cancel</Button>
+                </Link>
             </Form>
 
         </RequireAuth>

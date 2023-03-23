@@ -6,10 +6,10 @@
 import {useQuery} from '@apollo/client/react/hooks/useQuery';
 import {BLOGS_QUERY} from '../graphql/queries';
 import React from 'react';
-import {Table} from 'react-bootstrap';
-import {Link} from "react-router-dom";
-import {Blog} from "../graphql/schema";
 import {Heading} from "../common/Heading";
+import {Table} from "antd";
+import {Blog} from "../graphql/schema";
+import {Link} from "react-router-dom";
 
 
 export function BlogsList() {
@@ -26,25 +26,20 @@ export function BlogsList() {
         console.log('BlogsList: No data');
         return (<p>no data!</p>);
     }
-
+    const columns = [
+        { title: 'Name', dataIndex: 'name', key: 'id',
+            render: (_: string, blog: Blog) => <Link to={`/blogs/${blog.handle}`}>{blog.name}</Link>
+        },
+        { title: 'Handle', dataIndex: 'handle', key: 'id',
+            render: (text: string) => <Link to={`/blogs/${text}`}>{text}</Link>
+        },
+    ];
+    const dataSource = data.blogs?.nodes;
     return (
         <>
-            <Heading title='Welcome to BlogQL' heading='This is where you can find a list of all the blogs in the system' />
-
-            <Table striped bordered hover>
-                <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Handle</th>
-                </tr>
-                </thead>
-                <tbody>{ data.blogs?.nodes.map((blog: Blog) => blog ? (
-                    <tr key={blog.id}>
-                        <td><Link className='nav-link' to={`/blogs/${blog.handle}`}>{blog.name}</Link></td>
-                        <td><Link className='nav-link' to={`/blogs/${blog.handle}`}>{blog.handle}</Link></td>
-                    </tr> ) : null)
-                }</tbody>
-            </Table>
+            <Heading title='Welcome to BlogQL'
+                     heading='This is where you can find a list of all the blogs in the system' />
+            <Table dataSource={dataSource} columns={columns} />
         </>
     );
 }

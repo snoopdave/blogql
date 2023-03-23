@@ -5,6 +5,8 @@
 
 export interface Entry {
     id: string;
+
+    key?: string;
     title: string;
     content: string;
     created: Date;
@@ -14,6 +16,8 @@ export interface Entry {
 
 export interface Blog {
     id: string;
+
+    key?: string;
     name: string;
     handle: string;
 }

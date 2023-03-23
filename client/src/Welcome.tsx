@@ -3,17 +3,15 @@
  * Licensed under Apache Software License v2.
  */
 
-import {LoginButton, User} from "./common/Authentication";
-import React from "react";
-import {Jumbotron} from "react-bootstrap";
+import {authContext, LoginButton, UserContext} from "./common/Authentication";
+import React, {useContext} from "react";
+import {Heading} from "./common/Heading";
 
 export interface WelcomeProps {
-    onLogin: (user: User | null | undefined) => void;
 }
-export function Welcome(props: WelcomeProps) {
-    return <Jumbotron>
-        <h1>Welcome to BlogQL!</h1>
-        <p>Please login via your favorite Google Account</p>
-        <LoginButton onLogin={props.onLogin} destination='/blogs'/>
-    </Jumbotron>
+export function Welcome() {
+    return <>
+        <Heading title='Welcome to BlogQL!' heading='Please login via your favorite Google Account' />
+        <LoginButton destination='/blogs'/>
+    </>
 }

@@ -1,3 +1,7 @@
+/**
+ * Copyright David M. Johnson (snoopdave@gmail.com).
+ * Licensed under Apache Software License v2.
+ */
 
 import {ComponentStory} from '@storybook/react';
 import {RelativeDateTime} from "./DateTime";

@@ -27,7 +27,13 @@ export const ENTRY_QUERY = gql`query EntryQuery($handle: String!, $id: ID!) {
 export const ENTRIES_QUERY = gql`query EntriesQuery($handle: String!, $limit: Int, $offset: Int, $cursor: String) {
     blog(handle: $handle) {
         id
+        handle
         name
+        user {
+            email
+            username
+            picture
+        }
         entries(limit: $limit, offset: $offset, cursor: $cursor) {
             nodes {
                 id
@@ -52,6 +58,7 @@ export const DRAFTS_QUERY = gql`query DraftsQuery($handle: String!, $limit: Int,
         drafts(limit: $limit, offset: $offset, cursor: $cursor) {
             nodes {
                 id
+                key: id
                 title
                 content
                 created
@@ -77,6 +84,7 @@ export const BLOGS_QUERY = gql`query Blogs($limit: Int, $offset: Int, $cursor: S
     blogs(limit: $limit, offset: $offset, cursor: $cursor) {
         nodes {
             id
+            key: id
             handle
             name
             created

@@ -3,22 +3,26 @@
  * Licensed under Apache Software License v2.
  */
 
-import React from 'react';
-import {Jumbotron} from 'react-bootstrap';
-import {useParams} from 'react-router-dom';
+import React, {CSSProperties, useContext} from 'react';
+import {Link, useParams} from 'react-router-dom';
 import {useQuery} from '@apollo/client/react/hooks/useQuery';
 import {ENTRIES_QUERY} from '../graphql/queries';
-import EntriesColumns from "./EntriesColumns";
+import {Heading} from "../common/Heading";
+import {Entry} from "../graphql/schema";
+import {Avatar, List, Space, Tooltip} from "antd";
+import {stripHtml} from "string-strip-html";
+import {RelativeDateTime, SimpleDateTime} from "../common/DateTime";
+import {ClockCircleOutlined, EditOutlined, LinkOutlined} from "@ant-design/icons";
+import {authContext, UserContext} from "../common/Authentication";
 
-
-export interface BlogViewProps {
-    loggedIn: boolean;
+export interface EntriesProps {
 }
 
-function Entries(props: BlogViewProps) {
-    const { handle } = useParams<{handle : string}>(); // get handle param from router route
-    const { loading, error, data } = useQuery(ENTRIES_QUERY, {
-        variables: { handle, limit: 50 } // TODO: pagination!
+function Entries(props: EntriesProps) {
+    const userContext: UserContext = useContext(authContext);
+    const {handle} = useParams<{ handle: string }>(); // get handle param from router route
+    const {loading, error, data} = useQuery(ENTRIES_QUERY, {
+        variables: {handle, limit: 50} // TODO: pagination!
     });
 
     if (loading) {
@@ -31,12 +35,71 @@ function Entries(props: BlogViewProps) {
         return (<p>no data!</p>);
     }
 
+    const showIfLoggedIn = (): CSSProperties => {
+        if (userContext.user?.id) {
+            return {'display': 'block'};
+        }
+        return {'display': 'none'};
+    };
+
+    interface TruncateContentProps {
+        content: string;
+        link: string;
+    }
+
+    function TruncatedContent(props: TruncateContentProps) {
+        const strippedContent = stripHtml(props.content).result;
+        const truncatedContent = strippedContent.length > 150
+            ? strippedContent.substring(0, 150) + '...' : strippedContent;
+        return <>
+                <span className='entry-card-content' dangerouslySetInnerHTML={{__html: truncatedContent}} />
+            </>
+    }
+
     return (
         <>
-            <Jumbotron>
-            <h1>{data.blog.name}</h1>
-            </Jumbotron>
-            <EntriesColumns handle={handle!} loggedIn={props.loggedIn} entries={data.blog.entries?.nodes} />
+            <Heading title={data.blog.name} heading={'Tagline coming soon'}/>
+            <List itemLayout='vertical'
+                  dataSource={data.blog.entries?.nodes}
+                  footer={<div></div>}
+                  renderItem={(item: Entry) => (
+                      <List.Item
+                          key={item.title}
+                          actions={[
+                              <Space>
+                                  <Tooltip title="Link">
+                                      <Link to={`/blogs/${data.blog.handle}/entries/${item.id}`}>
+                                          <LinkOutlined />
+                                      </Link>
+                                  </Tooltip>
+                                  <Tooltip title={ <>Published: <SimpleDateTime when={item.published}/></> }>
+                                      <ClockCircleOutlined />
+                                  </Tooltip>
+                                  <Link style={showIfLoggedIn()}
+                                        to={`/blogs/${data.blog.handle}/edit/${item.id}`}>
+                                      <Tooltip title="Edit">
+                                          <EditOutlined />
+                                      </Tooltip>
+                                  </Link>
+                              </Space>
+                          ]}
+                          extra={
+                              <img width={150} alt="logo" src="https://placekitten.com/150/100"/>
+                      }>
+                          <List.Item.Meta
+                              avatar={<Avatar src={data.blog.user.picture}/>}
+                              title={(
+                                  <Link to={`/blogs/${data.blog.handle}/entries/${item.id}`}>
+                                      {item.title}
+                                  </Link>
+                              )}
+                              description={<i>Published <RelativeDateTime when={item.updated as Date}/></i>}
+                          ></List.Item.Meta>
+                          <TruncatedContent content={item.content}
+                              link={`/blogs/${data.blog.handle}/entries/${item.id}`} />
+                      </List.Item>
+                  )}
+            />
         </>
     );
 }
