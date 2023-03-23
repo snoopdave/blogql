@@ -28,6 +28,6 @@ This is a learning project; something I started to help me learn React, TypeScri
 ## Infrastructure
 
 * Github Actions
-   * [On pull-request](https://github.com/snoopdave/blogql/blob/main/.github/workflows/pull-request.yaml) update: build, runs tests, builds Docker image and checks GraphQL schema.
+   * [On pull-request update](https://github.com/snoopdave/blogql/blob/main/.github/workflows/pull-request.yaml): build, runs tests, builds Docker image and checks GraphQL schema.
    * [On merge to main](https://github.com/snoopdave/blogql/blob/main/.github/workflows/merge-to-main.yaml): does same steps and then publishes GraphQL schema to Apollo Studio.
 * Work in progress: Helm charts for deploying to Kubernetes
