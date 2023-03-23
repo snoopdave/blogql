@@ -3,12 +3,10 @@
  * Licensed under Apache Software License v2.
  */
 
-import {authContext, LoginButton, UserContext} from "./common/Authentication";
-import React, {useContext} from "react";
+import {LoginButton} from "./common/Authentication";
+import React from "react";
 import {Heading} from "./common/Heading";
 
-export interface WelcomeProps {
-}
 export function Welcome() {
     return <>
         <Heading title='Welcome to BlogQL!' heading='Please login via your favorite Google Account' />

@@ -35,7 +35,8 @@ export function BlogSettings(props: BlogSettingsProps) {
         return (<p>no data!</p>);
     }
 
-    return (<BlogSettingsById id={data.blog.id} name={data.blog.name} onBlogUpdated={props.onBlogUpdated} />);
+    return (<BlogSettingsById id={data.blog.id} name={data.blog.name}
+                              onBlogUpdated={props.onBlogUpdated} />);
 }
 
 export interface BlogSettingsByIdProps {
@@ -117,6 +118,7 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
     function deleteBlog() {
         blogDeleteMutation()
             .then(() => {
+                props.onBlogUpdated(false);
                 setSuccess(true);
                 setToast('Blog deleted');
                 setTimeout(() => {
@@ -193,7 +195,6 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
 
             <Tabs defaultActiveKey="name" items={tabItems} />
 
-            {/*
             <Modal
                 title="Delete Blog"
                 open={deleting}
@@ -201,7 +202,6 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
                 onCancel={cancelDelete}>
                 <p>Are you sure you want to do this?</p>
             </Modal>
-            */}
 
         </RequireAuth>
     );

@@ -6,9 +6,9 @@
 import {ComponentMeta, ComponentStory} from "@storybook/react";
 import {Route} from "react-router";
 import {BlogCreate} from "./BlogCreate";
-import {User} from "../common/Authentication";
 import {TestHarness} from "../tests/TestHarness";
 import {withRouter} from "storybook-addon-react-router-v6";
+import {User} from "../graphql/schema";
 
 export default {
     title: 'BlogCreate',

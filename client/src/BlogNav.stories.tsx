@@ -20,13 +20,17 @@ export default {
     }
 } as ComponentMeta<typeof BlogNav>;
 
+function onUpdate() {
+    console.log('Blog updated');
+}
+
 export const Primary: ComponentStory<typeof BlogNav> = () =>
     <TestHarness loggedIn={true}>
-        <Route path='*' element={<BlogNav/>} />
+        <Route path='*' element={<BlogNav onBlogUpdated={onUpdate} />} />
     </TestHarness>
 
 export const LoggedOut: ComponentStory<typeof BlogNav> = () =>
     <TestHarness loggedIn={false}>
-        <Route path='*' element={<BlogNav/>} />
+        <Route path='*' element={<BlogNav onBlogUpdated={onUpdate} />} />
     </TestHarness>
 

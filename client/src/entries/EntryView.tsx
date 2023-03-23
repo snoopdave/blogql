@@ -11,14 +11,14 @@ import {RelativeDateTime, SimpleDateTime} from '../common/DateTime';
 
 import './EntryView.css';
 import {Button, Card, Space, Tooltip} from "antd";
-import {authContext, UserContext} from "../common/Authentication";
+import {authContext, AuthContext} from "../common/Authentication";
 import {ClockCircleOutlined, EditOutlined, LinkOutlined} from "@ant-design/icons";
 
 export interface EntryViewProps {
 }
 
 export function EntryView(props: EntryViewProps) {
-    const userContext: UserContext = useContext(authContext);
+    const userContext: AuthContext = useContext(authContext);
     const { handle, id } = useParams<{handle : string, id: string}>(); // get handle param from router route
     const { loading, error, data } = useQuery(ENTRY_QUERY, {
         variables: { handle, id }

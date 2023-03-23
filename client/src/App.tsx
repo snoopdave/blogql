@@ -3,7 +3,7 @@
  * Licensed under Apache Software License v2.
  */
 
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Route, Routes} from 'react-router';
 import {BrowserRouter as Router} from 'react-router-dom';
 import {Divider, Layout} from "antd";
@@ -11,7 +11,7 @@ import {Divider, Layout} from "antd";
 import {EditorFormViaBlogHandle, EditorFormViaEntryId} from './entries/EntryEditor';
 import Entries from './entries/Entries';
 import Drafts from './entries/Drafts';
-import {logout, ProvideAuth, User} from './common/Authentication';
+import {logout, ProvideAuth} from './common/Authentication';
 import {BlogsList} from './blogs/BlogsList';
 import {BlogCreate} from './blogs/BlogCreate';
 import {BlogSettings} from './blogs/BlogSettings';
@@ -22,15 +22,26 @@ import {EntryView} from './entries/EntryView';
 // import BlogQL CSS last to ensure it appears at the end of bundle.css
 import 'antd/dist/reset.css';
 import './App.css';
+import {User} from "./graphql/schema";
+import {useQuery} from "@apollo/client";
+import {USER_BLOG_QUERY} from "./graphql/queries";
 
 function App() {
     const [loggedIn, setLoggedIn] = useState(false);
+    const [hasBlog, setHasBlog] = useState(false);
 
     const onLogin = (user: User | null | undefined) => {
         if (user) {
-            localStorage.setItem('BlogQlUser', JSON.stringify(user));
             setLoggedIn(true);
             console.log(`User ${user.email} (${user.id}) logged in`);
+            const { loading, error, data } = useQuery(USER_BLOG_QUERY, {
+                variables: {
+                    userId: user.id,
+                }
+            });
+            if (data?.blogForUser) {
+                setHasBlog(true);
+            }
             return;
         }
         throw new Error('Login failed');
@@ -39,13 +50,12 @@ function App() {
     const onLogout = () => {
         logout((message) => {
             console.log(`Logout message: ${message}`);
-            localStorage.removeItem('BlogQlUser');
             setLoggedIn(false);
         });
     };
 
     const onBlogUpdated = (hasBlog: boolean) => {
-        // no-op
+        setHasBlog(hasBlog);
     }
 
     const headerStyle: React.CSSProperties = {
@@ -70,7 +80,7 @@ function App() {
 
                 <Layout>
                     <Header style={headerStyle}>
-                        <BlogNav />
+                        <BlogNav onBlogUpdated={onBlogUpdated} />
                     </Header>
                     <Content style={contentStyle}>
                         <Routes>
@@ -81,7 +91,7 @@ function App() {
                                    element={<Welcome />} />
 
                             <Route path='/create-blog'
-                                   element={<BlogCreate onBlogUpdated={onBlogUpdated}/>} />
+                                   element={<BlogCreate onBlogUpdated={onBlogUpdated} />} />
 
                             <Route path='/blogs'
                                    element={<BlogsList/>} />
@@ -90,7 +100,7 @@ function App() {
                                    element={<Entries />} />
 
                             <Route path='/blogs/:handle/settings'
-                                   element={<BlogSettings onBlogUpdated={onBlogUpdated}/>} />
+                                   element={<BlogSettings onBlogUpdated={onBlogUpdated} />} />
 
                             <Route path='/blogs/:handle/drafts'
                                    element={<Drafts/>} />

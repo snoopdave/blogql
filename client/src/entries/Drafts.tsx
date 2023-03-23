@@ -55,7 +55,7 @@ function Drafts() {
         <Heading title='Drafts'
             heading='This is where you find your unpublished draft blog entries, and create new ones.' />
         <Button onClick={() => { newEntry(); }}>New</Button>
-        <Table style={tableStyle} dataSource={data.blog?.drafts?.nodes} columns={columns} />;
+        <Table style={tableStyle} dataSource={data.blog?.drafts?.nodes} columns={columns} />
     </RequireAuth>
 }
 

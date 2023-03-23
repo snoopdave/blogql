@@ -4,12 +4,10 @@
  */
 import {ApolloProvider} from "@apollo/client";
 import {client} from "../setupTests";
-import {ProvideAuth, User} from "../common/Authentication";
-import {BrowserRouter as Router} from "react-router-dom";
-import {Route, Routes} from "react-router";
-import {BlogCreate} from "../blogs/BlogCreate";
+import {ProvideAuth} from "../common/Authentication";
+import {Routes} from "react-router";
 import React from "react";
-import Entries from "../entries/Entries";
+import {User} from "../graphql/schema";
 
 function onLogin() {
     console.log('Login');
