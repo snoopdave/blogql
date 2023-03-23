@@ -44,10 +44,11 @@ interface ProvideAuthProps {
     onLogin: (user: User) => void;
     onLogout: () => void;
     children?: React.ReactNode;
+    user?: User | null;
 }
 
 export function ProvideAuth(props: ProvideAuthProps) {
-    const [user, setUser] = useState(null as User | null);
+    const [user, setUser] = useState(props.user);
     if (!user) {
         checkLoginStatus((user) => {
             setUser(user);

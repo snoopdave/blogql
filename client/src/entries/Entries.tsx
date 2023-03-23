@@ -9,7 +9,7 @@ import {useQuery} from '@apollo/client/react/hooks/useQuery';
 import {ENTRIES_QUERY} from '../graphql/queries';
 import {Heading} from "../common/Heading";
 import {Entry} from "../graphql/schema";
-import {Avatar, Button, List, Space, Tooltip} from "antd";
+import {Avatar, List, Space, Tooltip} from "antd";
 import {stripHtml} from "string-strip-html";
 import {RelativeDateTime, SimpleDateTime} from "../common/DateTime";
 import {ClockCircleOutlined, EditOutlined, LinkOutlined} from "@ant-design/icons";
@@ -72,15 +72,15 @@ function Entries(props: EntriesProps) {
                                           <LinkOutlined />
                                       </Link>
                                   </Tooltip>
+                                  <Tooltip title={ <>Published: <SimpleDateTime when={item.published}/></> }>
+                                      <ClockCircleOutlined />
+                                  </Tooltip>
                                   <Link style={showIfLoggedIn()}
                                         to={`/blogs/${data.blog.handle}/edit/${item.id}`}>
                                       <Tooltip title="Edit">
                                           <EditOutlined />
                                       </Tooltip>
                                   </Link>
-                                  <Tooltip title={ <>Published: <SimpleDateTime when={item.published}/></> }>
-                                      <ClockCircleOutlined />
-                                  </Tooltip>
                               </Space>
                           ]}
                           extra={

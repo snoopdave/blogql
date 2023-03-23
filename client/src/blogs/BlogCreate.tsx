@@ -94,17 +94,15 @@ export function BlogCreate(props: BlogCreateProps) {
                 <Form.Item
                     label="Handle"
                     name="handle"
-                    rules={[{ required: true, message: 'Please input a plaintext blog handle' }]}>
-                    onChange={onHandleChange}
-                    <Input />
+                    rules={[{ required: true, message: 'Please input a plaintext blog handle' }]} >
+                    <Input onChange={onHandleChange} />
                 </Form.Item>
 
                 <Form.Item
                     label="Name"
                     name="name"
                     rules={[{ required: true, message: 'Please input a blog name' }]}>
-                    onChange={onHandleChange}
-                    <Input />
+                    <Input onChange={onHandleChange} />
                 </Form.Item>
 
                 <Button disabled={!valid} onClick={() => {

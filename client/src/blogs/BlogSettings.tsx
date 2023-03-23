@@ -20,12 +20,6 @@ export interface BlogSettingsProps {
     onBlogUpdated: (hasBlog: boolean) => void;
 }
 
-export interface BlogSettingsByIdProps {
-    id: string;
-    name: string;
-    onBlogUpdated: (hasBlog: boolean) => void;
-}
-
 export function BlogSettings(props: BlogSettingsProps) {
     const { handle } = useParams<{handle : string}>(); // get handle param from router route
 
@@ -44,6 +38,12 @@ export function BlogSettings(props: BlogSettingsProps) {
     return (<BlogSettingsById id={data.blog.id} name={data.blog.name} onBlogUpdated={props.onBlogUpdated} />);
 }
 
+export interface BlogSettingsByIdProps {
+    id: string;
+    name: string;
+    onBlogUpdated: (hasBlog: boolean) => void;
+}
+
 export function BlogSettingsById(props: BlogSettingsByIdProps) {
     const [name, setName] = useState(props.name);
     const [valid, setValid] = useState(false);
@@ -56,8 +56,6 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
 
     const [ nameForm ] = useForm();
     const [ apiKeyForm ] = useForm();
-
-    console.log(`Blog settings for blog name ${name}`);
 
     const [blogUpdateMutation] = useMutation<Entry, { id: string, name: string }>(
         BLOG_UPDATE_MUTATION, {
@@ -174,6 +172,8 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
         },
     ];
 
+    console.log(`Blog settings for blog name ${name}`);
+
     return (
         <RequireAuth redirectTo="/login">
 
@@ -193,6 +193,7 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
 
             <Tabs defaultActiveKey="name" items={tabItems} />
 
+            {/*
             <Modal
                 title="Delete Blog"
                 open={deleting}
@@ -200,6 +201,7 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
                 onCancel={cancelDelete}>
                 <p>Are you sure you want to do this?</p>
             </Modal>
+            */}
 
         </RequireAuth>
     );

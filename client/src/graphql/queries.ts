@@ -58,6 +58,7 @@ export const DRAFTS_QUERY = gql`query DraftsQuery($handle: String!, $limit: Int,
         drafts(limit: $limit, offset: $offset, cursor: $cursor) {
             nodes {
                 id
+                key: id
                 title
                 content
                 created

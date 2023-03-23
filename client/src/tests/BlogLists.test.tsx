@@ -13,6 +13,7 @@ import {Routes, Route} from "react-router";
 import {ApolloProvider} from '@apollo/client';
 import {client} from '../setupTests';
 import React from "react";
+import './MatchMediaMock';
 
 it('BlogsList renders without error with Mocked Service Worker', async () => {
     const render1 = render(

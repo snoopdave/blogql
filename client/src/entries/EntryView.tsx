@@ -7,11 +7,12 @@ import {Link, useParams} from 'react-router-dom';
 import {useQuery} from '@apollo/client/react/hooks/useQuery';
 import {ENTRY_QUERY} from '../graphql/queries';
 import React, {CSSProperties, useContext} from 'react';
-import {SimpleDateTime} from '../common/DateTime';
+import {RelativeDateTime, SimpleDateTime} from '../common/DateTime';
 
 import './EntryView.css';
-import {Button, Card} from "antd";
+import {Button, Card, Space, Tooltip} from "antd";
 import {authContext, UserContext} from "../common/Authentication";
+import {ClockCircleOutlined, EditOutlined, LinkOutlined} from "@ant-design/icons";
 
 export interface EntryViewProps {
 }
@@ -42,23 +43,30 @@ export function EntryView(props: EntryViewProps) {
 
     return (
         <>
-            <Card>
-                <h1>{data.blog.name}</h1>
-            </Card>
+            <h1>{data.blog.name}</h1>
             <h2>{data.blog.entry.title}</h2>
-            <p>
-                { /* <img style={showIfLoggedIn()} className='profile-pic' src={data.blog.user.picture} alt={data.blog.user.username} /> */ }
-                By {data.blog.user.username}
-            </p>
+            <i>Published <RelativeDateTime when={data.blog.entry.updated as Date}/></i>
             <hr />
             <div dangerouslySetInnerHTML={{__html: data.blog.entry.content}} />
-            <p>
-                <b>Author</b>: {data.blog.user.username} <br/>
-                <b>Published</b>: <SimpleDateTime when={data.blog.entry.published as Date} />
-            </p>
-            <Link style={showIfLoggedIn()} to={`/blogs/${handle}/edit/${id}`}>
-                <Button type='primary'>Edit</Button>
-            </Link>
+            <br/>
+            <p><b>Author</b>: {data.blog.user.username}</p>
+            <p><b>Published</b>: <SimpleDateTime when={data.blog.entry.published as Date} /></p>
+            <Space>
+                <Tooltip title="Link">
+                    <Link to={`/blogs/${data.blog.handle}/entries/${data.blog.entry.id}`}>
+                        <LinkOutlined />
+                    </Link>
+                </Tooltip>
+                <Tooltip title={ <>Published: <SimpleDateTime when={data.blog.entry.published}/></> }>
+                    <ClockCircleOutlined />
+                </Tooltip>
+                <Link style={showIfLoggedIn()}
+                      to={`/blogs/${data.blog.handle}/edit/${data.blog.entry.id}`}>
+                    <Tooltip title="Edit">
+                        <EditOutlined />
+                    </Tooltip>
+                </Link>
+            </Space>
         </>
     );
 }
