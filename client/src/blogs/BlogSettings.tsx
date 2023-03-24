@@ -169,7 +169,7 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
     return (
         <RequireAuth redirectTo="/login">
 
-            <Heading title='Settings' heading='This is where you configure your blog' />
+            <Heading title='Settings' heading='This is where you configure your blog.' />
 
             <Space direction="vertical" style={{ width: '100%' }}>
             { success && (

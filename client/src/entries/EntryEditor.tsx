@@ -34,7 +34,7 @@ import './EntryEditor.css';
 
 export function EditorWelcome() {
     return <Heading title='Entry editor'
-                    heading='This is where you create a new entry or edit your old ones'/>;
+                    heading='This is where you create a new entry or edit your old ones.'/>;
 }
 
 export function EditorFormViaEntryId() {

@@ -29,7 +29,7 @@ export function BlogsList() {
     return (
         <>
             <Heading title='Welcome to BlogQL'
-                     heading='This is where you can find a list of all the blogs in the system' />
+                     heading='This is where you can find a list of all the blogs in the system.' />
             <Table dataSource={dataSource} columns={columns} />
         </>
     );
