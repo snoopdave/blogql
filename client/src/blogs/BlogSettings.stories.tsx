@@ -8,6 +8,7 @@ import {Route} from "react-router";
 import {BlogSettings, BlogSettingsById} from "./BlogSettings";
 import {TestHarness} from "../tests/TestHarness";
 import {withRouter} from "storybook-addon-react-router-v6";
+import {Blog} from "../graphql/schema";
 
 export default {
     title: 'BlogSettings',
@@ -21,7 +22,7 @@ export default {
     }
 } as ComponentMeta<typeof BlogSettings>;
 
-function onUpdate() {
+function onUpdate(blog: Blog | null) {
     console.log('Blog updated');
 }
 

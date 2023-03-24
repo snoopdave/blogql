@@ -8,6 +8,7 @@ import {Route} from 'react-router';
 import {BlogNav} from "./BlogNav";
 import {TestHarness} from "./tests/TestHarness";
 import {withRouter} from "storybook-addon-react-router-v6";
+import {Blog} from "./graphql/schema";
 
 export default {
     title: 'BlogNav',
@@ -20,7 +21,7 @@ export default {
     }
 } as ComponentMeta<typeof BlogNav>;
 
-function onUpdate() {
+function onUpdate(blog: Blog | null) {
     console.log('Blog updated');
 }
 
@@ -31,6 +32,11 @@ export const Primary: ComponentStory<typeof BlogNav> = () =>
 
 export const LoggedOut: ComponentStory<typeof BlogNav> = () =>
     <TestHarness loggedIn={false}>
+        <Route path='*' element={<BlogNav onBlogUpdated={onUpdate} />} />
+    </TestHarness>
+
+export const LoggedInNoBlog: ComponentStory<typeof BlogNav> = () =>
+    <TestHarness loggedIn={true}>
         <Route path='*' element={<BlogNav onBlogUpdated={onUpdate} />} />
     </TestHarness>
 

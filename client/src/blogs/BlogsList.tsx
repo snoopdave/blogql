@@ -14,18 +14,9 @@ import {Link} from "react-router-dom";
 
 export function BlogsList() {
     const { loading, error, data } = useQuery(BLOGS_QUERY);
-    if (loading) {
-        console.log('BlogsList: Loading...');
-        return (<p>Loading...</p>);
-    }
-    if (error) {
-        console.log('BlogsList: Error');
-        return (<p>error!</p>);
-    }
-    if (!data) {
-        console.log('BlogsList: No data');
-        return (<p>no data!</p>);
-    }
+    if (loading) { return (<p>Loading...</p>); }
+    if (error) { return (<p>error!</p>); }
+    if (!data) { return (<p>no data!</p>); }
     const columns = [
         { title: 'Name', dataIndex: 'name', key: 'id',
             render: (_: string, blog: Blog) => <Link to={`/blogs/${blog.handle}`}>{blog.name}</Link>
@@ -38,7 +29,7 @@ export function BlogsList() {
     return (
         <>
             <Heading title='Welcome to BlogQL'
-                     heading='This is where you can find a list of all the blogs in the system' />
+                     heading='This is where you can find a list of all the blogs in the system.' />
             <Table dataSource={dataSource} columns={columns} />
         </>
     );

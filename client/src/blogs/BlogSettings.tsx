@@ -3,13 +3,13 @@
  * Licensed under Apache Software License v2.
  */
 
-import React, {ChangeEvent, useState} from 'react';
-import {useQuery, useMutation} from '@apollo/client/react/hooks';
-import {Entry} from '../graphql/schema';
+import React, {ChangeEvent, useContext, useState} from 'react';
+import {useMutation, useQuery} from '@apollo/client/react/hooks';
+import {Blog, Entry} from '../graphql/schema';
 import {BLOG_DELETE_MUTATION, BLOG_UPDATE_MUTATION, ISSUE_API_KEY_MUTATION} from '../graphql/mutations';
 import {Link, useParams} from 'react-router-dom';
-import {BLOG_BY_HANDLE_QUERY, BLOGS_QUERY} from '../graphql/queries';
-import {RequireAuth} from "../common/Authentication";
+import {BLOG_BY_HANDLE_QUERY, BLOGS_QUERY, USER_BLOG_QUERY} from '../graphql/queries';
+import {authContext, AuthContext, RequireAuth} from "../common/Authentication";
 import {useNavigate} from "react-router";
 import {Heading} from "../common/Heading";
 import {Alert, Button, Form, Input, Modal, Space, Tabs} from "antd";
@@ -17,41 +17,27 @@ import {useForm} from "antd/lib/form/Form";
 
 
 export interface BlogSettingsProps {
-    onBlogUpdated: (hasBlog: boolean) => void;
+    onBlogUpdated: (blog: Blog | null) => void;
 }
 
 export function BlogSettings(props: BlogSettingsProps) {
     const { handle } = useParams<{handle : string}>(); // get handle param from router route
-
     const { loading, error, data } = useQuery(BLOG_BY_HANDLE_QUERY, { variables: { handle } });
-
-    if (loading) {
-        return (<>Loading...</>);
-    }
-    if (error) {
-        return (<p>error!</p>);
-    }
-    if (!data) {
-        return (<p>no data!</p>);
-    }
-
-    return (<BlogSettingsById id={data.blog.id} name={data.blog.name}
+    if (loading) { return (<p>Loading...</p>); }
+    if (error) { return (<p>error!</p>); }
+    if (!data) { return (<p>no data!</p>); }
+    return (<BlogSettingsById id={data.blog?.id} name={data.blog?.name}
                               onBlogUpdated={props.onBlogUpdated} />);
 }
 
 export interface BlogSettingsByIdProps {
     id: string;
     name: string;
-    onBlogUpdated: (hasBlog: boolean) => void;
-}
-
-export interface BlogSettingsByIdProps {
-    id: string;
-    name: string;
-    onBlogUpdated: (hasBlog: boolean) => void;
+    onBlogUpdated: (blog: Blog | null) => void;
 }
 
 export function BlogSettingsById(props: BlogSettingsByIdProps) {
+    const userContext: AuthContext = useContext(authContext);
     const [name, setName] = useState(props.name);
     const [valid, setValid] = useState(false);
     const [success, setSuccess] = useState(false);
@@ -74,14 +60,15 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
     const [blogDeleteMutation] = useMutation<Entry, { id: string }>(
         BLOG_DELETE_MUTATION, {
             variables: { id: props.id },
-            refetchQueries: [{query: BLOGS_QUERY}],
+            refetchQueries: [
+                {query:BLOGS_QUERY},
+                {query: USER_BLOG_QUERY, variables: { userId: userContext.user?.id }}],
             awaitRefetchQueries: true,
         });
 
     const [issueApiKeyMutation] = useMutation(ISSUE_API_KEY_MUTATION, { variables: {} })
 
     function onNameChange(event: ChangeEvent<HTMLInputElement>) {
-        console.log(`Blog name change: ${event.target.value}`);
         setName(event.target.value);
         validateForm();
     }
@@ -105,7 +92,7 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
             })
             .catch(() => {
                 setFailure(true);
-                setToast('Failed to create blog');
+                setToast('Failed to update blog');
             });
     }
 
@@ -124,13 +111,12 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
     function deleteBlog() {
         blogDeleteMutation()
             .then(() => {
-                props.onBlogUpdated(false);
                 setSuccess(true);
                 setToast('Blog deleted');
                 setTimeout(() => {
-                    props.onBlogUpdated(false);
                     navigate('/blogs');
-                }, 500);
+                    props.onBlogUpdated(null);
+                }, 1000);
             })
             .catch(() => {
                 setFailure(true);
@@ -150,42 +136,54 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
     }
 
     const tabItems = [
-        {key: 'name', label: 'Name', children:
-            <Form form={nameForm} initialValues={ {name: name}}>
+        {key: 'settings', label: 'Settings', children:
+            <Form form={nameForm} initialValues={{name: name}}
+                  labelCol={{ span: 2 }} wrapperCol={{ span: 24 }}>
+                <br/>
+                <p>This is where you can set the display name of your weblog.</p>
                 <Form.Item label="Name" name='name'
                     rules={[{ required: true, message: 'Please input a blog name' }]} >
                     <Input onChange={onNameChange} />
                 </Form.Item>
-                <Button disabled={!valid} onClick={() => { save(); }}>Save</Button>
-                <Link to='/entries'> <Button>Cancel</Button> </Link>
+                <Form.Item wrapperCol={{ offset: 2, span: 12 }}>
+                    <Space>
+                        <Button disabled={!valid} onClick={() => { save(); }}>Save</Button>
+                        <Link to='/entries'> <Button>Cancel</Button> </Link>
+                    </Space>
+                </Form.Item>
             </Form>
         },
 
         {key: 'apikey', label: 'API Key', children:
-           <Form form={apiKeyForm} initialValues={ {apiKey: '*******************'} }>
+           <Form form={apiKeyForm} initialValues={{apiKey: '*******************'}}
+                 labelCol={{ span: 2 }} wrapperCol={{ span: 24 }}>
+               <br/>
                 <p>This is where you get an API key for accessing your blog via GraphQL.
                    If you have lost it you'll have to create another one here.</p>
                 <Form.Item label="API Key" name="apiKey">
                     <Input />
                 </Form.Item>
-                <Button onClick={() => { issueApiKey(); }}>Issue API Key</Button>
+               <Form.Item wrapperCol={{ offset: 2, span: 12 }}>
+                   <Space>
+                       <Button onClick={() => { issueApiKey(); }}>Issue API Key</Button>
+                   </Space>
+               </Form.Item>
             </Form>
         },
 
         {key: 'delete', label: 'Delete blog', children:
             <>
+                <br/>
                 <p>You can delete your blog here. This is an irreversible action.</p>
                 <Button danger onClick={() => { setDeleting(true); }}>Delete Blog</Button>
             </>
         },
     ];
 
-    console.log(`Blog settings for blog name ${name}`);
-
     return (
         <RequireAuth redirectTo="/login">
 
-            <Heading title='Settings' heading='This is where you configure your blog' />
+            <Heading title='Settings' heading='This is where you configure your blog.' />
 
             <Space direction="vertical" style={{ width: '100%' }}>
             { success && (
@@ -199,7 +197,7 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
             )}
             </Space>
 
-            <Tabs defaultActiveKey="name" items={tabItems} />
+            <Tabs defaultActiveKey="settings" items={tabItems} />
 
             <Modal
                 title="Delete Blog"

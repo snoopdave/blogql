@@ -31,6 +31,7 @@ export const ENTRIES_QUERY = gql`query EntriesQuery($handle: String!, $limit: In
         handle
         name
         user {
+            id
             email
             username
             picture

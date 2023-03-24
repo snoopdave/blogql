@@ -3,23 +3,24 @@
  * Licensed under Apache Software License v2.
  */
 
-import React, {ChangeEvent, useState} from 'react';
+import React, {ChangeEvent, useContext, useState} from 'react';
 import {useMutation} from '@apollo/client';
 import {Blog} from '../graphql/schema';
 import {BLOG_CREATE_MUTATION} from '../graphql/mutations';
 import {Link} from 'react-router-dom';
-import {RequireAuth} from "../common/Authentication";
+import {authContext, AuthContext, RequireAuth} from "../common/Authentication";
 import {useNavigate} from "react-router";
-import {BLOGS_QUERY} from "../graphql/queries";
 import {Heading} from "../common/Heading";
 import {Alert, Button, Form, Input, Space} from "antd";
+import {BLOGS_QUERY, USER_BLOG_QUERY} from "../graphql/queries";
 
 
 export interface BlogCreateProps {
-    onBlogUpdated: (hasBlog: boolean) => void;
+    onBlogUpdated: (blog: Blog | null) => void;
 }
 
 export function BlogCreate(props: BlogCreateProps) {
+    const userContext: AuthContext = useContext(authContext);
     const [handle, setHandle] = useState('');
     const [name, setName] = useState('');
     const [valid, setValid] = useState(false);
@@ -31,7 +32,10 @@ export function BlogCreate(props: BlogCreateProps) {
 
     const [blogCreateMutation] = useMutation<Blog, { handle: string | undefined, name: string | undefined }>(BLOG_CREATE_MUTATION, {
         variables: { handle, name },
-        refetchQueries: [{query:BLOGS_QUERY}],
+        refetchQueries: [
+            {query:BLOGS_QUERY},
+            {query: USER_BLOG_QUERY, variables: { userId: userContext.user?.id }}],
+        awaitRefetchQueries: true,
     });
 
     function onHandleChange(event: ChangeEvent<HTMLInputElement>) {
@@ -55,14 +59,16 @@ export function BlogCreate(props: BlogCreateProps) {
 
     function save() {
         blogCreateMutation()
-            .then(() => {
-                props.onBlogUpdated(true);
+            .then((data) => {
                 setSuccess(true);
                 setToast('New blog created');
                 setTimeout(() => {
-                    props.onBlogUpdated(true);
                     navigate('/blogs');
-                }, 500);
+                    const newBlog: Blog = { id: '', handle: handle, name: name, 'updated': new Date() }
+                    console.table(data.data);
+                    console.table(newBlog);
+                    props.onBlogUpdated(newBlog);
+                }, 1000);
             })
             .catch(() => {
                 setFailure(true);

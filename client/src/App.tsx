@@ -22,26 +22,20 @@ import {EntryView} from './entries/EntryView';
 // import BlogQL CSS last to ensure it appears at the end of bundle.css
 import 'antd/dist/reset.css';
 import './App.css';
-import {User} from "./graphql/schema";
-import {useQuery} from "@apollo/client";
-import {USER_BLOG_QUERY} from "./graphql/queries";
+import {Blog, User} from "./graphql/schema";
 
 function App() {
-    const [loggedIn, setLoggedIn] = useState(false);
-    const [hasBlog, setHasBlog] = useState(false);
+    const [user, setUser] = useState<User | null>();
+    const [blog, setBlog] = useState<Blog | null>();
+
+    useEffect(() => {
+        console.log(`Blog: ${blog?.handle}`);
+    });
 
     const onLogin = (user: User | null | undefined) => {
         if (user) {
-            setLoggedIn(true);
+            setUser(user);
             console.log(`User ${user.email} (${user.id}) logged in`);
-            const { loading, error, data } = useQuery(USER_BLOG_QUERY, {
-                variables: {
-                    userId: user.id,
-                }
-            });
-            if (data?.blogForUser) {
-                setHasBlog(true);
-            }
             return;
         }
         throw new Error('Login failed');
@@ -50,12 +44,12 @@ function App() {
     const onLogout = () => {
         logout((message) => {
             console.log(`Logout message: ${message}`);
-            setLoggedIn(false);
+            setUser(null);
         });
     };
 
-    const onBlogUpdated = (hasBlog: boolean) => {
-        setHasBlog(hasBlog);
+    const onBlogUpdated = (updatedBlog: Blog | null) => {
+        setBlog(updatedBlog);
     }
 
     const headerStyle: React.CSSProperties = {
@@ -73,7 +67,6 @@ function App() {
     };
 
     const { Header, Footer, Content } = Layout;
-
     return (
         <ProvideAuth onLogin={onLogin} onLogout={onLogout}>
             <Router>
@@ -106,10 +99,10 @@ function App() {
                                    element={<Drafts/>} />
 
                             <Route path='/blogs/:handle/edit'
-                                   element={<EditorFormViaBlogHandle/>} />
+                                   element={<EditorFormViaBlogHandle onBlogUpdated={onBlogUpdated} />} />
 
                             <Route path='/blogs/:handle/edit/:id'
-                                   element={<EditorFormViaEntryId/>} />
+                                   element={<EditorFormViaEntryId onBlogUpdated={onBlogUpdated}/>} />
 
                             <Route path='/blogs/:handle/entries/:id'
                                    element={<EntryView/>} />

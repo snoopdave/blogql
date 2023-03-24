@@ -8,7 +8,7 @@ import {Route} from "react-router";
 import {BlogCreate} from "./BlogCreate";
 import {TestHarness} from "../tests/TestHarness";
 import {withRouter} from "storybook-addon-react-router-v6";
-import {User} from "../graphql/schema";
+import {Blog, User} from "../graphql/schema";
 
 export default {
     title: 'BlogCreate',
@@ -21,17 +21,8 @@ export default {
     }
 } as ComponentMeta<typeof BlogCreate>;
 
-function onUpdate() {
+function onUpdate(blog: Blog | null) {
     console.log('Blog updated');
-}
-function onLogin() {
-    console.log('Login');
-}
-function onLogout() {
-    console.log('Logout');
-}
-const user: User = {
-    created: new Date().toDateString(), email: "testy@example.com", id: "bleepblort"
 }
 
 export const Primary: ComponentStory<typeof BlogCreate> = () =>

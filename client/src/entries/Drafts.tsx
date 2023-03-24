@@ -18,21 +18,10 @@ import {SimpleDateTime} from "../common/DateTime";
 function Drafts() {
     const navigate = useNavigate();
     const { handle } = useParams<{handle : string}>(); // get handle param from router route
-    const { loading, error, data } = useQuery(DRAFTS_QUERY, { variables: { handle, limit: 50 } });
-
-    useEffect(() => {
-        //console.log("useEffect called for Drafts");
-    });
-
-    if (loading) {
-        return (<p>Loading...</p>);
-    }
-    if (error) {
-        return (<p>error!</p>);
-    }
-    if (!data) {
-        return (<p>no data!</p>);
-    }
+    const { loading, error, data } = useQuery(DRAFTS_QUERY, { variables: { handle } });
+    if (loading) { return (<p>Loading...</p>); }
+    if (error) { return (<p>error!</p>); }
+    if (!data) { return (<p>no data!</p>); }
 
     function newEntry() {
         navigate(`/blogs/${handle}/edit`);
@@ -50,6 +39,8 @@ function Drafts() {
     const tableStyle: React.CSSProperties = {
         marginTop: '1em',
     };
+
+    console.log('Drafts: rendering');
 
     return <RequireAuth redirectTo='/login'>
         <Heading title='Drafts'
