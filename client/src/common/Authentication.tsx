@@ -6,7 +6,7 @@
 import React, {Context, createContext, ReactNode, useContext, useState} from 'react';
 import GoogleLogin, {GoogleLoginResponse, GoogleLoginResponseOffline} from 'react-google-login';
 import {useNavigate} from "react-router";
-import {User} from "../graphql/schema";
+import {Blog, User} from "../graphql/schema";
 
 
 // Context will be used  to provide access to user, login and logout within
@@ -67,6 +67,12 @@ export function RequireAuth(props: RequireAuthProps): JSX.Element {
     let auth = useContext(authContext);
     const navigate = useNavigate();
     return (auth.user ? props.children : <>{navigate(props.redirectTo)}</>) as JSX.Element;
+}
+
+export function RequireNoAuth(props: RequireAuthProps): JSX.Element {
+    let auth = useContext(authContext);
+    const navigate = useNavigate();
+    return (!auth.user ? props.children : <>{navigate(props.redirectTo)}</>) as JSX.Element;
 }
 
 // LoginButton component shows Google Login button, will redirect when login complete

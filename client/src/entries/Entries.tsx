@@ -22,16 +22,9 @@ function Entries() {
     const {loading, error, data} = useQuery(ENTRIES_QUERY, {
         variables: {handle, limit: 50} // TODO: pagination!
     });
-
-    if (loading) {
-        return (<p>Loading...</p>);
-    }
-    if (error) {
-        return (<p>error!</p>);
-    }
-    if (!data) {
-        return (<p>no data!</p>);
-    }
+    if (loading) { return (<p>Loading...</p>); }
+    if (error) { return (<p>error!</p>); }
+    if (!data) { return (<p>no data!</p>); }
 
     const showIfLoggedIn = (): CSSProperties => {
         if (userContext.user?.id) {

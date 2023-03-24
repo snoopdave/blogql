@@ -129,9 +129,6 @@ export function EditorForm(props: EditorFormProps) {
             .then(() => {
                 setSuccess(true);
                 setToast('New entry created');
-                // setTimeout(() => {
-                //    navigate(`/blogs/${handle}`);
-                // }, 500);
             })
             .catch(() => {
                 setFailure(true);
@@ -157,9 +154,6 @@ export function EditorForm(props: EditorFormProps) {
                 setSuccess(true);
                 setSaved(true);
                 setToast('Entry updated');
-                // setTimeout(() => {
-                //     history.push(`/blogs/${handle}`);
-                // }, 500);
             })
             .catch(() => {
                 setFailure(true);
@@ -182,14 +176,9 @@ export function EditorForm(props: EditorFormProps) {
     function publishEntry() {
         publishEntryMutation()
             .then((data) => {
-                console.table(data);
-                //setPublished(new Date());
                 setPublished(data.data?.published);
                 setSuccess(true);
                 setToast('Entry published');
-                // setTimeout(() => {
-                //     history.push(`/blogs/${handle}`);
-                // }, 500);
             })
             .catch(() => {
                 setFailure(true);

@@ -10,7 +10,7 @@ import React, {CSSProperties, useContext} from 'react';
 import {RelativeDateTime, SimpleDateTime} from '../common/DateTime';
 
 import './EntryView.css';
-import {Button, Card, Space, Tooltip} from "antd";
+import {Space, Tooltip} from "antd";
 import {authContext, AuthContext} from "../common/Authentication";
 import {ClockCircleOutlined, EditOutlined, LinkOutlined} from "@ant-design/icons";
 
@@ -30,16 +30,9 @@ export function EntryView(props: EntryViewProps) {
         }
         return { 'display': 'none' };
     };
-
-    if (loading) {
-        return (<p>Loading...</p>);
-    }
-    if (error) {
-        return (<p>error!</p>);
-    }
-    if (!data) {
-        return (<p>no data!</p>);
-    }
+    if (loading) { return (<p>Loading...</p>); }
+    if (error) { return (<p>error!</p>); }
+    if (!data) { return (<p>no data!</p>); }
 
     return (
         <>

@@ -9,9 +9,15 @@ import {gql} from '@apollo/client';
 export const BLOG_CREATE_MUTATION = gql`mutation BlogCreateMutation($handle: String!, $name: String!) {
     createBlog(handle: $handle, name: $name) {
         id
-        name
+        key: id
         handle
+        name
         created
+        updated
+        user {
+            id
+            username
+        }
     }
 }`;
 
