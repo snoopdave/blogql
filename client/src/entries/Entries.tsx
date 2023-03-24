@@ -20,7 +20,7 @@ function Entries() {
     const userContext: AuthContext = useContext(authContext);
     const {handle} = useParams<{ handle: string }>(); // get handle param from router route
     const {loading, error, data} = useQuery(ENTRIES_QUERY, {
-        variables: {handle, limit: 50} // TODO: pagination!
+        variables: {handle} // TODO: pagination!
     });
     if (loading) { return (<p>Loading...</p>); }
     if (error) { return (<p>error!</p>); }

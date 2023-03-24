@@ -64,11 +64,7 @@ export function BlogCreate(props: BlogCreateProps) {
                 setToast('New blog created');
                 setTimeout(() => {
                     navigate('/blogs');
-                    const newBlog: Blog = {
-                        id: '',
-                        handle: handle,
-                        name: name,
-                    }
+                    const newBlog: Blog = { id: '', handle: handle, name: name, 'updated': new Date() }
                     console.table(data.data);
                     console.table(newBlog);
                     props.onBlogUpdated(newBlog);

@@ -25,4 +25,6 @@ export interface Blog {
     key?: string;
     name: string;
     handle: string;
+
+    updated: Date;
 }

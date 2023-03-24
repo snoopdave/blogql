@@ -13,7 +13,7 @@ import 'react-quill/dist/quill.snow.css';
 
 import {useMutation, useQuery} from '@apollo/client/react/hooks';
 
-import {Entry} from '../graphql/schema';
+import {Blog, Entry} from '../graphql/schema';
 import {
     ENTRY_CREATE_MUTATION,
     ENTRY_DELETE_MUTATION,
@@ -26,8 +26,8 @@ import {SimpleDateTime} from '../common/DateTime';
 import {RequireAuth} from '../common/Authentication';
 import {Heading} from '../common/Heading';
 
-import {Alert, Button, Form, Input, Modal, Space} from "antd";
-import {useForm} from "antd/lib/form/Form";
+import {Alert, Button, Form, Input, Modal, Space} from 'antd';
+import {useForm} from 'antd/lib/form/Form';
 
 // import BlogQL CSS last to ensure it appears at the end of bundle.css
 import './EntryEditor.css';
@@ -37,13 +37,18 @@ export function EditorWelcome() {
                     heading='This is where you create a new entry or edit your old ones.'/>;
 }
 
-export function EditorFormViaEntryId() {
+export interface EditorFormInitProps {
+    onBlogUpdated: (blog: Blog | null) => void;
+}
+
+export function EditorFormViaEntryId(props: EditorFormInitProps) {
     const {handle} = useParams<{ handle: string }>(); // get handle param from router route
     const {id} = useParams<{ id: string }>(); // get id param from router route
     const {loading, error, data} = useQuery(ENTRY_QUERY, {variables: {handle, id}});
     if (!error && data?.blog.id) {
         return (loading ? <p>Loading...</p> :
-            <EditorForm blogId={data.blog.id}
+            <EditorForm onBlogUpdated={props.onBlogUpdated}
+                        blogId={data.blog.id}
                         id={id!}
                         title={data.blog.entry.title}
                         content={data.blog.entry.content}
@@ -56,12 +61,13 @@ export function EditorFormViaEntryId() {
     return (<>An unexpected error has occurred: {error}</>)
 }
 
-export function EditorFormViaBlogHandle() {
+export function EditorFormViaBlogHandle(props: EditorFormInitProps) {
     const {handle} = useParams<{ handle: string }>(); // get handle param from router route
     const {loading, error, data} = useQuery(BLOG_BY_HANDLE_QUERY, {variables: {handle}});
     if (!error && data?.blog.id) {
         return (loading ? <p>Loading...</p> :
                 <EditorForm
+                    onBlogUpdated={props.onBlogUpdated}
                     blogId={data.blog.id}
                     id=''
                     title=''
@@ -85,13 +91,14 @@ interface EditorFormProps {
     updated: Date;
     published: Date | undefined;
     publish: boolean;
+    onBlogUpdated: (blog: Blog | null) => void;
 }
 
 export function EditorForm(props: EditorFormProps) {
     const navigate = useNavigate();
 
     const id = props.id;
-    const {handle} = useParams<{ handle: string }>(); // get handle param from router route
+    const { handle } = useParams<{ handle: string }>(); // get handle param from router route
     if (handle === undefined) {
         return <p>Error loading blog</p>;
     }
@@ -103,7 +110,7 @@ export function EditorForm(props: EditorFormProps) {
     const [toast, setToast] = useState('');
     const [deleting, setDeleting] = useState(false);
     const [published, setPublished] = useState(props.published);
-    const [saved, setSaved] = useState(id !== null && id !== undefined);
+    const [saved, setSaved] = useState(id !== null && id !== undefined && id !== '');
     const [valid, setValid] = useState(isValid());
 
     const [ form ] = useForm();
@@ -128,7 +135,10 @@ export function EditorForm(props: EditorFormProps) {
         createEntryMutation()
             .then(() => {
                 setSuccess(true);
+                setSaved(true);
                 setToast('New entry created');
+                const blog: Blog = {'handle': handle!, id: 'dummy', name: 'dummy', 'updated': new Date() };
+                props.onBlogUpdated(blog);
             })
             .catch(() => {
                 setFailure(true);
@@ -154,6 +164,8 @@ export function EditorForm(props: EditorFormProps) {
                 setSuccess(true);
                 setSaved(true);
                 setToast('Entry updated');
+                const blog: Blog = {'handle': handle!, id: 'dummy', name: 'dummy', 'updated': new Date()};
+                props.onBlogUpdated(blog);
             })
             .catch(() => {
                 setFailure(true);
@@ -178,7 +190,10 @@ export function EditorForm(props: EditorFormProps) {
             .then((data) => {
                 setPublished(data.data?.published);
                 setSuccess(true);
+                setSaved(true);
                 setToast('Entry published');
+                const blog: Blog = {'handle': handle!, id: 'dummy', name: 'dummy', 'updated': new Date()};
+                props.onBlogUpdated(blog);
             })
             .catch(() => {
                 setFailure(true);
@@ -204,6 +219,8 @@ export function EditorForm(props: EditorFormProps) {
             .then(() => {
                 setSuccess(true);
                 setToast('Entry deleted');
+                const blog: Blog = {'handle': handle!, id: 'dummy', name: 'dummy', 'updated': new Date()};
+                props.onBlogUpdated(blog);
                 setTimeout(() => {
                     navigate(`/`);
                 }, 1000);
@@ -255,19 +272,18 @@ export function EditorForm(props: EditorFormProps) {
         setDeleting(false);
     }
 
-
     return (
         <RequireAuth redirectTo='/login'>
 
             <EditorWelcome/>
 
-            <Space direction="vertical" style={{ width: '100%' }}>
+            <Space direction='vertical' style={{ width: '100%' }}>
             { success && (
                 <Alert message={'Success!'} type={'success'} onClose={clearToast}/>
             )}
             </Space>
 
-            <Space direction="vertical" style={{ width: '100%' }}>
+            <Space direction='vertical' style={{ width: '100%' }}>
             { failure && (
                 <Alert message={'Um... not good!'} type={'error'} onClose={clearToast}/>
             )}
@@ -316,7 +332,7 @@ export function EditorForm(props: EditorFormProps) {
                     }}>Save
                     </Button>
 
-                    { !published &&
+                    { (!published && saved) &&
                         <Button disabled={!valid} onClick={() => { publishEntry(); }}>Publish </Button>
                     }
                     { saved &&
@@ -342,7 +358,7 @@ export function EditorForm(props: EditorFormProps) {
             </Form>
 
             <Modal
-                title="Delete Entry"
+                title='Delete Entry'
                 visible={deleting}
                 onOk={deleteEntry}
                 onCancel={cancelDelete}>

@@ -136,30 +136,44 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
     }
 
     const tabItems = [
-        {key: 'name', label: 'Name', children:
-            <Form form={nameForm} initialValues={ {name: name}}>
+        {key: 'settings', label: 'Settings', children:
+            <Form form={nameForm} initialValues={{name: name}}
+                  labelCol={{ span: 2 }} wrapperCol={{ span: 24 }}>
+                <br/>
+                <p>This is where you can set the display name of your weblog.</p>
                 <Form.Item label="Name" name='name'
                     rules={[{ required: true, message: 'Please input a blog name' }]} >
                     <Input onChange={onNameChange} />
                 </Form.Item>
-                <Button disabled={!valid} onClick={() => { save(); }}>Save</Button>
-                <Link to='/entries'> <Button>Cancel</Button> </Link>
+                <Form.Item wrapperCol={{ offset: 2, span: 12 }}>
+                    <Space>
+                        <Button disabled={!valid} onClick={() => { save(); }}>Save</Button>
+                        <Link to='/entries'> <Button>Cancel</Button> </Link>
+                    </Space>
+                </Form.Item>
             </Form>
         },
 
         {key: 'apikey', label: 'API Key', children:
-           <Form form={apiKeyForm} initialValues={ {apiKey: '*******************'} }>
+           <Form form={apiKeyForm} initialValues={{apiKey: '*******************'}}
+                 labelCol={{ span: 2 }} wrapperCol={{ span: 24 }}>
+               <br/>
                 <p>This is where you get an API key for accessing your blog via GraphQL.
                    If you have lost it you'll have to create another one here.</p>
                 <Form.Item label="API Key" name="apiKey">
                     <Input />
                 </Form.Item>
-                <Button onClick={() => { issueApiKey(); }}>Issue API Key</Button>
+               <Form.Item wrapperCol={{ offset: 2, span: 12 }}>
+                   <Space>
+                       <Button onClick={() => { issueApiKey(); }}>Issue API Key</Button>
+                   </Space>
+               </Form.Item>
             </Form>
         },
 
         {key: 'delete', label: 'Delete blog', children:
             <>
+                <br/>
                 <p>You can delete your blog here. This is an irreversible action.</p>
                 <Button danger onClick={() => { setDeleting(true); }}>Delete Blog</Button>
             </>
@@ -183,7 +197,7 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
             )}
             </Space>
 
-            <Tabs defaultActiveKey="name" items={tabItems} />
+            <Tabs defaultActiveKey="settings" items={tabItems} />
 
             <Modal
                 title="Delete Blog"

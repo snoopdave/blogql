@@ -99,10 +99,10 @@ function App() {
                                    element={<Drafts/>} />
 
                             <Route path='/blogs/:handle/edit'
-                                   element={<EditorFormViaBlogHandle/>} />
+                                   element={<EditorFormViaBlogHandle onBlogUpdated={onBlogUpdated} />} />
 
                             <Route path='/blogs/:handle/edit/:id'
-                                   element={<EditorFormViaEntryId/>} />
+                                   element={<EditorFormViaEntryId onBlogUpdated={onBlogUpdated}/>} />
 
                             <Route path='/blogs/:handle/entries/:id'
                                    element={<EntryView/>} />
