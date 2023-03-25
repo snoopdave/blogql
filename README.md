@@ -2,9 +2,10 @@
 
 *Simple blog app with a GraphQL backend and React frontend*
 
-BlogQL is a learning project; something I started to help enhance my knowlege of learn Node, TypeScript, React, GraphQL and GitHub Actions. 
+BlogQL is a learning project; something I started to help enhance my knowlege of learn Node, TypeScript, React, GraphQL and GitHub Actions.
+Currently the system supports login via Google, single blog per user, a rich-text blog post editor and a GraphQL API accessible via API key.
 
-[![Two-minute demo of BlogQL UI](https://github.com/snoopdave/blogql/blob/main/demo/demo-image.png)](https://vimeo.com/811456421 "BlogQL UI - Click to Watch!")
+(https://github.com/snoopdave/blogql/blob/main/demo/demo-image.png)](https://vimeo.com/811456421 "BlogQL UI - Click to Watch!")
 
 ## The stack
 
