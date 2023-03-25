@@ -4,9 +4,7 @@ This is a learning project; something I started to help enhance my knowlege of l
 The server uses Express, Apollo Server and Sequalize to persist data in SQLite.
 The client uses React and the Quill rich-text editor.
 
-Here's 
-
-[![Two-minute demo of BlogQL UI](http://i.imgur.com/7YTMFQp.png)](https://vimeo.com/3514904 "BlogQL UI - Click to Watch!")
+[![Two-minute demo of BlogQL UI](https://github.com/snoopdave/blogql/blob/main/demo/two-minute-demo-thumbnail.png)](https://vimeo.com/811456421 "BlogQL UI - Click to Watch!")
 
 
 Here are the details about the technologies in use:
