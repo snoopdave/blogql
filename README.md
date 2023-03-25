@@ -7,9 +7,6 @@ Currently the system supports login via Google, single blog per user, a rich-tex
 
 Here's a two-miniute video demo of the BlogQL UI as it stands today:
 
-<iframe src="https://player.vimeo.com/video/811456421?h=39de3c2f9a" width="640" height="435" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
-<p><a href="https://vimeo.com/811456421">BlogQL two-minute demo</a> from <a href="https://vimeo.com/user197090151">Dave Johnson</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
-
 [![Two-minute demo of BlogQL UI](https://github.com/snoopdave/blogql/blob/main/demo/demo-image.png)](https://vimeo.com/811456421 "BlogQL UI - Click to Watch!")
 
 ## The stack
