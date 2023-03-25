@@ -1,6 +1,15 @@
 # BlogQL: Simple Blog Server with GraphQL API
 
-This is a learning project; something I started to help me learn React, TypeScript and more about GraphQL and Apollo Studio. Here are some more details about the technologies in use:
+This is a learning project; something I started to help enhance my knowlege of learn Node, TypeScript, React, GraphQL and GitHub Actions. 
+The server uses Express, Apollo Server and Sequalize to persist data in SQLite.
+The client uses React and the Quill rich-text editor.
+
+Here's 
+
+[![Two-minute demo of BlogQL UI](http://i.imgur.com/7YTMFQp.png)](https://vimeo.com/3514904 "BlogQL UI - Click to Watch!")
+
+
+Here are the details about the technologies in use:
 
 ## Common
 * [Node.js](https://nodejs.org/en/)
