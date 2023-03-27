@@ -23,7 +23,6 @@ Here's a listing of the technologies used in BlogQL.
 * [Express](https://expressjs.com) for REST bits
 * [Apollo GraphQL server](https://www.apollographql.com/docs/apollo-server/)
 * [SQLite3](https://www.sqlite.org/index.html) or [Postgres](https://www.postgresql.org) database persistence
-* API key authentication
 * [Apollo Studio](https://studio.apollographql.com/) schema checks and publish
 
 ### Client
