@@ -3,15 +3,18 @@
  * Licensed under Apache Software License v2.
  */
 
-import BlogStore, {Blog} from './blogstore.js';
-import {Entry, EntryStore} from './entrystore.js';
-import {User, UserStore} from './userstore.js';
+import {Blog} from './blogs/blog.js';
+import {Entry} from './entries/entry.js';
+import {User} from './users/user.js';
 import {Node} from './node.js';
-import {Response, Cursor, resolveCollection} from './pagination.js';
+import {ResponseConnection, Cursor, resolveCollection, ResponseEdge} from './pagination.js';
 import {AuthenticationError, ForbiddenError} from 'apollo-server-express';
 import {DEBUG, log} from "./utils.js";
 import DBConnection from "./dbconnection.js";
-import {ApiKeyStore} from "./apikeystore.js";
+import {ApiKeyStore} from "./apikeys/apikeystore.js";
+import BlogStore from "./blogs/blogstore";
+import {EntryStore} from "./entries/entrystore";
+import {UserStore} from "./users/userstore";
 
 
 export interface BlogService {
@@ -21,14 +24,17 @@ export interface BlogService {
     getBlogForUser(userId: string): Promise<Blog | null>;
     getBlog(handle: string): Promise<Blog | null>;
     getBlogById(id: string): Promise<Blog | null>;
-    getBlogs(limit: number, offset: number, cursor: string): Promise<Response<Blog>>;
+    getBlogs(first: number, after: string):
+        Promise<ResponseConnection<ResponseEdge<Blog>>>;
 
     // blog
 
     getEntry(blog: Blog, id: string): Promise<Entry | null>;
     getUser(blog: Blog, id: string): Promise<User | null>;
-    getEntries(blog: Blog, limit: number, offset: number, cursor: string): Promise<Response<Entry>>;
-    getDrafts(blog: Blog, limit: number, offset: number, cursor: string): Promise<Response<Entry>>;
+    getEntries(blog: Blog, first: number, after: string):
+        Promise<ResponseConnection<ResponseEdge<Entry>>>;
+    getDrafts(blog: Blog, first: number, after: string):
+        Promise<ResponseConnection<ResponseEdge<Entry>>>;
 
     // mutation
 
@@ -137,23 +143,26 @@ export class BlogServiceSequelizeImpl implements BlogService {
         return await this.blogStore.retrieveByUserId(userId);
     }
 
-    async getBlogs(limit: number, offset: number, cursor: string): Promise<Response<Blog>> {
+    async getBlogs(first: number, after: string):
+        Promise<ResponseConnection<ResponseEdge<Blog>>> {
         await this.initDataSources();
-        return resolveCollection<Blog>({limit, cursor}, async (cursor: Cursor) => {
+        return resolveCollection<Blog>({first, after}, async (cursor: Cursor) => {
             return await this.blogStore.retrieveAll(cursor.limit + 1, cursor.offset);
         });
     }
 
-    async getDrafts(blog: Blog, limit: number, offset: number, cursor: string): Promise<Response<Entry>> {
+    async getDrafts(blog: Blog, first: number, after: string):
+        Promise<ResponseConnection<ResponseEdge<Entry>>> {
         await this.initDataSources();
-        return resolveCollection<Entry>({limit, cursor}, async (cursor: Cursor) => {
+        return resolveCollection<Entry>({first, after}, async (cursor: Cursor) => {
             return await this.entryStore.retrieveAllDrafts(blog.id, cursor.limit + 1, cursor.offset);
         });
     }
 
-    async getEntries(blog: Blog, limit: number, offset: number, cursor: string): Promise<Response<Entry>> {
+    async getEntries(blog: Blog, first: number, after: string):
+        Promise<ResponseConnection<ResponseEdge<Entry>>> {
         await this.initDataSources();
-        return resolveCollection<Entry>({limit, cursor}, async (cursor: Cursor) => {
+        return resolveCollection<Entry>({first, after}, async (cursor: Cursor) => {
             return await this.entryStore.retrieveAll(blog.id, cursor.limit + 1, cursor.offset);
         });
     }

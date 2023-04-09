@@ -3,24 +3,15 @@
  * Licensed under Apache Software License v2.
  */
 
-import DBConnection from './dbconnection.js';
+import DBConnection from '../dbconnection.js';
 import {v4 as uuid} from 'uuid';
 import sequelize from 'sequelize';
 import {DataSource} from 'apollo-datasource';
 import {DataSourceConfig} from 'apollo-datasource/src';
-import {FindAllResult} from './pagination.js';
+import {FindAllResult} from '../pagination.js';
+import {User} from "./user.js";
 
-const { DataTypes, Model } = sequelize; // sequelize is a CommonJS module
-
-
-export class User extends Model {
-    declare id: string;
-    declare username: string;
-    declare email: string;
-    declare picture: string;
-    declare created: Date;
-    declare updated: Date
-}
+const { DataTypes } = sequelize; // sequelize is a CommonJS module
 
 export class UserStore implements DataSource<User> {
     db: sequelize.Sequelize;

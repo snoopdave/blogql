@@ -3,19 +3,22 @@
  * Licensed under Apache Software License v2.
  */
 
-import {EntryStore, Entry} from '../entrystore.js';
+import {Entry} from './entries/entry.js';
 import {describe, expect, test} from '@jest/globals';
 import {v4 as uuid} from 'uuid';
-import {ApolloServer} from 'apollo-server';
-import resolvers from '../resolvers.js';
-import {randomString} from "../utils.js";
-import BlogStore, {Blog} from '../blogstore.js';
+import {ApolloServer, gql} from 'apollo-server';
+import resolvers from './resolvers.js';
+import {randomString} from "./utils.js";
+import {Blog} from './blogs/blog.js';
 import {GraphQLResponse} from 'apollo-server-types';
-import {User, UserStore} from '../userstore.js';
-import DBConnection from '../dbconnection.js';
-import { readFileSync } from 'fs';
-import {gql} from 'apollo-server';
-import {BlogService, BlogServiceSequelizeImpl} from "../blogservice";
+import {User} from './users/user.js';
+import DBConnection from './dbconnection.js';
+import {readFileSync} from 'fs';
+import {BlogService, BlogServiceSequelizeImpl} from "./blogservice";
+import {UserStore} from "./users/userstore";
+import BlogStore from "./blogs/blogstore";
+import {EntryStore} from "./entries/entrystore";
+import {ResponseEdge} from "./pagination";
 
 describe('Test the GraphQL API integration', () => {
 
@@ -78,12 +81,14 @@ describe('Test the GraphQL API integration', () => {
         const limit = 2;
         const {server, conn, blogStore, entryStore, authUsers} = await initDataStorage();
         const blog = await createBlogAndTestEntriesViaSql(authUsers[0], blogStore, entryStore);
-        let payload = {query: getEntriesQuery, variables: {handle: blog.handle, limit}};
+        let payload = { query: getEntriesQuery, variables: {
+                handle: blog.handle,
+                first: limit,
+            }};
         try {
             const result = await server.executeOperation(payload);
             expect(result.errors).toBeUndefined();
-            expect(result.data?.blog.entries.nodes).toHaveLength(limit);
-            expect(result.data?.blog.entries.pageInfo.totalCount).toBe(authUsers.length);
+            expect(result.data?.blog.entries.edges).toHaveLength(limit);
         } finally {
             await blogStore.delete(blog.id);
             await conn.destroy();
@@ -93,7 +98,10 @@ describe('Test the GraphQL API integration', () => {
     test('It can page through all entries', async () => {
         const {server, conn, blogStore, entryStore, authUsers} = await initDataStorage();
         const blog = await createBlogAndTestEntriesViaSql(authUsers[0], blogStore, entryStore);
-        const payload = {query: getEntriesQuery, variables: {handle: blog.handle, limit: 2}};
+        let payload = { query: getEntriesQuery, variables: {
+                handle: blog.handle,
+                first: 2,
+            }};
         const dataRetrieved: Entry[] = [];
         try {
             await getAllEntries(server, payload, dataRetrieved);
@@ -199,8 +207,7 @@ describe('Test the GraphQL API integration', () => {
         try {
             const result = await getBlogs(server, limit, undefined);
             expect(result.errors).toBeUndefined();
-            expect(result.data?.blogs.nodes).toHaveLength(limit);
-            expect(result.data?.blogs.pageInfo.totalCount).toBe(authUsers.length);
+            expect(result.data?.blogs.edges).toHaveLength(limit);
         } finally {
             await conn.destroy();
         }
@@ -296,17 +303,17 @@ async function getAllEntries(server: ApolloServer, payload: any, dataRetrieved: 
     const result = await server.executeOperation(payload);
     expect(result?.errors).toBeUndefined();
 
-    result.data?.blog.entries.nodes.forEach((item: Entry) => {
-        dataRetrieved.push(item);
+    result.data?.blog.entries.edges.forEach((item: ResponseEdge<Entry>) => {
+        dataRetrieved.push(item.node);
     });
 
-    if (result.data?.blog.entries.pageInfo.cursor) {
+    if (result.data?.blog.entries.pageInfo.hasNextPage) {
         const newPayload = {
             query: payload.query,
             variables: {
-                limit: payload.variables.limit,
-                cursor: result.data?.blog.entries.pageInfo.cursor,
-                handle: payload.variables.handle
+                handle: payload.variables.handle,
+                first: payload.variables.first,
+                after: result.data?.blog.entries.pageInfo.startCursor,
             }
         };
         await getAllEntries(server, newPayload, dataRetrieved);
@@ -318,17 +325,17 @@ async function getAllBlogs(server: ApolloServer, payload: any, dataRetrieved: En
     const result = await server.executeOperation(payload);
     expect(result?.errors).toBeUndefined();
 
-    result.data?.blogs.nodes.forEach((item: Entry) => {
-        dataRetrieved.push(item);
+    result.data?.blogs.edges.forEach((item: ResponseEdge<Entry>) => {
+        dataRetrieved.push(item.node);
     });
 
     if (result.data?.blogs.pageInfo.cursor) {
         const newPayload = {
             query: payload.query,
             variables: {
-                limit: payload.variables.limit,
-                cursor: result.data?.blogs.pageInfo.cursor,
-                handle: payload.variables.handle
+                handle: payload.variables.handle,
+                first: payload.variables.first,
+                after: result.data?.blogs.pageInfo.startCursor,
             }
         };
         await getAllBlogs(server, newPayload, dataRetrieved);
@@ -367,19 +374,24 @@ function verifyDate(dateString: string) {
 //
 
 const getEntriesQuery = `
-        query getBlogEntries($handle: String!, $limit: Int, $cursor: String) {
+        query getBlogEntries($handle: String!, $first: Int, $last: Int, $before: String, $after: String ) {
             blog(handle: $handle) {
-                entries(limit: $limit, cursor: $cursor) { 
-                    nodes { 
-                        id
-                        title
-                        content
-                        created
-                        updated
+                entries(first: $first, last: $last, before: $before, after: $after) { 
+                    edges {
+                        node {
+                            id
+                            title
+                            content
+                            created
+                            updated
+                        }
+                        cursor
                     }
                     pageInfo {
-                        totalCount
-                        cursor
+                        hasPreviousPage
+                        hasNextPage
+                        startCursor
+                        endCursor
                     } 
                 }
             }
@@ -402,12 +414,12 @@ const getEntryQuery = `query getEntry($handle: String!, $id: ID!) {
     }`;
 
 async function createEntry(server: ApolloServer, handle: string, title: string, content: string): Promise<GraphQLResponse> {
-    return server.executeOperation({query: createEntryMutation, variables: {handle, title, content}});
+    return server.executeOperation({query: createEntryMutation, variables: {handle, entry: { title, content }}});
 }
 
-const createEntryMutation = `mutation CreateEntry($handle: String!, $title: String!, $content: String!) { 
+const createEntryMutation = `mutation CreateEntry($handle: String!, $entry: EntryCreateInput!) { 
         blog(handle: $handle) {
-            createEntry(title: $title, content: $content) {
+            createEntry(entry: $entry) {
                 id
                 title 
                 content
@@ -432,13 +444,13 @@ const deleteEntryMutation = `mutation DeleteEntry($handle: String!, $id: ID!) {
     }`;
 
 async function updateEntry(server: ApolloServer, handle: string, id: string, title: string, content: string): Promise<GraphQLResponse> {
-    return server.executeOperation({query: updateEntryMutation, variables: {handle, id, title, content}});
+    return server.executeOperation({query: updateEntryMutation, variables: {handle, id, entry: { title, content }}});
 }
 
-const updateEntryMutation = `mutation UpdateEntry($handle: String!, $id: ID!, $title: String!, $content: String!) { 
+const updateEntryMutation = `mutation UpdateEntry($handle: String!, $id: ID!, $entry: EntryUpdateInput!) { 
         blog(handle: $handle) {
             entry(id: $id) {
-                update(title: $title, content: $content) {
+                update(entry: $entry) {
                     id
                 }
             }
@@ -446,11 +458,11 @@ const updateEntryMutation = `mutation UpdateEntry($handle: String!, $id: ID!, $t
     }`;
 
 async function createBlog(server: ApolloServer, handle: string, name: string): Promise<GraphQLResponse> {
-    return server.executeOperation({query: createBlogMutation, variables: {handle, name}});
+    return server.executeOperation({query: createBlogMutation, variables: {blog: {handle, name}}});
 }
 
-const createBlogMutation = `mutation CreateBlog($handle: String!, $name: String!) { 
-        createBlog(handle: $handle, name: $name) {
+const createBlogMutation = `mutation CreateBlog($blog: BlogCreateInput) { 
+        createBlog(blog: $blog) {
             id
             handle
             name 
@@ -478,12 +490,12 @@ const getBlogQuery = `query getBlog($handle: String!) {
     }`;
 
 async function updateBlog(server: ApolloServer, handle: string, name: string): Promise<GraphQLResponse> {
-    return server.executeOperation({query: updateBlogMutation, variables: {handle, name}});
+    return server.executeOperation({query: updateBlogMutation, variables: { handle, blog: { name }}});
 }
 
-const updateBlogMutation = `mutation UpdateBlog($handle: String!, $name: String!) { 
+const updateBlogMutation = `mutation UpdateBlog($handle: String!, $blog: BlogUpdateInput!) { 
         blog(handle: $handle) {
-            update(name: $name) {
+            update(blog: $blog) {
                 id
                 name
             }
@@ -503,21 +515,30 @@ const deleteBlogMutation = `mutation DeleteBlog($handle: String!) {
     }`;
 
 async function getBlogs(server: ApolloServer, limit: number, cursor: string | undefined): Promise<GraphQLResponse> {
-    return server.executeOperation({query: getBlogsQuery, variables: {limit, cursor}});
+    return server.executeOperation({query: getBlogsQuery, variables: {
+            first: limit,
+            after: cursor
+        }}
+    );
 }
 
-const getBlogsQuery = `query getBlogs($limit: Int, $cursor: String) {
-        blogs(limit: $limit, cursor: $cursor) { 
-            nodes { 
-                id
-                handle 
-                name 
-                created
-                updated
+const getBlogsQuery = `query getBlogs($first: Int, $last: Int, $before: String, $after: String) {
+        blogs(first: $first, last: $last, before: $before, after: $after) { 
+            edges {
+                node { 
+                    id
+                    handle 
+                    name 
+                    created
+                    updated
+                }
+                cursor
             }
             pageInfo {
-                totalCount
-                cursor
+                hasPreviousPage
+                hasNextPage
+                startCursor
+                endCursor
             } 
         }
     }`;

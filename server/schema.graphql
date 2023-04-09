@@ -1,3 +1,9 @@
+#
+# Copyright David M. Johnson (snoopdave@gmail.com).
+# Licensed under Apache Software License v2.
+#
+
+scalar DateTime
 
 schema {
     query: Query
@@ -10,8 +16,8 @@ interface Node {
 
 type Blog implements Node {
     created: DateTime!
-    drafts(limit: Int, offset: Int, cursor: String): EntryResponse!
-    entries(limit: Int, offset: Int, cursor: String): EntryResponse!
+    drafts(first: Int, last: Int, before: String, after: String): EntryConnection!
+    entries(first: Int, last: Int, before: String, after: String): EntryConnection!
     entry(id: ID!): Entry
     handle: String!
     id: ID!
@@ -21,15 +27,34 @@ type Blog implements Node {
     userId: ID!
 }
 
-type BlogMutation {
-    createEntry(content: String!, title: String!): Entry
-    delete: Node
-    entry(id: ID!): EntryMutation
-    update(name: String!): Blog
+input BlogCreateInput {
+    handle: String!
+    name: String!
 }
 
-type BlogResponse {
-    nodes: [Blog]!
+input BlogUpdateInput {
+    name: String!
+}
+
+input EntryCreateInput {
+    content: String
+    title: String
+}
+
+type BlogMutation {
+    createEntry(entry: EntryCreateInput): Entry
+    delete: Node
+    entry(id: ID!): EntryMutation
+    update(blog: BlogUpdateInput): Blog
+}
+
+type BlogEdge {
+    node: Blog!
+    cursor: String!
+}
+
+type BlogConnection {
+    edges: [BlogEdge]!
     pageInfo: PageInfo!
 }
 
@@ -49,16 +74,26 @@ type Entry implements Node {
     updated: DateTime!
 }
 
+input EntryUpdateInput {
+    content: String
+    title: String
+}
+
 type EntryMutation {
     delete: Node
     publish: Entry
-    update(content: String!, title: String!): Entry
+    update(entry: EntryUpdateInput): Entry
+}
+
+type EntryEdge {
+    node: Entry!
+    cursor: String!
 }
 
 "Represents a pageable list of entries."
-type EntryResponse {
+type EntryConnection {
     "Entries returned in this response."
-    nodes: [Entry]!
+    edges: [EntryEdge]!
     "Information about the pagination of the entries."
     pageInfo: PageInfo!
 }
@@ -67,18 +102,20 @@ type Mutation {
     issueApiKey: String
     blog(handle: String!): BlogMutation
     blogByID(id: ID!): BlogMutation
-    createBlog(handle: String!, name: String!): Blog
+    createBlog(blog: BlogCreateInput): Blog
 }
 
 type PageInfo {
-    cursor: String
-    totalCount: Int!
+    hasPreviousPage: Boolean!
+    hasNextPage: Boolean!
+    startCursor: String!
+    endCursor: String!
 }
 
 type Query {
     blog(handle: String!): Blog
     blogForUser(userId: ID!): Blog
-    blogs(limit: Int, offset: Int, cursor: String): BlogResponse
+    blogs(first: Int, last: Int, before: String, after: String): BlogConnection
     apiKeyForUser(userId: ID!): String
 }
 
@@ -98,9 +135,3 @@ type User implements Node {
     username: String!
 }
 
-type UserResponse {
-    nodes: [User]!
-    pageInfo: PageInfo!
-}
-
-scalar DateTime

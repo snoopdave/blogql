@@ -3,26 +3,16 @@
  * Licensed under Apache Software License v2.
  */
 
-import { v4 as uuid } from 'uuid';
-import {DataSource} from 'apollo-datasource' ;
+import {v4 as uuid} from 'uuid';
+import {DataSource} from 'apollo-datasource';
 import {DataSourceConfig} from 'apollo-datasource/src';
-import DBConnection from './dbconnection.js';
-import {FindAllResult} from './pagination.js';
-import {Node} from './node.js';
+import DBConnection from '../dbconnection.js';
+import {FindAllResult} from '../pagination.js';
 import sequelize, {Op} from 'sequelize';
 import {WhereOptions} from "sequelize/types/model";
-const { DataTypes, Model } = sequelize; // sequelize is a CommonJS module
+import {Entry} from "./entry";
 
-
-export class Entry extends Model implements Node {
-    declare id: string;
-    declare blogId: string;
-    declare title: string;
-    declare content: string;
-    declare created: Date;
-    declare updated: Date;
-    declare published: Date;
-}
+const { DataTypes} = sequelize; // sequelize is a CommonJS module
 
 export class EntryStore implements DataSource<Entry> {
     db: sequelize.Sequelize;

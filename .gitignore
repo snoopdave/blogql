@@ -6,17 +6,7 @@
 .idea
 env.sh
 node_modules
-*/src/*.js
-*/src/common/*.js
-*/src/blogs/*.js
-*/src/entries/*.js
-*/src/types/*.js
-*/src/types/*.js
-*/src/graphql/*.js
-*/src/stories/*.js
-*/src/tests/*.js
-*/src/mocks/*.js
-*/src/__tests__/*.js
+**/*.js
 .DS_Store
 .env*
 .idea/
@@ -28,3 +18,4 @@ bundle.*
 /client/src/googlecid.ts
 /server/jest.config.js
 postgresql-12.2.1.tgz
+server/coverage
