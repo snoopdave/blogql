@@ -10,10 +10,9 @@
   "private": true,
   "scripts": {
     "start": "webpack-dev-server --mode development",
-    "compile": "tsc --noEmit false && yarn run codegen && yarn run gentypes",
+    "compile": "tsc --noEmit false",
     "test": "jest --detectOpenHandles",
-    "build": "yarn compile; webpack",
-    "restart": "yarn compile; yarn start",
+    "build": "yarn codegen && yarn gentypes && yarn compile && webpack",
     "gentypes": "npx apollo codegen:generate --excludes=src/*/*.ts --localSchemaFile=schema.graphql --target=typescript --tagName=gql",
     "gentypes-against-server": "npx apollo codegen:generate --excludes=src/*/*.ts -endpoint=http://localhost:4000/graphql --target=typescript --tagName=gql",
     "clean": "rm -rf node_modules build src/*.js src/*/*.js src/*.jsx src/*/*.jsx __generated__/* src/graphql/__generated__/* schema.graphql",
