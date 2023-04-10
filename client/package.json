@@ -10,7 +10,7 @@
   "private": true,
   "scripts": {
     "start": "webpack-dev-server --mode development",
-    "compile": "tsc --noEmit false && yarn run gentypes",
+    "compile": "tsc --noEmit false && yarn run codegen && yarn run gentypes",
     "test": "jest --detectOpenHandles",
     "build": "yarn compile; webpack",
     "restart": "yarn compile; yarn start",
