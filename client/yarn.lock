@@ -1473,7 +1473,7 @@
 
 "@graphql-codegen/cli@^3.3.0":
   version "3.3.0"
-  resolved "https://registry.npmjs.org/@graphql-codegen/cli/-/cli-3.3.0.tgz"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/cli/-/cli-3.3.0.tgz#12755b6b20b5a24eca7514a6fa00507b61406bef"
   integrity sha512-KRQoAG0stor/ztMsBxHqxnwQzcM1DEZigwzah1LFej8bh6TT1WpUt37zt6PH0EdlMpelmeN3keY4Pq6GMd4ADw==
   dependencies:
     "@babel/generator" "^7.18.13"
@@ -1512,9 +1512,9 @@
     yaml "^1.10.0"
     yargs "^17.0.0"
 
-"@graphql-codegen/client-preset@3.0.0":
+"@graphql-codegen/client-preset@^3.0.0":
   version "3.0.0"
-  resolved "https://registry.npmjs.org/@graphql-codegen/client-preset/-/client-preset-3.0.0.tgz"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/client-preset/-/client-preset-3.0.0.tgz#c70be83c9676467f72f97ba8e6d7a123355095d3"
   integrity sha512-J8MGoucvhjqStZ3JBY9rfmgOZrSwuX8aIX5q1OHpjDjxxwaV7XIcw6ztKcZo394xEwA/hMjdoO++qFi0wMRKQA==
   dependencies:
     "@babel/helper-plugin-utils" "^7.20.2"
@@ -1965,12 +1965,7 @@
   resolved "https://registry.npmjs.org/@graphql-typed-document-node/core/-/core-3.1.1.tgz"
   integrity sha512-NQ17ii0rK1b34VZonlmT2QMJFI70m0TRwbknO/ihlbatXyaktDhN/98vBiUU6kNBPljqGqyIrl2T4nY2RpFANg==
 
-"@graphql-typed-document-node/core@3.2.0":
-  version "3.2.0"
-  resolved "https://registry.npmjs.org/@graphql-typed-document-node/core/-/core-3.2.0.tgz"
-  integrity sha512-mB9oAsNCm9aM3/SOv4YtBMqZbYj10R7dkq8byBqxGY/ncFwhf2oQzMV+LCRlWoDSEBJ3COiR1yeDvMtsoOsuFQ==
-
-"@graphql-typed-document-node/core@^3.2.0":
+"@graphql-typed-document-node/core@3.2.0", "@graphql-typed-document-node/core@^3.2.0":
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/@graphql-typed-document-node/core/-/core-3.2.0.tgz#5f3d96ec6b2354ad6d8a28bf216a1d97b5426861"
   integrity sha512-mB9oAsNCm9aM3/SOv4YtBMqZbYj10R7dkq8byBqxGY/ncFwhf2oQzMV+LCRlWoDSEBJ3COiR1yeDvMtsoOsuFQ==
@@ -15877,10 +15872,10 @@ typedarray@^0.0.6:
   resolved "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
   integrity sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==
 
-typescript@~4.9.4:
-  version "4.9.4"
-  resolved "https://registry.npmjs.org/typescript/-/typescript-4.9.4.tgz"
-  integrity sha512-Uz+dTXYzxXXbsFpM86Wh3dKCxrQqUcVMxwU54orwlJjOpO3ao8L7j5lH+dWfTwgCwIuM9GQ2kvVotzYJMXTBZg==
+typescript@^5.0.4:
+  version "5.0.4"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.0.4.tgz#b217fd20119bd61a94d4011274e0ab369058da3b"
+  integrity sha512-cW9T5W9xY37cc+jfEnaUvX91foxtHkza3Nw3wkoF4sSlKn0MONdkdEndig/qPBWXNkmplh3NzayQzCiHM4/hqw==
 
 ua-parser-js@^0.7.30:
   version "0.7.35"
