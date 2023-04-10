@@ -3,7 +3,7 @@
  * Licensed under Apache Software License v2.
  */
 
-import React, {useEffect} from 'react';
+import React from 'react';
 import {useQuery} from '@apollo/client/react/hooks/useQuery';
 import {DRAFTS_QUERY} from '../graphql/queries';
 import {Link, useParams} from 'react-router-dom';
@@ -11,7 +11,7 @@ import {RequireAuth} from '../common/Authentication';
 import {useNavigate} from 'react-router';
 import {Button, Table} from "antd";
 import {Heading} from "../common/Heading";
-import {Entry} from "../graphql/schema";
+import {EntryEdge} from "../gql/graphql";
 import {SimpleDateTime} from "../common/DateTime";
 
 
@@ -28,11 +28,13 @@ function Drafts() {
     }
 
     const columns = [
-        { title:'Title', dataIndex:'title', key:'title', render: (_: any, entry: Entry) =>
-                <Link className='nav-link' to={`/blogs/${handle}/edit/${entry.id}`}>{entry.title}</Link>
+        { title:'Title', dataIndex:'title', key:'title', render: (_: any, edge: EntryEdge) =>
+                <Link className='nav-link' to={`/blogs/${handle}/edit/${edge.node.id}`}>
+                    {edge.node.title}
+                </Link>
         },
-        { title:'Updated', dataIndex:'updated', key:'updated', render: (_: any, entry: Entry) =>
-                <span className='nav-link'><SimpleDateTime when={entry.updated}/></span>
+        { title:'Updated', dataIndex:'updated', key:'updated', render: (_: any, edge: EntryEdge) =>
+                <span className='nav-link'><SimpleDateTime when={edge.node.updated}/></span>
         },
     ];
 
@@ -46,7 +48,7 @@ function Drafts() {
         <Heading title='Drafts'
             heading='This is where you find your unpublished draft blog entries, and create new ones.' />
         <Button onClick={() => { newEntry(); }}>New</Button>
-        <Table style={tableStyle} dataSource={data.blog?.drafts?.nodes} columns={columns} />
+        <Table style={tableStyle} dataSource={data.blog?.drafts?.edges} columns={columns} />
     </RequireAuth>
 }
 

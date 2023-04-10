@@ -8,7 +8,7 @@ import {Route} from 'react-router';
 import {BlogNav} from "./BlogNav";
 import {TestHarness} from "./tests/TestHarness";
 import {withRouter} from "storybook-addon-react-router-v6";
-import {Blog} from "./graphql/schema";
+import {Blog} from "./gql/graphql";
 
 export default {
     title: 'BlogNav',

@@ -10,7 +10,7 @@ import DBConnection from '../dbconnection.js';
 import {FindAllResult} from '../pagination.js';
 import sequelize, {Op} from 'sequelize';
 import {WhereOptions} from "sequelize/types/model";
-import {Entry} from "./entry";
+import {Entry} from "./entry.js";
 
 const { DataTypes} = sequelize; // sequelize is a CommonJS module
 

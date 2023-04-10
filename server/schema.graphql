@@ -16,8 +16,8 @@ interface Node {
 
 type Blog implements Node {
     created: DateTime!
-    drafts(first: Int, last: Int, before: String, after: String): EntryConnection!
-    entries(first: Int, last: Int, before: String, after: String): EntryConnection!
+    drafts(first: Int, last: Int, before: String, after: String): EntryConnection
+    entries(first: Int, last: Int, before: String, after: String): EntryConnection
     entry(id: ID!): Entry
     handle: String!
     id: ID!

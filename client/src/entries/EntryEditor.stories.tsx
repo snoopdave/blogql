@@ -7,8 +7,8 @@ import {ComponentMeta, ComponentStory} from '@storybook/react';
 import {EditorFormViaEntryId} from "./EntryEditor";
 import {TestHarness} from "../tests/TestHarness";
 import {Route} from "react-router";
-import { withRouter } from 'storybook-addon-react-router-v6';
-import {Blog} from "../graphql/schema";
+import {withRouter} from 'storybook-addon-react-router-v6';
+import {BlogRef} from "../App";
 
 export default {
     title: 'EntryEditor',
@@ -22,7 +22,7 @@ export default {
     }
 } as ComponentMeta<typeof EditorFormViaEntryId>;
 
-function onUpdate(blog: Blog | null) {
+function onUpdate(blog: BlogRef | null) {
     console.log('Blog updated');
 }
 

@@ -17,3 +17,6 @@ schema.graphql
 server/coverage
 server/deploy/local/create-secrets.sh
 server/jest.config.js
+/client/src/gql/
+deploy/blogql/charts
+create-secrets.sh

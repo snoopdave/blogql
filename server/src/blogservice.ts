@@ -12,9 +12,9 @@ import {AuthenticationError, ForbiddenError} from 'apollo-server-express';
 import {DEBUG, log} from "./utils.js";
 import DBConnection from "./dbconnection.js";
 import {ApiKeyStore} from "./apikeys/apikeystore.js";
-import BlogStore from "./blogs/blogstore";
-import {EntryStore} from "./entries/entrystore";
-import {UserStore} from "./users/userstore";
+import BlogStore from "./blogs/blogstore.js";
+import {EntryStore} from "./entries/entrystore.js";
+import {UserStore} from "./users/userstore.js";
 
 
 export interface BlogService {

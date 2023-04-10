@@ -5,7 +5,7 @@
 
 import React, {Context, createContext, ReactNode, useContext, useState} from 'react';
 import {useNavigate} from "react-router";
-import {Blog, User} from "../graphql/schema";
+import {Blog, User} from "../gql/graphql";
 import {GoogleLogin} from "@react-oauth/google";
 
 

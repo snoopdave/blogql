@@ -9,7 +9,7 @@ import {DataSource} from 'apollo-datasource';
 import DBConnection from '../dbconnection.js';
 import {DataSourceConfig} from 'apollo-datasource/src';
 import {FindAllResult} from '../pagination.js';
-import {Blog} from "./blog";
+import {Blog} from "./blog.js";
 
 const { DataTypes} = sequelize; // sequelize is a CommonJS module
 

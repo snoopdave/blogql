@@ -19,7 +19,8 @@
     "clean": "rm -rf node_modules build src/*.js src/*/*.js src/*.jsx src/*/*.jsx __generated__/* src/graphql/__generated__/* schema.graphql",
     "build-storybook": "build-storybook",
     "storybook": "start-storybook -p 6006",
-    "nukeit": "yarn clean; rm yarn.lock; yarn install; yarn build"
+    "nukeit": "yarn clean; rm yarn.lock; yarn install; yarn build",
+    "codegen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
     "@ant-design/cssinjs": "^1.6.1",
@@ -47,7 +48,12 @@
     "@babel/preset-react": "^7.18.6",
     "@babel/preset-typescript": "^7.18.6",
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
-    "@graphql-codegen/cli": "^2.6.2",
+    "@graphql-codegen/cli": "^3.3.0",
+    "@graphql-codegen/client-preset": "3.0.0",
+    "@graphql-codegen/introspection": "3.0.1",
+    "@graphql-codegen/typescript": "^3.0.3",
+    "@graphql-codegen/typescript-resolvers": "^3.2.0",
+    "@graphql-typed-document-node/core": "^3.2.0",
     "@storybook/addon-actions": "^6.5.16",
     "@storybook/addon-essentials": "^6.5.16",
     "@storybook/addon-interactions": "^6.5.16",
