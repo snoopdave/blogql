@@ -5,7 +5,6 @@
 
 import React, {ChangeEvent, useContext, useState} from 'react';
 import {useMutation} from '@apollo/client';
-import {Blog} from '../graphql/schema';
 import {BLOG_CREATE_MUTATION} from '../graphql/mutations';
 import {Link} from 'react-router-dom';
 import {authContext, AuthContext, RequireAuth} from "../common/Authentication";
@@ -13,10 +12,12 @@ import {useNavigate} from "react-router";
 import {Heading} from "../common/Heading";
 import {Alert, Button, Form, Input, Space} from "antd";
 import {BLOGS_QUERY, USER_BLOG_QUERY} from "../graphql/queries";
+import {Blog} from "../gql/graphql";
+import {BlogRef} from "../App";
 
 
 export interface BlogCreateProps {
-    onBlogUpdated: (blog: Blog | null) => void;
+    onBlogUpdated: (blog: BlogRef | null) => void;
 }
 
 export function BlogCreate(props: BlogCreateProps) {
@@ -64,7 +65,7 @@ export function BlogCreate(props: BlogCreateProps) {
                 setToast('New blog created');
                 setTimeout(() => {
                     navigate('/blogs');
-                    const newBlog: Blog = { id: '', handle: handle, name: name, 'updated': new Date() }
+                    const newBlog: BlogRef = { handle: handle, name: name, }
                     console.table(data.data);
                     console.table(newBlog);
                     props.onBlogUpdated(newBlog);

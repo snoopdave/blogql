@@ -8,7 +8,7 @@ import {Link, useParams} from 'react-router-dom';
 import {useQuery} from '@apollo/client/react/hooks/useQuery';
 import {ENTRIES_QUERY} from '../graphql/queries';
 import {Heading} from "../common/Heading";
-import {Entry} from "../graphql/schema";
+import {Entry, EntryEdge} from "../gql/graphql";
 import {Avatar, List, Space, Tooltip} from "antd";
 import {stripHtml} from "string-strip-html";
 import {RelativeDateTime, SimpleDateTime} from "../common/DateTime";
@@ -52,23 +52,23 @@ function Entries() {
         <>
             <Heading title={data.blog.name} heading={'Tagline coming soon'}/>
             <List itemLayout='vertical'
-                  dataSource={data.blog.entries?.nodes}
+                  dataSource={data.blog.entries?.edges}
                   footer={<div></div>}
-                  renderItem={(item: Entry) => (
+                  renderItem={(item: EntryEdge) => (
                       <List.Item
-                          key={item.title}
+                          key={item.node.title}
                           actions={[
                               <Space>
                                   <Tooltip title="Link">
-                                      <Link to={`/blogs/${data.blog.handle}/entries/${item.id}`}>
+                                      <Link to={`/blogs/${data.blog.handle}/entries/${item.node.id}`}>
                                           <LinkOutlined />
                                       </Link>
                                   </Tooltip>
-                                  <Tooltip title={ <>Published: <SimpleDateTime when={item.published}/></> }>
+                                  <Tooltip title={ <>Published: <SimpleDateTime when={item.node.published}/></> }>
                                       <ClockCircleOutlined />
                                   </Tooltip>
                                   <Link style={showIfLoggedIn()}
-                                        to={`/blogs/${data.blog.handle}/edit/${item.id}`}>
+                                        to={`/blogs/${data.blog.handle}/edit/${item.node.id}`}>
                                       <Tooltip title="Edit">
                                           <EditOutlined />
                                       </Tooltip>
@@ -81,14 +81,14 @@ function Entries() {
                           <List.Item.Meta
                               avatar={<Avatar src={data.blog.user.picture}/>}
                               title={(
-                                  <Link to={`/blogs/${data.blog.handle}/entries/${item.id}`}>
-                                      {item.title}
+                                  <Link to={`/blogs/${data.blog.handle}/entries/${item.node.id}`}>
+                                      {item.node.title}
                                   </Link>
                               )}
-                              description={<i>Published <RelativeDateTime when={item.updated as Date}/></i>}
+                              description={<i>Published <RelativeDateTime when={item.node.updated as Date}/></i>}
                           ></List.Item.Meta>
-                          <TruncatedContent content={item.content} truncateAt={250}
-                              link={`/blogs/${data.blog.handle}/entries/${item.id}`} />
+                          <TruncatedContent content={item.node.content} truncateAt={250}
+                              link={`/blogs/${data.blog.handle}/entries/${item.node.id}`} />
                       </List.Item>
                   )}
             />

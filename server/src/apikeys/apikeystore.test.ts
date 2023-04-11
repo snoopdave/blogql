@@ -5,7 +5,7 @@
 
 import DBConnection from '../dbconnection.js';
 import {randomString} from "../utils.js";
-import {ApiKeyStore} from "../apikeystore.js";
+import {ApiKeyStore} from "./apikeystore.js";
 
 
 async function createApiKeyStore(): Promise<{ apiKeyStore: ApiKeyStore, conn: DBConnection }> {

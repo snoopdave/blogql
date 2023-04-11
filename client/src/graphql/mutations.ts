@@ -6,8 +6,8 @@
 import {gql} from '@apollo/client';
 
 
-export const BLOG_CREATE_MUTATION = gql`mutation BlogCreateMutation($handle: String!, $name: String!) {
-    createBlog(handle: $handle, name: $name) {
+export const BLOG_CREATE_MUTATION = gql`mutation BlogCreateMutation($blog: BlogCreateInput!) {
+    createBlog(blog: $blog) {
         id
         key: id
         handle
@@ -21,9 +21,9 @@ export const BLOG_CREATE_MUTATION = gql`mutation BlogCreateMutation($handle: Str
     }
 }`;
 
-export const BLOG_UPDATE_MUTATION = gql`mutation BlogUpdateMutation($id: ID!, $name: String!) {
+export const BLOG_UPDATE_MUTATION = gql`mutation BlogUpdateMutation($id: ID!, $blog: BlogUpdateInput!) {
     blogByID(id: $id) {
-        update(name: $name) {
+        update(blog: $blog) {
             id
         }
     }
@@ -38,9 +38,9 @@ export const BLOG_DELETE_MUTATION = gql`mutation BlogDeleteMutation($id: ID!) {
 }`;
 
 export const ENTRY_CREATE_MUTATION = gql`mutation EntryCreateMutation(
-    $handle: String!, $title: String!, $content: String!) {
+    $handle: String!, $entry: EntryCreateInput!) {
     blog(handle: $handle) {
-        createEntry(title: $title, content: $content) {
+        createEntry(entry: $entry) {
             id
             title
             content
@@ -52,10 +52,10 @@ export const ENTRY_CREATE_MUTATION = gql`mutation EntryCreateMutation(
 }`;
 
 export const ENTRY_UPDATE_MUTATION = gql`mutation EntryUpdateMutation(
-    $handle: String!, $id: ID!, $title: String!, $content: String!) {
+    $handle: String!, $id: ID!, $entry: EntryUpdateInput!) {
     blog(handle: $handle) {
         entry(id: $id) {
-            update(title: $title, content: $content) {
+            update(entry: $entry) {
                 id
                 title
                 content

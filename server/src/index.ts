@@ -7,14 +7,15 @@ import {ApolloServer} from 'apollo-server-express';
 import {ApolloServerPluginSchemaReporting, ApolloServerPluginUsageReporting} from 'apollo-server-core';
 import DBConnection from './dbconnection.js';
 import resolvers from './resolvers.js';
-import {User, UserStore} from './userstore.js';
+import {User} from './users/user.js';
 import BlogQL from './blogql.js';
 import {AuthenticationError, gql} from 'apollo-server';
 import {DEBUG, INFO, log} from './utils.js';
 import {readFileSync} from 'fs';
 import {config} from './config.js';
-import {ApiKeyStore} from "./apikeystore.js";
+import {ApiKeyStore} from "./apikeys/apikeystore.js";
 import {BlogService, BlogServiceSequelizeImpl} from "./blogservice.js";
+import {UserStore} from "./users/userstore.js";
 
 export interface BlogQLContext {
     readonly blogService: BlogService;
@@ -81,9 +82,9 @@ const apolloServer = new ApolloServer({
     await apolloServer.start();
 })();
 
-// Wait a sec for the server.start() to be called
+// Wait a sec or two for server start
 setTimeout(function() {
-    // Express app provides REST API for authentication
+    // Hook the BlogQL Express app into Apollo Server as "middleware"
     const blogQL = new BlogQL();
     apolloServer.applyMiddleware({
         app: blogQL.app,

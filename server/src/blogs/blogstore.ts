@@ -6,23 +6,12 @@
 import {v4 as uuid} from 'uuid';
 import sequelize from 'sequelize';
 import {DataSource} from 'apollo-datasource';
-import DBConnection from './dbconnection.js';
+import DBConnection from '../dbconnection.js';
 import {DataSourceConfig} from 'apollo-datasource/src';
-import {FindAllResult} from './pagination.js';
+import {FindAllResult} from '../pagination.js';
+import {Blog} from "./blog.js";
 
-const { DataTypes, Model } = sequelize; // sequelize is a CommonJS module
-
-
-export class Blog extends Model {
-    // use 'declare' to avoid shadowing model's getters/setters
-    // https://sequelize.org/docs/v6/core-concepts/model-basics/#caveat-with-public-class-fields
-    declare id: string;
-    declare name: string;
-    declare handle: string;
-    declare created: Date;
-    declare updated: Date;
-    declare userId: string;
-}
+const { DataTypes} = sequelize; // sequelize is a CommonJS module
 
 export default class BlogStore implements DataSource<Blog> {
     db: sequelize.Sequelize;

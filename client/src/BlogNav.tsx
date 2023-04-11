@@ -8,7 +8,7 @@ import React, {useContext} from 'react';
 import {Menu} from "antd";
 import {MenuItemType} from "antd/lib/menu/hooks/useItems";
 import {Link} from "react-router-dom";
-import {Blog} from "./graphql/schema";
+import {Blog} from "./gql/graphql";
 import {useQuery} from "@apollo/client/react/hooks";
 import {USER_BLOG_QUERY} from "./graphql/queries";
 

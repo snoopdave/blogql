@@ -8,7 +8,7 @@ import {Route} from "react-router";
 import {BlogCreate} from "./BlogCreate";
 import {TestHarness} from "../tests/TestHarness";
 import {withRouter} from "storybook-addon-react-router-v6";
-import {Blog, User} from "../graphql/schema";
+import {BlogRef} from "../App";
 
 export default {
     title: 'BlogCreate',
@@ -21,7 +21,7 @@ export default {
     }
 } as ComponentMeta<typeof BlogCreate>;
 
-function onUpdate(blog: Blog | null) {
+function onUpdate(blog: BlogRef | null) {
     console.log('Blog updated');
 }
 

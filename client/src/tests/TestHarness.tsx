@@ -7,7 +7,7 @@ import {client} from "../setupTests";
 import {ProvideAuth} from "../common/Authentication";
 import {Routes} from "react-router";
 import React from "react";
-import {User} from "../graphql/schema";
+import {User} from "../gql/graphql";
 
 function onLogin() {
     console.log('Login');
@@ -18,7 +18,11 @@ function onLogout() {
 }
 
 const user: User = {
-    created: new Date().toDateString(), email: "testy@example.com", id: "bleepblort"
+    id: "09871634",
+    username: "bleepblort",
+    email: "bleepblort@example.com",
+    created: new Date().toDateString(),
+    updated: new Date().toDateString(),
 }
 
 interface TestHarnessProps {

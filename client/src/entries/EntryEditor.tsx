@@ -13,7 +13,7 @@ import 'react-quill/dist/quill.snow.css';
 
 import {useMutation, useQuery} from '@apollo/client/react/hooks';
 
-import {Blog, Entry} from '../graphql/schema';
+import {Blog, Entry} from "../gql/graphql";
 import {
     ENTRY_CREATE_MUTATION,
     ENTRY_DELETE_MUTATION,
@@ -31,6 +31,7 @@ import {useForm} from 'antd/lib/form/Form';
 
 // import BlogQL CSS last to ensure it appears at the end of bundle.css
 import './EntryEditor.css';
+import {BlogRef} from "../App";
 
 export function EditorWelcome() {
     return <Heading title='Entry editor'
@@ -38,7 +39,7 @@ export function EditorWelcome() {
 }
 
 export interface EditorFormInitProps {
-    onBlogUpdated: (blog: Blog | null) => void;
+    onBlogUpdated: (blog: BlogRef | null) => void;
 }
 
 export function EditorFormViaEntryId(props: EditorFormInitProps) {
@@ -91,7 +92,7 @@ interface EditorFormProps {
     updated: Date;
     published: Date | undefined;
     publish: boolean;
-    onBlogUpdated: (blog: Blog | null) => void;
+    onBlogUpdated: (blog: BlogRef | null) => void;
 }
 
 export function EditorForm(props: EditorFormProps) {
@@ -137,7 +138,7 @@ export function EditorForm(props: EditorFormProps) {
                 setSuccess(true);
                 setSaved(true);
                 setToast('New entry created');
-                const blog: Blog = {'handle': handle!, id: 'dummy', name: 'dummy', 'updated': new Date() };
+                const blog: BlogRef = { handle: handle!, name: name!, };
                 props.onBlogUpdated(blog);
             })
             .catch(() => {
@@ -164,7 +165,7 @@ export function EditorForm(props: EditorFormProps) {
                 setSuccess(true);
                 setSaved(true);
                 setToast('Entry updated');
-                const blog: Blog = {'handle': handle!, id: 'dummy', name: 'dummy', 'updated': new Date()};
+                const blog: BlogRef = {'handle': handle!, name: 'dummy' };
                 props.onBlogUpdated(blog);
             })
             .catch(() => {
@@ -192,7 +193,7 @@ export function EditorForm(props: EditorFormProps) {
                 setSuccess(true);
                 setSaved(true);
                 setToast('Entry published');
-                const blog: Blog = {'handle': handle!, id: 'dummy', name: 'dummy', 'updated': new Date()};
+                const blog: BlogRef = {'handle': handle!, name: 'dummy' };
                 props.onBlogUpdated(blog);
             })
             .catch(() => {
@@ -219,7 +220,7 @@ export function EditorForm(props: EditorFormProps) {
             .then(() => {
                 setSuccess(true);
                 setToast('Entry deleted');
-                const blog: Blog = {'handle': handle!, id: 'dummy', name: 'dummy', 'updated': new Date()};
+                const blog: BlogRef = {'handle': handle!, name: 'dummy' };
                 props.onBlogUpdated(blog);
                 setTimeout(() => {
                     navigate(`/`);

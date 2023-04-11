@@ -5,7 +5,7 @@
 
 import React, {ChangeEvent, useContext, useState} from 'react';
 import {useMutation, useQuery} from '@apollo/client/react/hooks';
-import {Blog, Entry} from '../graphql/schema';
+import {Blog, Entry} from "../gql/graphql";
 import {BLOG_DELETE_MUTATION, BLOG_UPDATE_MUTATION, ISSUE_API_KEY_MUTATION} from '../graphql/mutations';
 import {Link, useParams} from 'react-router-dom';
 import {BLOG_BY_HANDLE_QUERY, BLOGS_QUERY, USER_BLOG_QUERY} from '../graphql/queries';
