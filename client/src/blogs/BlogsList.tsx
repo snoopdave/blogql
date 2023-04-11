@@ -22,7 +22,7 @@ export function BlogsList() {
             render: (_: string, edge: BlogEdge) => <Link to={`/blogs/${edge.node.handle}`}>{edge.node.name}</Link>
         },
         { title: 'Handle', dataIndex: 'handle', key: 'id',
-            render: (text: string) => <Link to={`/blogs/${text}`}>{text}</Link>
+            render: (_: string, edge: BlogEdge) => <Link to={`/blogs/${edge.node.handle}`}>{edge.node.handle}</Link>
         },
     ];
     const dataSource = data.blogs?.edges;
