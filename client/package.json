@@ -19,7 +19,7 @@
     "build-storybook": "build-storybook",
     "storybook": "start-storybook -p 6006",
     "nukeit": "yarn clean; rm yarn.lock; yarn install; yarn build",
-    "codegen": "graphql-codegen --config codegen.ts"
+    "codegen": "graphql-codegen --config ./codegen.ts"
   },
   "dependencies": {
     "@ant-design/cssinjs": "^1.6.1",
