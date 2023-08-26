@@ -109,8 +109,8 @@ export async function resolveCollection<T>(
         return new ResponseConnection<ResponseEdge<T>>(edges, new PageInfo(
             hasNextPage,
             hasPreviousPage,
-            edges[0].cursor,
-            edges[edges.length - 1].cursor
+            edges[0] ? edges[0].cursor : "",
+            edges[edges.length - 1] ? edges[edges.length - 1].cursor : ""
         ));
     } catch (e) {
         throw e;
