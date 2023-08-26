@@ -13,7 +13,7 @@ import 'react-quill/dist/quill.snow.css';
 
 import {useMutation, useQuery} from '@apollo/client/react/hooks';
 
-import {Blog, Entry} from "../gql/graphql";
+import {Blog, Entry, EntryCreateInput, EntryUpdateInput} from "../gql/graphql";
 import {
     ENTRY_CREATE_MUTATION,
     ENTRY_DELETE_MUTATION,
@@ -116,12 +116,14 @@ export function EditorForm(props: EditorFormProps) {
 
     const [ form ] = useForm();
 
+    const [ entry, setEntry ] = useState({ title, content });
+
     // eslint-disable-next-line
     let editor: UnprivilegedEditor | null = null; // assigned a value below in handleContentFocus()
 
-    const [createEntryMutation] = useMutation<Entry, { handle: string, title: string, content: string }>(
+    const [createEntryMutation] = useMutation<Entry, { handle: string, entry: EntryCreateInput }>(
         ENTRY_CREATE_MUTATION, {
-            variables: {handle, title, content},
+            variables: { handle, entry },
             refetchQueries: [{
                 query: DRAFTS_QUERY,
                 variables: {handle},
@@ -147,8 +149,8 @@ export function EditorForm(props: EditorFormProps) {
             });
     }
 
-    const [updateEntryMutation] = useMutation<Entry, { handle: string, id: string, title: string, content: string }>(ENTRY_UPDATE_MUTATION, {
-        variables: {handle, id, title, content},
+    const [updateEntryMutation] = useMutation<Entry, { handle: string, id: string, entry: EntryUpdateInput }>(ENTRY_UPDATE_MUTATION, {
+        variables: { handle, id: props.id, entry },
         refetchQueries: [{
             query: DRAFTS_QUERY,
             variables: {handle},
@@ -238,12 +240,14 @@ export function EditorForm(props: EditorFormProps) {
 
     function onTitleChange(event: ChangeEvent<HTMLInputElement>) {
         setTitle(event.target.value);
+        setEntry({title, content});
         setSaved(false);
         validateForm();
     }
 
     function onContentChange(value: string) {
         setContent(value);
+        setEntry({title, content});
         setSaved(false);
         validateForm();
     }

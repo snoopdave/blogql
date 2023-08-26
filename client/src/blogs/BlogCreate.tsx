@@ -12,7 +12,7 @@ import {useNavigate} from "react-router";
 import {Heading} from "../common/Heading";
 import {Alert, Button, Form, Input, Space} from "antd";
 import {BLOGS_QUERY, USER_BLOG_QUERY} from "../graphql/queries";
-import {Blog} from "../gql/graphql";
+import {Blog, BlogCreateInput} from "../gql/graphql";
 import {BlogRef} from "../App";
 
 
@@ -29,18 +29,22 @@ export function BlogCreate(props: BlogCreateProps) {
     const [failure, setFailure] = useState(false);
     const [toast, setToast] = useState('');
 
+    const[blog, setBlog] = useState({ name, handle });
+
     const navigate = useNavigate();
 
-    const [blogCreateMutation] = useMutation<Blog, { handle: string | undefined, name: string | undefined }>(BLOG_CREATE_MUTATION, {
-        variables: { handle, name },
+    const [blogCreateMutation] = useMutation<Blog, { blog: BlogCreateInput }>(BLOG_CREATE_MUTATION, {
+        variables: { blog },
         refetchQueries: [
-            {query:BLOGS_QUERY},
+            {query: BLOGS_QUERY},
             {query: USER_BLOG_QUERY, variables: { userId: userContext.user?.id }}],
         awaitRefetchQueries: true,
     });
 
     function onHandleChange(event: ChangeEvent<HTMLInputElement>) {
         setHandle(event.target.value.toLowerCase());
+        setName(name);
+        setBlog({ name, handle });
         validateForm();
     }
 
