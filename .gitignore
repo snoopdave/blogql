@@ -5,7 +5,7 @@
 **/__generated__
 bundle.*
 .DS_Store
-.env
+client/.direnv
 .env*
 .idea
 client/storybook-static
