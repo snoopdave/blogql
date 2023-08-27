@@ -9,6 +9,7 @@ import {ApolloClient, ApolloProvider, InMemoryCache} from '@apollo/client';
 import App from './App';
 import * as serviceWorker from './tests/serviceWorker';
 import {GoogleOAuthProvider} from "@react-oauth/google";
+import {GOOGLE_SIGNON_CID} from "./googlecid";
 
 console.log('BlogQL starting');
 
@@ -25,9 +26,8 @@ const client = new ApolloClient({
     },
 });
 
-const cid = process.env.GOOGLE_SIGNON_CID!;
 ReactDOM.render(
-    <GoogleOAuthProvider clientId={cid}>
+    <GoogleOAuthProvider clientId={GOOGLE_SIGNON_CID}>
         <ApolloProvider client={client}>
            <App />
         </ApolloProvider>
