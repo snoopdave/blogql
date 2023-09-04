@@ -19,7 +19,7 @@ export async function createBlogAndTestEntriesViaSql(user: User, bs: BlogStore, 
     const blogId = blog.id;
     for (let i = 0; i < NUM_ENTRIES; i++) {
         const entry: Entry = await es.create(blogId, 'Entry Title ' + i, 'Entry content ' + i);
-        es.publish(entry.id);
+        await es.publish(entry.id);
         expect(entry.id).toBeDefined();
         await sleep(5);
     }
