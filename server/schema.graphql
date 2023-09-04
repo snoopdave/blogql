@@ -105,6 +105,7 @@ type Mutation {
     createBlog(blog: BlogCreateInput): Blog
 }
 
+# Conform to Relay Connections (classic) spec: https://relay.dev/graphql/connections.htm
 type PageInfo {
     hasPreviousPage: Boolean!
     hasNextPage: Boolean!

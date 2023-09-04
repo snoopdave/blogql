@@ -163,6 +163,7 @@ export class BlogServiceSequelizeImpl implements BlogService {
         Promise<ResponseConnection<ResponseEdge<Entry>>> {
         await this.initDataSources();
         return resolveCollection<Entry>({first, after}, async (cursor: Cursor) => {
+            console.log(`Fetching limit ${cursor.limit} entries after cursor ${cursor.offset}`);
             return await this.entryStore.retrieveAll(blog.id, cursor.limit + 1, cursor.offset);
         });
     }

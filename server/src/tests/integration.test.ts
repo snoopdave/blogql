@@ -3,22 +3,37 @@
  * Licensed under Apache Software License v2.
  */
 
-import {Entry} from './entries/entry.js';
+import {Entry} from '../entries/entry.js';
 import {describe, expect, test} from '@jest/globals';
 import {v4 as uuid} from 'uuid';
 import {ApolloServer, gql} from 'apollo-server';
-import resolvers from './resolvers.js';
-import {randomString} from "./utils.js";
-import {Blog} from './blogs/blog.js';
+import resolvers from '../resolvers.js';
+import {randomString} from "../utils.js";
+import {Blog} from '../blogs/blog.js';
 import {GraphQLResponse} from 'apollo-server-types';
-import {User} from './users/user.js';
-import DBConnection from './dbconnection.js';
+import {User} from '../users/user.js';
+import DBConnection from '../dbconnection.js';
 import {readFileSync} from 'fs';
-import {BlogService, BlogServiceSequelizeImpl} from "./blogservice";
-import {UserStore} from "./users/userstore";
-import BlogStore from "./blogs/blogstore";
-import {EntryStore} from "./entries/entrystore";
-import {ResponseEdge} from "./pagination";
+import {BlogService, BlogServiceSequelizeImpl} from "../blogservice";
+import {UserStore} from "../users/userstore";
+import BlogStore from "../blogs/blogstore";
+import {EntryStore} from "../entries/entrystore";
+import {ResponseEdge} from "../pagination";
+import {
+    createBlog,
+    createEntry,
+    deleteBlog,
+    deleteEntry,
+    GET_BLOGS_QUERY,
+    GET_ENTRIES_QUERY,
+    getBlog,
+    getBlogForUser,
+    getBlogs,
+    getEntry,
+    updateBlog,
+    updateEntry
+} from "./integration_test_queries";
+import {createBlogAndTestEntriesViaSql, createTestBlogsViaSql, NUM_BLOGS, NUM_ENTRIES} from "./integration_test_data";
 
 describe('Test the GraphQL API integration', () => {
 
@@ -36,7 +51,7 @@ describe('Test the GraphQL API integration', () => {
         const userStore = new UserStore(conn)
         await userStore.init();
         let authUsers: User[] = [];
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < NUM_BLOGS; i++) {
             const slug = randomString(5);
             authUsers.push(await userStore.create(
                 `test-user-${slug}`,
@@ -63,6 +78,20 @@ describe('Test the GraphQL API integration', () => {
         return {server, conn, userStore, blogStore, entryStore, authUsers};
     }
 
+    test('It can get blog for a user', async () => {
+        const {server, conn, authUsers} = await initDataStorage();
+        const slug = randomString(5);
+        const blog = await createBlog(server, `My Blog ${slug}`, `myblog${slug}`);
+        blog?.data?.createBlog.id;
+        try {
+            let data = await getBlogForUser(server, authUsers[0].id);
+            expect(data.errors).toBeUndefined();
+            expect(data?.data?.blogForUser?.id).toBe(blog?.data?.createBlog.id);
+        } finally {
+            await conn.destroy();
+        }
+    });
+
     test('It can create new entries via GraphQL', async () => {
         const {server, conn, blogStore, authUsers} = await initDataStorage();
         try {
@@ -81,7 +110,7 @@ describe('Test the GraphQL API integration', () => {
         const limit = 2;
         const {server, conn, blogStore, entryStore, authUsers} = await initDataStorage();
         const blog = await createBlogAndTestEntriesViaSql(authUsers[0], blogStore, entryStore);
-        let payload = { query: getEntriesQuery, variables: {
+        let payload = { query: GET_ENTRIES_QUERY, variables: {
                 handle: blog.handle,
                 first: limit,
             }};
@@ -90,7 +119,6 @@ describe('Test the GraphQL API integration', () => {
             expect(result.errors).toBeUndefined();
             expect(result.data?.blog.entries.edges).toHaveLength(limit);
         } finally {
-            await blogStore.delete(blog.id);
             await conn.destroy();
         }
     });
@@ -98,16 +126,82 @@ describe('Test the GraphQL API integration', () => {
     test('It can page through all entries', async () => {
         const {server, conn, blogStore, entryStore, authUsers} = await initDataStorage();
         const blog = await createBlogAndTestEntriesViaSql(authUsers[0], blogStore, entryStore);
-        let payload = { query: getEntriesQuery, variables: {
-                handle: blog.handle,
-                first: 2,
-            }};
         const dataRetrieved: Entry[] = [];
         try {
-            await getAllEntries(server, payload, dataRetrieved);
-            expect(dataRetrieved).toHaveLength(authUsers.length);
+            await testPageThroughEntries(server, blog.handle, NUM_ENTRIES, NUM_ENTRIES);
+            await testPageThroughEntries(server, blog.handle, 1, NUM_ENTRIES);
+            await testPageThroughEntries(server, blog.handle, 2, NUM_ENTRIES);
+            await testPageThroughEntries(server, blog.handle, 10, NUM_ENTRIES);
+            await testPageThroughEntries(server, blog.handle, NUM_ENTRIES + 20, NUM_ENTRIES);
         } finally {
-            await blogStore.delete(blog.id);
+            await conn.destroy();
+        }
+    }, 20000); // timeout for long running test
+
+
+    async function testPageThroughEntries(server: ApolloServer, handle: string, pageSize: number | null, expectedSize: number) {
+        const payload = {query: GET_ENTRIES_QUERY, variables: { handle, first: pageSize}};
+        const dataRetrieved: Entry[] = [];
+        await getAllEntries(server, payload, dataRetrieved);
+        expect(dataRetrieved).toHaveLength(expectedSize);
+    }
+
+
+    it('should fetch all 100 entries in reverse chronological order', async () => {
+        const {conn, server, blogStore, entryStore, authUsers} = await initDataStorage();
+        try {
+            const blog = await createBlogAndTestEntriesViaSql(authUsers[0], blogStore, entryStore);
+
+            const response = await server.executeOperation({
+                query: GET_ENTRIES_QUERY,
+                variables: {handle: blog.handle, first: NUM_ENTRIES},
+            });
+
+            const entries = response.data?.blog.entries.edges.map((edge: any) => edge.node);
+            expect(entries.length).toBe(authUsers.length);
+
+            for (let i = 1; i < entries.length; i++) {
+                expect(new Date(entries[i - 1].updated).getTime())
+                    .toBeGreaterThanOrEqual(new Date(entries[i].updated).getTime());
+            }
+        } finally {
+            await conn.destroy();
+        }
+    });
+
+    it('should paginate forward 5 items at a time in reverse chronological order', async () => {
+        const {conn, server, blogStore, entryStore, authUsers} = await initDataStorage();
+        try {
+            const blog = await createBlogAndTestEntriesViaSql(authUsers[0], blogStore, entryStore);
+
+            let afterCursor = null;
+            const allEntries: any[] = [];
+
+            for (let i = 0; i < 20; i++) {
+                const response: GraphQLResponse = await server.executeOperation({
+                    query: GET_ENTRIES_QUERY,
+                    variables: {handle: blog.handle, first: 5, after: afterCursor},
+                });
+
+                const pageInfo = response.data?.blog.entries.pageInfo;
+                const edges = response.data?.blog.entries.edges;
+                afterCursor = pageInfo.endCursor;
+
+                expect(edges.length).toBe(5);
+
+                allEntries.push(...edges.map((edge: any) => edge.node));
+
+                for (let j = 1; j < edges.length; j++) {
+                    expect(new Date(edges[j - 1].node.updated).getTime())
+                        .toBeGreaterThanOrEqual(new Date(edges[j].node.updated).getTime());
+                }
+            }
+
+            for (let i = 1; i < allEntries.length; i++) {
+                expect(new Date(allEntries[i - 1].updated).getTime())
+                    .toBeGreaterThanOrEqual(new Date(allEntries[i].updated).getTime());
+            }
+        } finally {
             await conn.destroy();
         }
     });
@@ -253,29 +347,24 @@ describe('Test the GraphQL API integration', () => {
     test('It can page through all blogs', async () => {
         const {server, conn, blogStore, authUsers} = await initDataStorage();
         await createTestBlogsViaSql(authUsers, blogStore);
-        const payload = {query: getBlogsQuery, variables: {limit: 2}};
-        const dataRetrieved: Entry[] = [];
         try {
-            await getAllBlogs(server, payload, dataRetrieved);
-            expect(dataRetrieved).toHaveLength(authUsers.length);
+            await testPageThroughBlogs(server, NUM_BLOGS, NUM_BLOGS);
+            await testPageThroughBlogs(server, 1, NUM_BLOGS);
+            await testPageThroughBlogs(server, 2, NUM_BLOGS);
+            await testPageThroughBlogs(server, 10, NUM_BLOGS);
+            await testPageThroughBlogs(server, NUM_BLOGS + 20, NUM_BLOGS);
         } finally {
             await conn.destroy();
         }
     });
 
-    test('It can get blog for a user', async () => {
-        const {server, conn, authUsers} = await initDataStorage();
-        const slug = randomString(5);
-        const blog = await createBlog(server, `My Blog ${slug}`, `myblog${slug}`);
-        blog?.data?.createBlog.id;
-        try {
-            let data = await getBlogForUser(server, authUsers[0].id);
-            expect(data.errors).toBeUndefined();
-            expect(data?.data?.blogForUser?.id).toBe(blog?.data?.createBlog.id);
-        } finally {
-            await conn.destroy();
-        }
-    });
+    async function testPageThroughBlogs(server: ApolloServer, pageSize: number | null, expectedSize: number) {
+        const payload = {query: GET_BLOGS_QUERY, variables: {first: pageSize}};
+        const dataRetrieved: Blog[] = [];
+        await getAllBlogs(server, payload, dataRetrieved);
+        expect(dataRetrieved).toHaveLength(expectedSize);
+    }
+
 });
 
 describe('Test random stuff', () => {
@@ -300,6 +389,7 @@ describe('Test random stuff', () => {
 
 // use cursor to recursively page through and fetch all entries
 async function getAllEntries(server: ApolloServer, payload: any, dataRetrieved: Entry[]) {
+
     const result = await server.executeOperation(payload);
     expect(result?.errors).toBeUndefined();
 
@@ -308,58 +398,25 @@ async function getAllEntries(server: ApolloServer, payload: any, dataRetrieved: 
     });
 
     if (result.data?.blog.entries.pageInfo.hasNextPage) {
-        const newPayload = {
-            query: payload.query,
-            variables: {
-                handle: payload.variables.handle,
-                first: payload.variables.first,
-                after: result.data?.blog.entries.pageInfo.startCursor,
-            }
-        };
-        await getAllEntries(server, newPayload, dataRetrieved);
+        payload.variables.after = result.data?.blog.entries.pageInfo.endCursor;
+        await getAllEntries(server, payload, dataRetrieved);
     }
 }
 
 // use cursor to recursively page through and fetch all blogs
-async function getAllBlogs(server: ApolloServer, payload: any, dataRetrieved: Entry[]) {
+async function getAllBlogs(server: ApolloServer, payload: any, dataRetrieved: Blog[]) {
+
     const result = await server.executeOperation(payload);
     expect(result?.errors).toBeUndefined();
 
-    result.data?.blogs.edges.forEach((item: ResponseEdge<Entry>) => {
+    result.data?.blogs.edges.forEach((item: ResponseEdge<Blog>) => {
         dataRetrieved.push(item.node);
     });
 
-    if (result.data?.blogs.pageInfo.cursor) {
-        const newPayload = {
-            query: payload.query,
-            variables: {
-                handle: payload.variables.handle,
-                first: payload.variables.first,
-                after: result.data?.blogs.pageInfo.startCursor,
-            }
-        };
-        await getAllBlogs(server, newPayload, dataRetrieved);
+    if (result.data?.blogs.pageInfo.endCursor) {
+        payload.variables.after = result.data?.blogs.pageInfo.endCursor;
+        await getAllBlogs(server, payload, dataRetrieved);
     }
-}
-
-async function createBlogAndTestEntriesViaSql(user: User, bs: BlogStore, es: EntryStore): Promise<Blog> {
-    const blog: Blog = await bs.create(user.id, 'bloghandle', 'Blog Name');
-    const blogId = blog.id;
-    for (let i = 0; i < 10; i++) {
-        const entry: Entry = await es.create(blogId, 'Entry Title ' + i, 'Entry content' + i);
-        es.publish(entry.id);
-        expect(entry.id).toBeDefined();
-    }
-    return blog;
-}
-
-async function createTestBlogsViaSql(users: User[], bs: BlogStore): Promise<Blog[]> {
-    const blogs: Blog[] = []
-    for (let i = 0; i < users.length; i++) {
-        const slug = randomString(5);
-        blogs.push(await bs.create(users[i].id, `blog${slug}`, `Blog ${slug}`));
-    }
-    return blogs;
 }
 
 function verifyDate(dateString: string) {
@@ -368,193 +425,5 @@ function verifyDate(dateString: string) {
     date.setTime(Date.parse(dateString));
     expect(date.getFullYear()).toBeGreaterThan(2020);
 }
-
-//
-// GraphQL queries and mutations
-//
-
-const getEntriesQuery = `
-        query getBlogEntries($handle: String!, $first: Int, $last: Int, $before: String, $after: String ) {
-            blog(handle: $handle) {
-                entries(first: $first, last: $last, before: $before, after: $after) { 
-                    edges {
-                        node {
-                            id
-                            title
-                            content
-                            created
-                            updated
-                        }
-                        cursor
-                    }
-                    pageInfo {
-                        hasPreviousPage
-                        hasNextPage
-                        startCursor
-                        endCursor
-                    } 
-                }
-            }
-        }`;
-
-async function getEntry(server: ApolloServer, handle: string, entryId: string): Promise<GraphQLResponse> {
-    return server.executeOperation({query: getEntryQuery, variables: {handle, id: entryId}});
-}
-
-const getEntryQuery = `query getEntry($handle: String!, $id: ID!) {
-        blog(handle: $handle) {
-          entry(id: $id) {
-            id
-            title 
-            content
-            created
-            updated
-          }  
-        } 
-    }`;
-
-async function createEntry(server: ApolloServer, handle: string, title: string, content: string): Promise<GraphQLResponse> {
-    return server.executeOperation({query: createEntryMutation, variables: {handle, entry: { title, content }}});
-}
-
-const createEntryMutation = `mutation CreateEntry($handle: String!, $entry: EntryCreateInput!) { 
-        blog(handle: $handle) {
-            createEntry(entry: $entry) {
-                id
-                title 
-                content
-                created
-                updated
-            }
-        } 
-    }`;
-
-async function deleteEntry(server: ApolloServer, handle: string, id: string): Promise<GraphQLResponse> {
-    return server.executeOperation({query: deleteEntryMutation, variables: {handle, id}});
-}
-
-const deleteEntryMutation = `mutation DeleteEntry($handle: String!, $id: ID!) {
-        blog(handle: $handle) {
-            entry(id: $id) {
-                delete {
-                    id
-                }
-            } 
-        }
-    }`;
-
-async function updateEntry(server: ApolloServer, handle: string, id: string, title: string, content: string): Promise<GraphQLResponse> {
-    return server.executeOperation({query: updateEntryMutation, variables: {handle, id, entry: { title, content }}});
-}
-
-const updateEntryMutation = `mutation UpdateEntry($handle: String!, $id: ID!, $entry: EntryUpdateInput!) { 
-        blog(handle: $handle) {
-            entry(id: $id) {
-                update(entry: $entry) {
-                    id
-                }
-            }
-        } 
-    }`;
-
-async function createBlog(server: ApolloServer, handle: string, name: string): Promise<GraphQLResponse> {
-    return server.executeOperation({query: createBlogMutation, variables: {blog: {handle, name}}});
-}
-
-const createBlogMutation = `mutation CreateBlog($blog: BlogCreateInput) { 
-        createBlog(blog: $blog) {
-            id
-            handle
-            name 
-            created
-            updated
-        } 
-    }`;
-
-async function getBlog(server: ApolloServer, handle: string): Promise<GraphQLResponse> {
-    return server.executeOperation({query: getBlogQuery, variables: {handle}});
-}
-
-const getBlogQuery = `query getBlog($handle: String!) {
-        blog(handle: $handle) {
-            id
-            name 
-            handle
-            created
-            updated
-            userId
-            user {
-                id
-            }
-        } 
-    }`;
-
-async function updateBlog(server: ApolloServer, handle: string, name: string): Promise<GraphQLResponse> {
-    return server.executeOperation({query: updateBlogMutation, variables: { handle, blog: { name }}});
-}
-
-const updateBlogMutation = `mutation UpdateBlog($handle: String!, $blog: BlogUpdateInput!) { 
-        blog(handle: $handle) {
-            update(blog: $blog) {
-                id
-                name
-            }
-        } 
-    }`;
-
-async function deleteBlog(server: ApolloServer, handle: string): Promise<GraphQLResponse> {
-    return server.executeOperation({query: deleteBlogMutation, variables: {handle}});
-}
-
-const deleteBlogMutation = `mutation DeleteBlog($handle: String!) { 
-        blog(handle: $handle) {
-            delete {
-                id
-            } 
-        }
-    }`;
-
-async function getBlogs(server: ApolloServer, limit: number, cursor: string | undefined): Promise<GraphQLResponse> {
-    return server.executeOperation({query: getBlogsQuery, variables: {
-            first: limit,
-            after: cursor
-        }}
-    );
-}
-
-const getBlogsQuery = `query getBlogs($first: Int, $last: Int, $before: String, $after: String) {
-        blogs(first: $first, last: $last, before: $before, after: $after) { 
-            edges {
-                node { 
-                    id
-                    handle 
-                    name 
-                    created
-                    updated
-                }
-                cursor
-            }
-            pageInfo {
-                hasPreviousPage
-                hasNextPage
-                startCursor
-                endCursor
-            } 
-        }
-    }`;
-
-async function getBlogForUser(server: ApolloServer, userId: string): Promise<GraphQLResponse> {
-    return server.executeOperation({query: getBlogForUserQuery, variables: {userId}});
-}
-
-const getBlogForUserQuery = `query getBlogForUser($userId: ID!) {
-        blogForUser(userId: $userId) { 
-           id
-           handle 
-           name 
-           created
-           updated
-        }
-    }`;
 
 

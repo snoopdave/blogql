@@ -78,7 +78,6 @@ export function encodeCursor(cursor: Cursor): string {
 function log(msg: string) {
     appendFileSync('/tmp/jest.log.txt', msg + '\n', {'encoding': 'utf8'});
 }
-
 export async function resolveCollection<T>(
         args: FindAllArgs,
         fetchData: (cursor: Cursor) => Promise<FindAllResult<T>>):
@@ -93,24 +92,29 @@ export async function resolveCollection<T>(
         args.first = args.first ? args.first : 10;
         const cursor = new Cursor(args.first, offset);
 
+        // fetchData will attempt to fetch one more result than we need
         let result: FindAllResult<T> = await fetchData(cursor);
 
+        let endCursor: String = "";
         let hasNextPage = false;
         if (result.rows.length > args.first) {
             hasNextPage = true;
-            result.rows = result.rows.slice(0, args.first);
+            endCursor = encodeCursor(new Cursor(cursor.limit, cursor.offset + cursor.limit));
         }
+        // slice off that extra result
+        result.rows = result.rows.slice(0, args.first);
+
         const edges: ResponseEdge<T>[] = [];
         for (let i = 0; i < result.rows.length; i++) {
             let cursor = { limit: args.first, offset: offset + args.first + i };
             edges.push(new ResponseEdge<T>(result.rows[i], encodeCursor(cursor)));
         }
-        const hasPreviousPage = false; // TODO: support backwards paging
+        const hasPreviousPage = false;
         return new ResponseConnection<ResponseEdge<T>>(edges, new PageInfo(
             hasNextPage,
             hasPreviousPage,
-            edges[0] ? edges[0].cursor : "",
-            edges[edges.length - 1] ? edges[edges.length - 1].cursor : ""
+            "",  // TODO: support backwards paging
+            endCursor
         ));
     } catch (e) {
         throw e;
