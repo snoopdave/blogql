@@ -45,25 +45,6 @@ export class Cursor {
     }
 }
 
-export class FindAllArgs {
-    first: number;
-    after: string;
-    constructor(limit: number, after: string) {
-        this.first = limit;
-        this.after = after;
-    }
-}
-
-
-
-export class FindAllResult<T> {
-    rows: T[];
-    count: number;
-    constructor(rows: T[], count: number) {
-        this.rows = rows;
-        this.count = count;
-    }
-}
 
 export function decodeCursor(cursor: string): Cursor {
     let cursorJson = Buffer.from(cursor, `base64`).toString(`binary`);
@@ -73,6 +54,24 @@ export function decodeCursor(cursor: string): Cursor {
 export function encodeCursor(cursor: Cursor): string {
     let cursorJson  = JSON.stringify(cursor);
     return Buffer.from(cursorJson, 'binary').toString('base64');
+}
+
+export class FindAllArgs {
+    first: number;
+    after: string;
+    constructor(limit: number, after: string) {
+        this.first = limit;
+        this.after = after;
+    }
+}
+
+export class FindAllResult<T> {
+    rows: T[];
+    count: number;
+    constructor(rows: T[], count: number) {
+        this.rows = rows;
+        this.count = count;
+    }
 }
 
 function log(msg: string) {
