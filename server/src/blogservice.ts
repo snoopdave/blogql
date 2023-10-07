@@ -14,8 +14,7 @@ import {ApiKeyStore} from "./apikeys/apikeystore.js";
 import BlogStore from "./blogs/blogstore.js";
 import {EntryStore} from "./entries/entrystore.js";
 import {UserStore} from "./users/userstore.js";
-import {GraphQLError} from "graphql/error";
-
+import {GraphQLError} from "graphql/error/GraphQLError.js"; // this is an annoying one
 
 export interface BlogService {
 

@@ -17,10 +17,10 @@ import {expressMiddleware} from "@apollo/server/express4";
 import http from 'http';
 import pkg from 'body-parser';
 import {ApolloServer} from "@apollo/server";
-import {ApolloServerPluginDrainHttpServer} from "@apollo/server/dist/esm/plugin/drainHttpServer";
-const { json } = pkg;
 import cors from 'cors';
 import gql from 'graphql-tag';
+
+const { json } = pkg;
 
 const blogQL = new BlogQL();
 const httpServer = http.createServer(blogQL.app);
@@ -46,7 +46,7 @@ const typeDefs = gql(readFileSync('schema.graphql', 'utf8'));
 const apolloServer = new ApolloServer<BlogQLContext>({
     typeDefs,
     resolvers,
-    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+    //plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
 });
 
 // This oddness is working around the lack of top-level await
