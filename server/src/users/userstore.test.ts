@@ -110,3 +110,5 @@ describe('Test UserStore', () => {
         }
     });
 });
+
+export {}

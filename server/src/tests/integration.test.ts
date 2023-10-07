@@ -6,11 +6,9 @@
 import {Entry} from '../entries/entry.js';
 import {describe, expect, test} from '@jest/globals';
 import {v4 as uuid} from 'uuid';
-import {ApolloServer, gql} from 'apollo-server';
 import resolvers from '../resolvers.js';
 import {randomString} from "../utils.js";
 import {Blog} from '../blogs/blog.js';
-import {GraphQLResponse} from 'apollo-server-types';
 import {User} from '../users/user.js';
 import DBConnection from '../dbconnection.js';
 import {readFileSync} from 'fs';
@@ -18,7 +16,7 @@ import {BlogService, BlogServiceSequelizeImpl} from "../blogservice";
 import {UserStore} from "../users/userstore";
 import BlogStore from "../blogs/blogstore";
 import {EntryStore} from "../entries/entrystore";
-import {ResponseEdge} from "../pagination";
+import {ResponseConnection, ResponseEdge} from "../pagination";
 import {
     createBlog,
     createEntry,
@@ -34,12 +32,17 @@ import {
     updateEntry
 } from "./integration_test_queries";
 import {createBlogAndTestEntriesViaSql, createTestBlogsViaSql, NUM_BLOGS, NUM_ENTRIES} from "./integration_test_data";
+import {ApolloServer, GraphQLResponse} from "@apollo/server";
+import {BlogQLContext} from "../index";
+import {startStandaloneServer} from "@apollo/server/standalone";
+import gql from 'graphql-tag';
 
 describe('Test the GraphQL API integration', () => {
 
     interface TestContext {
-        server: ApolloServer;
+        server: ApolloServer<BlogQLContext>;
         conn: DBConnection;
+        blogService: BlogService;
         userStore: UserStore;
         blogStore: BlogStore;
         entryStore: EntryStore;
@@ -60,117 +63,145 @@ describe('Test the GraphQL API integration', () => {
         }
 
         const typeDefs = gql(readFileSync('schema.graphql', 'utf8'));
-        const server = new ApolloServer({
+        const server = new ApolloServer<BlogQLContext>({
             typeDefs,
-            resolvers,
-            context: () => {
-                const user = authUsers[0];
-                const blogService: BlogService = new BlogServiceSequelizeImpl(user, conn);
-                return { user, blogService }
+            resolvers
+        });
+        const user = authUsers[0];
+        const blogService: BlogServiceSequelizeImpl = new BlogServiceSequelizeImpl(user, conn);
+        await blogService.initDataSources();
+
+        const { url } = await startStandaloneServer(server, {
+            context: async ({req, res}) => {
+                return { blogService, user }; // for some reason this is not used
             }
         });
+        console.log(`🚀 server up at ${url}`);
 
-        const blogStore = new BlogStore(conn);
-        await blogStore.init();
-        const entryStore = new EntryStore(conn);
-        await entryStore.init();
-
-        return {server, conn, userStore, blogStore, entryStore, authUsers};
+        return {
+            server,
+            conn,
+            blogService,
+            userStore: blogService.userStore,
+            blogStore: blogService.blogStore,
+            entryStore: blogService.entryStore,
+            authUsers
+        };
     }
 
     test('It can get blog for a user', async () => {
-        const {server, conn, authUsers} = await initDataStorage();
+        const {blogService, server, conn, authUsers} = await initDataStorage();
         const slug = randomString(5);
-        const blog = await createBlog(server, `My Blog ${slug}`, `myblog${slug}`);
-        blog?.data?.createBlog.id;
+        const blog = await createBlog(server, `My Blog ${slug}`, `myblog${slug}`, { blogService, user: authUsers[0] });
+
+        expect(blog.body.kind === 'single');
         try {
-            let data = await getBlogForUser(server, authUsers[0].id);
-            expect(data.errors).toBeUndefined();
-            expect(data?.data?.blogForUser?.id).toBe(blog?.data?.createBlog.id);
+            let response = await getBlogForUser(server, authUsers[0].id, { blogService, user: authUsers[0] });
+            expect(response.body.kind === 'single');
+            if (response.body.kind === 'single') {
+                expect(response.body.singleResult?.errors).toBeUndefined();
+                if (blog.body.kind === 'single') {
+                    expect((response.body.singleResult?.data?.blogForUser as {id: string}).id)
+                        .toBe((blog.body.singleResult?.data?.createBlog as {id: string}).id);
+                }
+            }
         } finally {
             await conn.destroy();
+            await server.stop();
         }
     });
 
     test('It can create new entries via GraphQL', async () => {
-        const {server, conn, blogStore, authUsers} = await initDataStorage();
+        const {blogService, server, conn, blogStore, authUsers} = await initDataStorage();
         try {
             const blog: Blog = await blogStore.create(authUsers[0].id, 'bloghandle', 'Blog Name');
-            const entryCreated = await createEntry(server, blog.handle, 'First post!', 'LOL');
-            expect(entryCreated.errors).toBeUndefined();
-            expect(entryCreated.data?.blog.createEntry.title).toBe('First post!')
-            verifyDate(entryCreated.data?.blog.createEntry.created);
-            verifyDate(entryCreated.data?.blog.createEntry.updated);
+            const entryCreated = await createEntry(server, blog.handle, 'First post!', 'LOL', { blogService, user: authUsers[0] });
+            expect(entryCreated.body.kind === 'single');
+            if (entryCreated.body.kind === 'single') {
+                expect(entryCreated.body.singleResult?.errors).toBeUndefined();
+                expect((entryCreated.body.singleResult?.data?.blog as { createEntry: { title: string} } )
+                    .createEntry.title).toBe('First post!');
+                verifyDate((entryCreated.body.singleResult?.data?.blog as { createEntry: { created: string }}).createEntry?.created);
+                verifyDate((entryCreated.body.singleResult?.data?.blog as { createEntry: { updated: string }}).createEntry?.updated);
+            }
         } finally {
             await conn.destroy();
+            await server.stop();
         }
     });
 
+    // rewrite this to use the singleResult field as above
     test('It can return limited blog entries from the database', async () => {
         const limit = 2;
-        const {server, conn, blogStore, entryStore, authUsers} = await initDataStorage();
-        const blog = await createBlogAndTestEntriesViaSql(authUsers[0], blogStore, entryStore);
-        let payload = { query: GET_ENTRIES_QUERY, variables: {
-                handle: blog.handle,
-                first: limit,
-            }};
+        const {blogService, server, conn, blogStore, authUsers} = await initDataStorage();
+        await createTestBlogsViaSql(authUsers, blogStore);
         try {
-            const result = await server.executeOperation(payload);
-            expect(result.errors).toBeUndefined();
-            expect(result.data?.blog.entries.edges).toHaveLength(limit);
+            const result = await getBlogs(server, limit, undefined, { blogService, user: authUsers[0] });
+            expect(result.body.kind === 'single');
+            if (result.body.kind === 'single') {
+                expect(result.body.singleResult?.errors).toBeUndefined();
+                expect((result.body.singleResult?.data?.blogs as {edges: ResponseEdge<Blog>[] }).edges.length).toBe(limit);
+            }
         } finally {
             await conn.destroy();
+            await server.stop();
         }
     });
 
     test('It can page through all entries', async () => {
-        const {server, conn, blogStore, entryStore, authUsers} = await initDataStorage();
+        const {blogService, server, conn, blogStore, entryStore, authUsers} = await initDataStorage();
         const blog = await createBlogAndTestEntriesViaSql(authUsers[0], blogStore, entryStore);
         const dataRetrieved: Entry[] = [];
+        const blogQLContext: BlogQLContext = {blogService, user: authUsers[0]};
         try {
-            await testPageThroughEntries(server, blog.handle, NUM_ENTRIES, NUM_ENTRIES);
-            await testPageThroughEntries(server, blog.handle, 1, NUM_ENTRIES);
-            await testPageThroughEntries(server, blog.handle, 2, NUM_ENTRIES);
-            await testPageThroughEntries(server, blog.handle, 10, NUM_ENTRIES);
-            await testPageThroughEntries(server, blog.handle, NUM_ENTRIES + 20, NUM_ENTRIES);
+            await testPageThroughEntries(server, blog.handle, NUM_ENTRIES, NUM_ENTRIES, blogQLContext);
+            await testPageThroughEntries(server, blog.handle, 1, NUM_ENTRIES, blogQLContext);
+            await testPageThroughEntries(server, blog.handle, 2, NUM_ENTRIES, blogQLContext);
+            await testPageThroughEntries(server, blog.handle, 10, NUM_ENTRIES, blogQLContext);
+            await testPageThroughEntries(server, blog.handle, NUM_ENTRIES + 20, NUM_ENTRIES, blogQLContext);
         } finally {
             await conn.destroy();
+            await server.stop();
         }
     }, 20000); // timeout for long running test
 
 
-    async function testPageThroughEntries(server: ApolloServer, handle: string, pageSize: number | null, expectedSize: number) {
+    async function testPageThroughEntries(server: ApolloServer<BlogQLContext>, handle: string, pageSize: number | null, expectedSize: number, blogQLContext: BlogQLContext) {
         const payload = {query: GET_ENTRIES_QUERY, variables: { handle, first: pageSize}};
         const dataRetrieved: Entry[] = [];
-        await getAllEntries(server, payload, dataRetrieved);
+        await getAllEntries(server, payload, dataRetrieved, blogQLContext);
         expect(dataRetrieved).toHaveLength(expectedSize);
     }
 
 
     it('should fetch all 100 entries in reverse chronological order', async () => {
-        const {conn, server, blogStore, entryStore, authUsers} = await initDataStorage();
+        const {blogService, conn, server, blogStore, entryStore, authUsers} = await initDataStorage();
         try {
             const blog = await createBlogAndTestEntriesViaSql(authUsers[0], blogStore, entryStore);
 
             const response = await server.executeOperation({
                 query: GET_ENTRIES_QUERY,
                 variables: {handle: blog.handle, first: NUM_ENTRIES},
-            });
+            }, { contextValue: { blogService, user: authUsers[0] } });
 
-            const entries = response.data?.blog.entries.edges.map((edge: any) => edge.node);
-            expect(entries.length).toBe(authUsers.length);
+            if (response.body.kind  === 'single') {
+                expect(response.body.singleResult?.errors).toBeUndefined();
 
-            for (let i = 1; i < entries.length; i++) {
-                expect(new Date(entries[i - 1].updated).getTime())
-                    .toBeGreaterThanOrEqual(new Date(entries[i].updated).getTime());
+                const entries = (response.body.singleResult.data?.blog as { entries: ResponseConnection<ResponseEdge<Entry>> }).entries.edges;
+                expect(entries.length).toBe(NUM_ENTRIES);
+                for (let i = 1; i < entries.length; i++) {
+                    expect(new Date(entries[i - 1].node.updated).getTime())
+                        .toBeGreaterThanOrEqual(new Date(entries[i].node.updated).getTime());
+                }
             }
         } finally {
             await conn.destroy();
+            await server.stop();
         }
     });
 
     it('should paginate forward 5 items at a time in reverse chronological order', async () => {
-        const {conn, server, blogStore, entryStore, authUsers} = await initDataStorage();
+        const {blogService, conn, server, blogStore, entryStore, authUsers} = await initDataStorage();
         try {
             const blog = await createBlogAndTestEntriesViaSql(authUsers[0], blogStore, entryStore);
 
@@ -181,189 +212,252 @@ describe('Test the GraphQL API integration', () => {
                 const response: GraphQLResponse = await server.executeOperation({
                     query: GET_ENTRIES_QUERY,
                     variables: {handle: blog.handle, first: 5, after: afterCursor},
-                });
+                }, { contextValue: { blogService, user: authUsers[0] } });
 
-                const pageInfo = response.data?.blog.entries.pageInfo;
-                const edges = response.data?.blog.entries.edges;
-                afterCursor = pageInfo.endCursor;
+                if (response.body.kind === 'single') {
+                    expect(response.body.singleResult?.errors).toBeUndefined();
 
-                expect(edges.length).toBe(5);
+                    const pageInfo = (response.body.singleResult.data?.blog as { entries: ResponseConnection<ResponseEdge<Entry>> }).entries.pageInfo;
+                    afterCursor = pageInfo.endCursor;
 
-                allEntries.push(...edges.map((edge: any) => edge.node));
+                    const edges= (response.body.singleResult.data?.blog as { entries: ResponseConnection<ResponseEdge<Entry>> }).entries.edges;
+                    expect(edges.length).toBe(5);
 
-                for (let j = 1; j < edges.length; j++) {
-                    expect(new Date(edges[j - 1].node.updated).getTime())
-                        .toBeGreaterThanOrEqual(new Date(edges[j].node.updated).getTime());
+                    allEntries.push(...edges.map((edge: any) => edge.node));
+
+                    // check that entries in this page are ordered
+                    for (let j = 1; j < edges.length; j++) {
+                        expect(new Date(edges[j - 1].node.updated).getTime())
+                            .toBeGreaterThanOrEqual(new Date(edges[j].node.updated).getTime());
+                    }
                 }
+
             }
 
+            // check that all pages taken together are ordered
             for (let i = 1; i < allEntries.length; i++) {
                 expect(new Date(allEntries[i - 1].updated).getTime())
                     .toBeGreaterThanOrEqual(new Date(allEntries[i].updated).getTime());
             }
+
         } finally {
             await conn.destroy();
+            await server.stop();
         }
     });
 
     test('It can retrieve entry by ID', async () => {
-        const {server, conn, userStore, blogStore, entryStore} = await initDataStorage();
+        const {blogService, server, conn, userStore, blogStore, entryStore, authUsers} = await initDataStorage();
         const user: User = await userStore.create(
             'test-user', 'test-user@example.com', 'dummy.png')
         const blog: Blog = await blogStore.create(user.id, 'bloghandle', 'Blog Name');
         const entry = await entryStore.create(blog.id, 'entry 1 title', 'entry 1 content');
         try {
-            const entryFetched = await getEntry(server, blog.handle, entry.id);
-            expect(entryFetched.errors).toBeUndefined();
-            expect(entryFetched.data?.message).toBeUndefined();
-            expect(entryFetched.data?.blog.entry.content).toBe('entry 1 content');
-            verifyDate(entryFetched.data?.blog.entry.created);
-            verifyDate(entryFetched.data?.blog.entry.updated);
-            expect(entryFetched.data?.blog.entry.updated).toBeDefined();
+            const entryFetched = await getEntry(server, blog.handle, entry.id, { blogService, user: authUsers[0] });
+            if (entryFetched.body.kind  === 'single') {
+                expect(entryFetched.body.singleResult?.errors).toBeUndefined();
+                const entry = (entryFetched.body.singleResult?.data?.blog as { entry: Entry }).entry;
+                expect(entry.id).toBe(entry.id);
+                expect(entryFetched.body.singleResult.data?.message).toBeUndefined();
+                expect(entry.content).toBe('entry 1 content');
+                expect(entry.updated).toBeDefined();
+            }
         } finally {
             await conn.destroy();
+            await server.stop();
         }
     });
 
     test(`It can delete an entry`, async () => {
-        const {server, conn, blogStore, entryStore, authUsers} = await initDataStorage();
+        const {blogService, server, conn, blogStore, entryStore, authUsers} = await initDataStorage();
         const blog: Blog = await blogStore.create(authUsers[0].id, 'bloghandle', 'Blog Name');
         const entry = await entryStore.create(blog.id, 'entry 1 title', 'entry 1 content');
         try {
-            const itemFetched = await getEntry(server, blog.handle, entry.id);
-            expect(itemFetched.errors).toBeUndefined();
-            expect(itemFetched.data?.blog.entry.content).toBe('entry 1 content');
+            const itemFetched = await getEntry(server, blog.handle, entry.id, { blogService, user: authUsers[0] });
+            if (itemFetched.body.kind  === 'single') {
+                expect(itemFetched.body.singleResult.errors).toBeUndefined();
+                expect((itemFetched.body.singleResult.data?.blog as { entry: Entry }).entry.content).toBe('entry 1 content');
+            }
 
-            const itemDeleted = await deleteEntry(server, blog.handle, entry.id);
-            expect(itemDeleted.errors).toBeUndefined();
-            expect(itemDeleted.data?.blog.entry.delete.id).toBe(entry.id);
+            const itemDeleted = await deleteEntry(server, blog.handle, entry.id, { blogService, user: authUsers[0] });
+            if (itemDeleted.body.kind  === 'single') {
+                expect(itemDeleted.body.singleResult.errors).toBeUndefined();
+                expect((itemDeleted.body.singleResult.data?.blog as { entry: { delete: Entry }}).entry.delete.id).toBe(entry.id);
+            }
+
         } finally {
             await conn.destroy();
+            await server.stop();
         }
     });
 
     test('It prevents user from creating entries in somebody else blog', async () => {
-        const {server, conn, blogStore, userStore} = await initDataStorage();
+        const {blogService, server, conn, blogStore, userStore, authUsers} = await initDataStorage();
         try {
             const user: User = await userStore.create(
                 'test-user', 'test-user@example.com', 'dummy.png')
             const blog: Blog = await blogStore.create(user.id, 'bloghandle', 'Blog Name');
-            const entryCreated = await createEntry(server, blog.handle, 'First post!', 'LOL');
-            expect(entryCreated.errors).toHaveLength(1);
+            const entryCreated = await createEntry(server, blog.handle, 'First post!', 'LOL', { blogService, user: authUsers[0] });
+            if (entryCreated.body.kind  === 'single') {
+                expect(entryCreated.body.singleResult.errors).toBeDefined();
+                expect(entryCreated.body.singleResult?.errors).toHaveLength(1);
+            }
         } finally {
             await conn.destroy();
+            await server.stop();
         }
     });
 
     test(`It gives error when deleting entry that does not exist`, async () => {
-        const {server, conn, blogStore, authUsers} = await initDataStorage();
+        const {blogService, server, conn, blogStore, authUsers} = await initDataStorage();
         const id = uuid();
         const blog: Blog = await blogStore.create(authUsers[0].id, 'bloghandle', 'Blog Name');
         try {
-            const entryDeleted = await deleteEntry(server, blog.handle, id);
-            expect(entryDeleted.errors).toBeDefined();
+            const entryDeleted = await deleteEntry(server, blog.handle, id, { blogService, user: authUsers[0] });
+            if (entryDeleted.body.kind  === 'single') {
+                expect(entryDeleted.body.singleResult.errors).toBeDefined();
+                expect(entryDeleted.body.singleResult?.errors).toHaveLength(1);
+            }
         } finally {
             await conn.destroy();
+            await server.stop();
         }
     });
 
     test(`It can update an entry's title and content and updated time`, async () => {
-        const {server, conn, blogStore, entryStore, authUsers} = await initDataStorage();
+        const {blogService, server, conn, blogStore, entryStore, authUsers} = await initDataStorage();
         const blog: Blog = await blogStore.create(authUsers[0].id, 'bloghandle', 'Blog Name');
         const entry = await entryStore.create(blog.id, 'entry 1 title', 'entry 1 content');
         try {
-            let entryFetched: GraphQLResponse = await getEntry(server, blog.handle, entry.id);
-            expect(entryFetched.errors).toBeUndefined();
-            expect(entryFetched.data?.blog.entry.content).toBe('entry 1 content');
+            let entryFetched: GraphQLResponse = await getEntry(server, blog.handle, entry.id, { blogService, user: authUsers[0] });
+            if (entryFetched.body.kind  === 'single') {
+                expect(entryFetched.body.singleResult.errors).toBeUndefined();
+                expect((entryFetched.body.singleResult.data?.blog as { entry: Entry }).entry.content).toBe('entry 1 content');
+            }
 
-            const entryUpdated = await updateEntry(
+            const entryUpdatedResponse = await updateEntry(
                 server,
                 blog.handle,
                 entry.id,
                 entry.title + ' (EDITED)',
-                entry.content + ' (EDITED)');
-            expect(entryUpdated.data?.blog.entry.update.id).toBe(entry.id);
-            expect(entryUpdated.errors).toBeUndefined();
+                entry.content + ' (EDITED)', { blogService, user: authUsers[0] });
+            if (entryUpdatedResponse.body.kind  === 'single') {
+                expect(entryUpdatedResponse.body.singleResult.errors).toBeUndefined();
 
-            entryFetched = await getEntry(server, blog.handle, entry.id);
-            expect(entryFetched.errors).toBeUndefined();
-            expect(entryFetched.data?.blog.entry.title).toBe('entry 1 title (EDITED)');
-            expect(entryFetched.data?.blog.entry.content).toBe('entry 1 content (EDITED)');
+                const entryUpdated = (entryUpdatedResponse.body.singleResult.data?.blog as {
+                    entry: { update: {id: string} }
+                }).entry;
+                expect(entryUpdated.update.id).toBe(entry.id);
+
+                const entryReFetchedResponse  = await getEntry(server, blog.handle, entry.id, { blogService, user: authUsers[0] });
+                if (entryReFetchedResponse.body.kind  === 'single') {
+                    expect(entryReFetchedResponse.body.singleResult.errors).toBeUndefined();
+                    const entryRefetched: Entry = (entryReFetchedResponse.body.singleResult.data?.blog as {
+                        entry: Entry
+                    }).entry;
+                    expect(entryRefetched.title).toBe('entry 1 title (EDITED)');
+                    expect(entryRefetched.content).toBe('entry 1 content (EDITED)');
+                }
+            }
         } finally {
             await conn.destroy();
+            await server.stop();
         }
     });
 
     test('It can return limited blogs from the database', async () => {
         const limit = 2;
-        const {server, conn, blogStore, authUsers} = await initDataStorage();
+        const {blogService, server, conn, blogStore, authUsers} = await initDataStorage();
         await createTestBlogsViaSql(authUsers, blogStore);
         try {
-            const result = await getBlogs(server, limit, undefined);
-            expect(result.errors).toBeUndefined();
-            expect(result.data?.blogs.edges).toHaveLength(limit);
+            const result = await getBlogs(server, limit, undefined, { blogService, user: authUsers[0] });
+            if (result.body.kind === 'single') {
+                expect(result.body.singleResult.errors).toBeUndefined();
+                expect((result.body.singleResult.data?.blogs as { edges: ResponseEdge<Blog>[] }).edges).toHaveLength(limit);
+            }
         } finally {
             await conn.destroy();
+            await server.stop();
         }
     });
 
     test('It can CRUD blogs', async () => {
-        const {server, conn, authUsers} = await initDataStorage();
+        const {blogService, server, conn, authUsers} = await initDataStorage();
 
         try {
             const slug = randomString(5);
 
             // create a blog
-            const blog = await createBlog(server, `test-blog-${slug}`, `Test Blog ${slug}`);
-            expect(blog.errors).toBeUndefined();
+            const blogResponse = await createBlog(server, `test-blog-${slug}`, `Test Blog ${slug}`, { blogService, user: authUsers[0] });
+            if (blogResponse.body.kind === 'single') {
+                expect(blogResponse.body.singleResult.errors).toBeUndefined();
 
-            // get the blog
-            const fetchedBlog = await getBlog(server, blog.data?.createBlog.handle);
-            expect(fetchedBlog.errors).toBeUndefined();
-            expect(fetchedBlog.data?.blog.name).toBe(`Test Blog ${slug}`);
-            expect(fetchedBlog.data?.blog.handle).toBe(`test-blog-${slug}`);
-            expect(fetchedBlog.data?.blog.userId).toBe(authUsers[0].id);
-            expect(fetchedBlog.data?.blog.user.id).toBe(authUsers[0].id);
+                // get the blog
+                const blog = (blogResponse.body.singleResult.data?.createBlog as Blog);
+                expect(blog.id).toBeDefined();
+                const fetchedBlogResponse = await getBlog(server, blog.handle, { blogService, user: authUsers[0] });
+                if (fetchedBlogResponse.body.kind === 'single') {
+                    expect(fetchedBlogResponse.body.singleResult.errors).toBeUndefined();
 
-            // update the blog
-            const updatedBlog = await updateBlog(server, blog?.data?.createBlog.handle, `Test Blog ${slug} - Updated`);
-            expect(updatedBlog.errors).toBeUndefined();
-            expect(updatedBlog.data?.blog.update.name).toBe(`Test Blog ${slug} - Updated`);
+                    const fetchedBlog = fetchedBlogResponse.body.singleResult.data?.blog as Blog;
+                    expect(fetchedBlog.id).toBe(blog.id);
+                    expect(fetchedBlog.name).toBe(`Test Blog ${slug}`);
+                    expect(fetchedBlog.handle).toBe(`test-blog-${slug}`);
+                    expect(fetchedBlog.userId).toBe(authUsers[0].id);
 
-            // delete the blog
-            const deletedBlog = await deleteBlog(server, blog?.data?.createBlog.handle);
-            expect(deletedBlog.errors).toBeUndefined();
+                    // update the blog
+                    const updatedBlog = await updateBlog(server, blog.handle, `Test Blog ${slug} - Updated`, { blogService, user: authUsers[0] });
+                    if (updatedBlog.body.kind === 'single') {
+                        expect(updatedBlog.body.singleResult.errors).toBeUndefined();
+                        expect((updatedBlog.body.singleResult.data?.blog as { update: Blog }).update.name).toBe(`Test Blog ${slug} - Updated`);
+                    }
 
-            // attempt to get blog should return null
-            const deletedBlogFetched = await getBlog(server, blog.data?.createBlog.handle);
-            expect(deletedBlogFetched.errors).toBeUndefined();
-            expect(deletedBlogFetched.data?.blog).toBeNull();
+                    // delete the blog
+                    const deletedBlog = await deleteBlog(server, blog.handle, { blogService, user: authUsers[0] });
+                    if (deletedBlog.body.kind === 'single') {
+                        expect(deletedBlog.body.singleResult.errors).toBeUndefined();
+                    }
+
+                    // attempt to get blog should return null
+                    const deletedBlogFetched = await getBlog(server, blog.handle, { blogService, user: authUsers[0] });
+                    if (deletedBlogFetched.body.kind === 'single') {
+                        expect(deletedBlogFetched.body.singleResult.errors).toBeUndefined();
+                        expect(deletedBlogFetched.body.singleResult.data?.blog).toBeNull();
+                    }
+                }
+            }
+
+
 
         } finally {
             await conn.destroy();
+            server.stop();
         }
     });
 
     test('It can page through all blogs', async () => {
-        const {server, conn, blogStore, authUsers} = await initDataStorage();
+        const {blogService, server, conn, blogStore, authUsers} = await initDataStorage();
         await createTestBlogsViaSql(authUsers, blogStore);
+        const blogQLContext: BlogQLContext = {blogService, user: authUsers[0]};
         try {
-            await testPageThroughBlogs(server, NUM_BLOGS, NUM_BLOGS);
-            await testPageThroughBlogs(server, 1, NUM_BLOGS);
-            await testPageThroughBlogs(server, 2, NUM_BLOGS);
-            await testPageThroughBlogs(server, 10, NUM_BLOGS);
-            await testPageThroughBlogs(server, NUM_BLOGS + 20, NUM_BLOGS);
+            await testPageThroughBlogs(server, NUM_BLOGS, NUM_BLOGS, blogQLContext);
+            await testPageThroughBlogs(server, 1, NUM_BLOGS, blogQLContext);
+            await testPageThroughBlogs(server, 2, NUM_BLOGS, blogQLContext);
+            await testPageThroughBlogs(server, 10, NUM_BLOGS, blogQLContext);
+            await testPageThroughBlogs(server, NUM_BLOGS + 20, NUM_BLOGS, blogQLContext);
         } finally {
             await conn.destroy();
+            await server.stop();
         }
     });
 
-    async function testPageThroughBlogs(server: ApolloServer, pageSize: number | null, expectedSize: number) {
+    async function testPageThroughBlogs(server: ApolloServer<BlogQLContext>, pageSize: number | null, expectedSize: number, blogQLContext: BlogQLContext) {
         const payload = {query: GET_BLOGS_QUERY, variables: {first: pageSize}};
         const dataRetrieved: Blog[] = [];
-        await getAllBlogs(server, payload, dataRetrieved);
+        await getAllBlogs(server, payload, dataRetrieved, blogQLContext);
         expect(dataRetrieved).toHaveLength(expectedSize);
     }
+
 
 });
 
@@ -388,34 +482,43 @@ describe('Test random stuff', () => {
 });
 
 // use cursor to recursively page through and fetch all entries
-async function getAllEntries(server: ApolloServer, payload: any, dataRetrieved: Entry[]) {
+async function getAllEntries(server: ApolloServer<BlogQLContext>, payload: any, dataRetrieved: Entry[], blogQLContext: BlogQLContext) {
 
-    const result = await server.executeOperation(payload);
-    expect(result?.errors).toBeUndefined();
+    const result = await server.executeOperation(payload, { contextValue: blogQLContext });
+    expect(result.body.kind === 'single');
+    if (result.body.kind === 'single') {
+        expect(result?.body.singleResult.errors).toBeUndefined();
 
-    result.data?.blog.entries.edges.forEach((item: ResponseEdge<Entry>) => {
-        dataRetrieved.push(item.node);
-    });
+        expect((result?.body.singleResult.data?.blog as {entries: {edges: ResponseEdge<Entry>[]}}).entries.edges).toBeDefined();
+        (result.body.singleResult.data?.blog as {entries: {edges: ResponseEdge<Entry>[]}}).entries.edges
+            .forEach((item: ResponseEdge<Entry>) => {
+                dataRetrieved.push(item.node);
+            });
 
-    if (result.data?.blog.entries.pageInfo.hasNextPage) {
-        payload.variables.after = result.data?.blog.entries.pageInfo.endCursor;
-        await getAllEntries(server, payload, dataRetrieved);
+        if ((result.body.singleResult?.data?.blog as {entries: {pageInfo: {hasNextPage: boolean}}}).entries.pageInfo.hasNextPage) {
+            payload.variables.after = (result.body.singleResult?.data?.blog as {entries: {pageInfo: {endCursor: string}}}).entries.pageInfo.endCursor;
+            await getAllEntries(server, payload, dataRetrieved, blogQLContext);
+        }
     }
 }
 
 // use cursor to recursively page through and fetch all blogs
-async function getAllBlogs(server: ApolloServer, payload: any, dataRetrieved: Blog[]) {
+async function getAllBlogs(server: ApolloServer<BlogQLContext>, payload: any, dataRetrieved: Blog[], blogQLContext: BlogQLContext) {
 
-    const result = await server.executeOperation(payload);
-    expect(result?.errors).toBeUndefined();
+    const result = await server.executeOperation(payload, { contextValue: blogQLContext });
+    expect(result.body.kind === 'single');
+    if (result.body.kind === 'single') {
+        expect(result?.body.singleResult.errors).toBeUndefined();
 
-    result.data?.blogs.edges.forEach((item: ResponseEdge<Blog>) => {
-        dataRetrieved.push(item.node);
-    });
+        (result.body.singleResult.data?.blogs as {edges: ResponseEdge<Blog>[]}).edges.forEach((item: ResponseEdge<Blog>) => {
+            dataRetrieved.push(item.node);
+        });
 
-    if (result.data?.blogs.pageInfo.endCursor) {
-        payload.variables.after = result.data?.blogs.pageInfo.endCursor;
-        await getAllBlogs(server, payload, dataRetrieved);
+        if ((result.body.singleResult?.data?.blogs as {pageInfo: {hasNextPage: boolean}}).pageInfo.hasNextPage
+            && (result.body.singleResult?.data?.blogs as {pageInfo: {endCursor: string}}).pageInfo.endCursor) {
+            payload.variables.after = (result.body.singleResult?.data?.blogs as {pageInfo: {endCursor: string}}).pageInfo.endCursor
+            await getAllBlogs(server, payload, dataRetrieved, blogQLContext);
+        }
     }
 }
 
@@ -425,5 +528,4 @@ function verifyDate(dateString: string) {
     date.setTime(Date.parse(dateString));
     expect(date.getFullYear()).toBeGreaterThan(2020);
 }
-
 
