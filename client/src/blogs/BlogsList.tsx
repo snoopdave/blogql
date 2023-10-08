@@ -7,7 +7,7 @@ import {useQuery} from '@apollo/client/react/hooks/useQuery';
 import {BLOGS_QUERY} from '../graphql/queries';
 import React, {useState} from 'react';
 import {Heading} from "../common/Heading";
-import {Switch, Table} from "antd";
+import {Table} from "antd";
 import {BlogEdge} from "../gql/graphql";
 import {Link} from "react-router-dom";
 
@@ -20,10 +20,10 @@ export function BlogsList() {
     if (error) { return (<p>error!</p>); }
     if (!data) { return (<p>no data!</p>); }
     const columns = [
-        { title: 'Name', dataIndex: 'name', key: 'id',
+        { title: 'Name', dataIndex: 'name', key: 'name',
             render: (_: string, edge: BlogEdge) => <Link to={`/blogs/${edge.node.handle}`}>{edge.node.name}</Link>
         },
-        { title: 'Handle', dataIndex: 'handle', key: 'id',
+        { title: 'Handle', dataIndex: 'handle', key: 'handle',
             render: (_: string, edge: BlogEdge) => <Link to={`/blogs/${edge.node.handle}`}>{edge.node.handle}</Link>
         },
     ];

@@ -3,9 +3,9 @@
  * Licensed under Apache Software License v2.
  */
 
-import {BlogConnection} from "../gql/graphql";
+import {TestBlogConnection} from "./TestDataGenerator";
 
 export interface Export {
-    blogs: BlogConnection;
+    blogs: TestBlogConnection;
 }
 
