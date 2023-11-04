@@ -10,7 +10,6 @@ client/.direnv
 .idea
 client/storybook-static
 client/.storybook/public
-client/src/googlecid.ts
 env.sh
 node_modules
 schema.graphql
