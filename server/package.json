@@ -7,7 +7,7 @@
   "author": "snoopdave@gmail.com",
   "license": "Apache-2.0",
   "scripts": {
-    "start": "node --experimental-modules src/index.js",
+    "start": "yarn build && node --experimental-modules src/index.js",
     "build": "tsc --noEmit false",
     "test": "NODE_OPTIONS=\"--experimental-vm-modules --input-type module\" npx jest  --detectOpenHandles",
     "clean": "rm -rf src/*.js src/*/*.js",
