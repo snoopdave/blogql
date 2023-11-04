@@ -25,6 +25,6 @@ it('BlogsList renders without error with Mocked Service Worker', async () => {
             </Router>
         </ApolloProvider>
     );
-    expect(await screen.findByText('Blog One')).toBeInTheDocument();
-    expect(await screen.findByText('Daves Blog')).toBeInTheDocument();
+    expect(await screen.findByText('Blog 1')).toBeInTheDocument();
+    expect(await screen.findByText('Blog 2')).toBeInTheDocument();
 });

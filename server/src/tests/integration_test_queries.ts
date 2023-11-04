@@ -2,9 +2,8 @@
  * Copyright David M. Johnson (snoopdave@gmail.com).
  * Licensed under Apache Software License v2.
  */
-
-import {ApolloServer} from 'apollo-server';
-import {GraphQLResponse} from 'apollo-server-types';
+import {ApolloServer, GraphQLResponse} from "@apollo/server";
+import {BlogQLContext} from "../index";
 
 export const GET_ENTRIES_QUERY = `
         query getBlogEntries($handle: String!, $first: Int, $last: Int, $before: String, $after: String ) {
@@ -30,8 +29,8 @@ export const GET_ENTRIES_QUERY = `
             }
         }`;
 
-export async function getEntry(server: ApolloServer, handle: string, entryId: string): Promise<GraphQLResponse> {
-    return server.executeOperation({query: GET_ENTRY_QUERY, variables: {handle, id: entryId}});
+export async function getEntry(server: ApolloServer<BlogQLContext>, handle: string, entryId: string, blogQLContext: BlogQLContext): Promise<GraphQLResponse> {
+    return server.executeOperation({query: GET_ENTRY_QUERY, variables: {handle, id: entryId}}, { contextValue: blogQLContext });
 }
 
 const GET_ENTRY_QUERY = `query getEntry($handle: String!, $id: ID!) {
@@ -46,8 +45,8 @@ const GET_ENTRY_QUERY = `query getEntry($handle: String!, $id: ID!) {
         } 
     }`;
 
-export async function createEntry(server: ApolloServer, handle: string, title: string, content: string): Promise<GraphQLResponse> {
-    return server.executeOperation({query: CREATE_ENTRY_MUTATION, variables: {handle, entry: { title, content }}});
+export async function createEntry(server: ApolloServer<BlogQLContext>, handle: string, title: string, content: string, blogQLContext: BlogQLContext): Promise<GraphQLResponse> {
+    return server.executeOperation({query: CREATE_ENTRY_MUTATION, variables: {handle, entry: { title, content }}}, { contextValue: blogQLContext });
 }
 
 const CREATE_ENTRY_MUTATION = `mutation CreateEntry($handle: String!, $entry: EntryCreateInput!) { 
@@ -62,8 +61,8 @@ const CREATE_ENTRY_MUTATION = `mutation CreateEntry($handle: String!, $entry: En
         } 
     }`;
 
-export async function deleteEntry(server: ApolloServer, handle: string, id: string): Promise<GraphQLResponse> {
-    return server.executeOperation({query: DELETE_ENTRY_MUTATION , variables: {handle, id}});
+export async function deleteEntry(server: ApolloServer<BlogQLContext>, handle: string, id: string, blogQLContext: BlogQLContext): Promise<GraphQLResponse> {
+    return server.executeOperation({query: DELETE_ENTRY_MUTATION , variables: {handle, id}}, { contextValue: blogQLContext });
 }
 
 const DELETE_ENTRY_MUTATION  = `mutation DeleteEntry($handle: String!, $id: ID!) {
@@ -76,8 +75,8 @@ const DELETE_ENTRY_MUTATION  = `mutation DeleteEntry($handle: String!, $id: ID!)
         }
     }`;
 
-export async function updateEntry(server: ApolloServer, handle: string, id: string, title: string, content: string): Promise<GraphQLResponse> {
-    return server.executeOperation({query:  UPDATE_ENTRY_MUTATION, variables: {handle, id, entry: { title, content }}});
+export async function updateEntry(server: ApolloServer<BlogQLContext>, handle: string, id: string, title: string, content: string, blogQLContext: BlogQLContext): Promise<GraphQLResponse> {
+    return server.executeOperation({query:  UPDATE_ENTRY_MUTATION, variables: {handle, id, entry: { title, content }}}, { contextValue: blogQLContext });
 }
 
 const UPDATE_ENTRY_MUTATION = `mutation UpdateEntry($handle: String!, $id: ID!, $entry: EntryUpdateInput!) { 
@@ -90,8 +89,8 @@ const UPDATE_ENTRY_MUTATION = `mutation UpdateEntry($handle: String!, $id: ID!, 
         } 
     }`;
 
-export async function createBlog(server: ApolloServer, handle: string, name: string): Promise<GraphQLResponse> {
-    return server.executeOperation({query: CREATE_BLOG_MUTATION, variables: {blog: {handle, name}}});
+export async function createBlog(server: ApolloServer<BlogQLContext>, handle: string, name: string, blogQLContext: BlogQLContext): Promise<GraphQLResponse> {
+    return server.executeOperation({query: CREATE_BLOG_MUTATION, variables: {blog: {handle, name}}}, { contextValue: blogQLContext });
 }
 
 const CREATE_BLOG_MUTATION = `mutation CreateBlog($blog: BlogCreateInput) { 
@@ -104,8 +103,8 @@ const CREATE_BLOG_MUTATION = `mutation CreateBlog($blog: BlogCreateInput) {
         } 
     }`;
 
-export async function getBlog(server: ApolloServer, handle: string): Promise<GraphQLResponse> {
-    return server.executeOperation({query: GET_BLOG_QUERY, variables: {handle}});
+export async function getBlog(server: ApolloServer<BlogQLContext>, handle: string, blogQLContext: BlogQLContext): Promise<GraphQLResponse> {
+    return server.executeOperation({query: GET_BLOG_QUERY, variables: {handle}}, { contextValue: blogQLContext });
 }
 
 const GET_BLOG_QUERY = `query getBlog($handle: String!) {
@@ -122,8 +121,8 @@ const GET_BLOG_QUERY = `query getBlog($handle: String!) {
         } 
     }`;
 
-export async function updateBlog(server: ApolloServer, handle: string, name: string): Promise<GraphQLResponse> {
-    return server.executeOperation({query: UPDATE_BLOG_MUTATION, variables: { handle, blog: { name }}});
+export async function updateBlog(server: ApolloServer<BlogQLContext>, handle: string, name: string, blogQLContext: BlogQLContext): Promise<GraphQLResponse> {
+    return server.executeOperation({query: UPDATE_BLOG_MUTATION, variables: { handle, blog: { name }}}, { contextValue: blogQLContext });
 }
 
 const UPDATE_BLOG_MUTATION = `mutation UpdateBlog($handle: String!, $blog: BlogUpdateInput!) { 
@@ -135,8 +134,8 @@ const UPDATE_BLOG_MUTATION = `mutation UpdateBlog($handle: String!, $blog: BlogU
         } 
     }`;
 
-export async function deleteBlog(server: ApolloServer, handle: string): Promise<GraphQLResponse> {
-    return server.executeOperation({query: DELETE_BLOG_MUTATION , variables: {handle}});
+export async function deleteBlog(server: ApolloServer<BlogQLContext>, handle: string, blogQLContext: BlogQLContext): Promise<GraphQLResponse> {
+    return server.executeOperation({query: DELETE_BLOG_MUTATION , variables: {handle}}, { contextValue: blogQLContext });
 }
 
 const DELETE_BLOG_MUTATION = `mutation DeleteBlog($handle: String!) { 
@@ -147,12 +146,12 @@ const DELETE_BLOG_MUTATION = `mutation DeleteBlog($handle: String!) {
         }
     }`;
 
-export async function getBlogs(server: ApolloServer, limit: number, cursor: string | undefined): Promise<GraphQLResponse> {
+export async function getBlogs(server: ApolloServer<BlogQLContext>, limit: number, cursor: string | undefined, blogQLContext: BlogQLContext): Promise<GraphQLResponse> {
     return server.executeOperation({query: GET_BLOGS_QUERY, variables: {
             first: limit,
             after: cursor
         }}
-    );
+        , { contextValue: blogQLContext });
 }
 
 export const GET_BLOGS_QUERY= `query getBlogs($first: Int, $last: Int, $before: String, $after: String) {
@@ -176,8 +175,8 @@ export const GET_BLOGS_QUERY= `query getBlogs($first: Int, $last: Int, $before: 
         }
     }`;
 
-export async function getBlogForUser(server: ApolloServer, userId: string): Promise<GraphQLResponse> {
-    return server.executeOperation({query: GET_BLOGS_FOR_USER_QUERY, variables: {userId}});
+export async function getBlogForUser(server: ApolloServer<BlogQLContext>, userId: string, blogQLContext: BlogQLContext): Promise<GraphQLResponse> {
+    return server.executeOperation({query: GET_BLOGS_FOR_USER_QUERY, variables: {userId}}, { contextValue: blogQLContext });
 }
 
 const GET_BLOGS_FOR_USER_QUERY = `query getBlogForUser($userId: ID!) {

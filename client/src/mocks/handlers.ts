@@ -47,8 +47,6 @@ export const handlers = [
 
 //------------------------------------------------------------------- Entries
 
-// some queries add an alias for id named 'key' this, so it's needed in mocks
-
 export const userBlogQueryData = {
     'blogForUser': {
         'id': 'dummy',

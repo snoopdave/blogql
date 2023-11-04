@@ -22,7 +22,7 @@ export default class DBConnection {
             this.db = new sequelize.Sequelize({
                 dialect: 'sqlite',
                 storage: this.path,
-                logging: false, // config.logLevel === LogLevel.DEBUG,
+                logging: false
             });
         }
     }

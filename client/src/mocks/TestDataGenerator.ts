@@ -6,12 +6,13 @@
 import { faker } from '@faker-js/faker';
 import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs';
-import {Blog, BlogConnection, Entry, EntryConnection, User} from "../gql/graphql";
+import {Blog, BlogConnection, BlogEdge, Entry, EntryConnection, Maybe, PageInfo, User} from "../gql/graphql";
 import template from 'lodash/template.js';
 import {Export} from "./ExportType";
 
 const userTemplate = `{
   id: "<%= id %>",
+  key: "<%= id %>",
   created: "<%= created %>",
   email: "<%= email %>",
   picture: "<%= picture %>",
@@ -22,6 +23,7 @@ const userTemplate = `{
 const entryTemplate = `{
   node: {
     id: "<%= node.id %>",
+    key: "<%= node.id %>",
     content: <%= node.content %>,
     created: "<%= node.created %>",
     published: "<%= node.published %>",
@@ -34,6 +36,7 @@ const entryTemplate = `{
 const blogTemplate = `{
   node: {
     id: "<%= id %>",
+    key: "<%= id %>",
     created: "<%= created %>",
     entries: {
       edges: [<%= entries %>],
@@ -83,8 +86,15 @@ export interface TestEntryEdge {
     node: TestEntry;
 }
 
+export interface TestEntryConnection {
+    edges: Array<TestEntryEdge>;
+    pageInfo: PageInfo;
+}
+
 export interface TestBlog extends Blog {
     key: string;
+    entries: TestEntryConnection;
+    user: TestUser;
 }
 
 export interface TestBlogEdge {
@@ -92,14 +102,34 @@ export interface TestBlogEdge {
     node: TestBlog;
 }
 
+export interface TestBlogConnection {
+    edges: Array<TestBlogEdge>;
+    pageInfo: PageInfo;
+}
+
+export interface TestUser extends User {
+    key: string;
+}
+
+export interface TestUserEdge {
+    cursor: string;
+    node: TestUser;
+}
+
+export interface TestUserConnection {
+    edges: Array<TestUserEdge>;
+    pageInfo: PageInfo;
+};
+
 // Generate Data
 const generateData = (): Export => {
-    const blogs: Blog[] = [];
+    const blogs: TestBlog[] = [];
 
     for (let i = 1; i <= 10; i++) {
         const userId = uuidv4();
-        const user: User = {
+        const user: TestUser = {
             id: userId,
+            key: userId,
             created: faker.date.past().toISOString(),
             email: faker.internet.email(),
             picture: faker.internet.avatar(),
@@ -122,7 +152,7 @@ const generateData = (): Export => {
             entries.push(entry);
         }
 
-        const entryConnection: EntryConnection = {
+        const entryConnection: TestEntryConnection = {
             edges: entries.map((entry) => ({
                 node: entry,
                 cursor: Buffer.from(entry.id).toString('base64'),
@@ -151,7 +181,7 @@ const generateData = (): Export => {
         blogs.push(blog);
     }
 
-    const blogConnection: BlogConnection = {
+    const blogConnection: TestBlogConnection = {
         edges: blogs.map((blog) => ({
             node: blog,
             cursor: Buffer.from(blog.id).toString('base64'),

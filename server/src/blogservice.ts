@@ -8,14 +8,13 @@ import {Entry} from './entries/entry.js';
 import {User} from './users/user.js';
 import {Node} from './node.js';
 import {ResponseConnection, Cursor, resolveCollection, ResponseEdge} from './pagination.js';
-import {AuthenticationError, ForbiddenError} from 'apollo-server-express';
 import {DEBUG, log} from "./utils.js";
 import DBConnection from "./dbconnection.js";
 import {ApiKeyStore} from "./apikeys/apikeystore.js";
 import BlogStore from "./blogs/blogstore.js";
 import {EntryStore} from "./entries/entrystore.js";
 import {UserStore} from "./users/userstore.js";
-
+import {GraphQLError} from "graphql/error/GraphQLError.js"; // this is an annoying one
 
 export interface BlogService {
 
@@ -79,11 +78,15 @@ export class BlogServiceSequelizeImpl implements BlogService {
         if (this.user) {
             await this.initDataSources();
             if (await this.blogStore.retrieveByUserId(this.user.id)) {
-                throw new ForbiddenError('Currently only one blog per user is supported.');
+                throw new GraphQLError('Currently only one blog per user is supported.', {
+                    extensions: { code: 'UNSUPPORTED'}
+                });
             }
             return await this.blogStore.create(this.user.id, handle, name);
         }
-        throw new AuthenticationError('Must be logged in to createBlog');
+        throw new GraphQLError('Must be logged in to createBlog', {
+            extensions: { code: 'FORBIDDEN'}
+        });
     }
 
     async createEntry(blogId: string, title: string, content: string): Promise<Entry> {
@@ -91,11 +94,15 @@ export class BlogServiceSequelizeImpl implements BlogService {
             await this.initDataSources();
             const blog = await this.blogStore.retrieveById(blogId);
             if (blog?.userId !== this.user.id) {
-                throw new AuthenticationError('You are not authorized to create entries for this blog.');
+                throw new GraphQLError('You are not authorized to create entries for this blog.', {
+                    extensions: { code: 'FORBIDDEN'}
+                });
             }
             return await this.entryStore.create(blogId, title, content);
         }
-        throw new AuthenticationError('Must be logged in to createEntry');
+        throw new GraphQLError('Must be logged in to createEntry', {
+            extensions: { code: 'FORBIDDEN'}
+        });
     }
 
     async deleteBlog(id: string): Promise<Node> {
@@ -103,12 +110,14 @@ export class BlogServiceSequelizeImpl implements BlogService {
             await this.initDataSources();
             const blog = await this.blogStore.retrieveById(id);
             if (blog?.userId !== this.user.id) {
-                throw new AuthenticationError('You are not authorized to delete this blog.');
+                throw new GraphQLError('You are not authorized to delete this blog.', {
+                    extensions: { code: 'FORBIDDEN'}
+                });
             }
             await this.blogStore.delete(id);
             return {id};
         }
-        throw new AuthenticationError('Must be logged in to deleteBlog')
+        throw new GraphQLError('Must be logged in to deleteBlog')
     }
 
     async deleteEntry(id: string): Promise<Node> {
@@ -118,14 +127,18 @@ export class BlogServiceSequelizeImpl implements BlogService {
             if (entry) {
                 const blog = await this.blogStore.retrieveById(entry?.blogId);
                 if (blog?.userId !== this.user.id) {
-                    throw new AuthenticationError('You are not authorized to delete entries for this blog.');
+                    throw new GraphQLError('You are not authorized to delete entries for this blog.', {
+                        extensions: { code: 'FORBIDDEN'}
+                    });
                 }
                 await this.entryStore.delete(id);
                 return {id};
             }
             throw Error(`Entry ${id} not found`);
         }
-        throw new AuthenticationError('Must be logged in to deleteEntry');
+        throw new GraphQLError('Must be logged in to deleteEntry', {
+            extensions: { code: 'FORBIDDEN'}
+        });
     }
 
     async getBlog(handle: string): Promise<Blog | null> {
@@ -183,11 +196,15 @@ export class BlogServiceSequelizeImpl implements BlogService {
             await this.initDataSources();
             const blog = await this.blogStore.retrieveById(id);
             if (blog?.userId !== this.user.id) {
-                throw new AuthenticationError('You are not authorized to update this blog.');
+                throw new GraphQLError('You are not authorized to update this blog.', {
+                    extensions: { code: 'FORBIDDEN'}
+                });
             }
             return await this.blogStore.update(id, name);
         }
-        throw new AuthenticationError('Must be logged in to updateBlog');
+        throw new GraphQLError('Must be logged in to updateBlog', {
+            extensions: { code: 'FORBIDDEN'}
+        });
     }
 
     async updateEntry(id: string, title: string, content: string): Promise<Entry | null> {
@@ -198,13 +215,17 @@ export class BlogServiceSequelizeImpl implements BlogService {
             if (entry) {
                 const blog = await this.blogStore.retrieveById(entry?.blogId);
                 if (blog?.userId !== this.user.id) {
-                    throw new AuthenticationError('You are not authorized to update entries for this blog.');
+                    throw new GraphQLError('You are not authorized to update entries for this blog.', {
+                        extensions: { code: 'FORBIDDEN'}
+                    });
                 }
                 return await this.entryStore.update(id, title, content);
             }
-            throw Error(`Entry ${id} not found`);
+            throw new GraphQLError(`Entry ${id} not found`);
         }
-        throw new AuthenticationError('Must be logged in to updateEntry');
+        throw new GraphQLError('Must be logged in to updateEntry', {
+            extensions: { code: 'FORBIDDEN'}
+        });
     }
 
     async publishEntry(id: string): Promise<Entry | null> {
@@ -214,19 +235,23 @@ export class BlogServiceSequelizeImpl implements BlogService {
             if (entry) {
                 const blog = await this.blogStore.retrieveById(entry?.blogId);
                 if (blog?.userId !== this.user.id) {
-                    throw new AuthenticationError('You are not authorized to update entries for this blog.');
+                    throw new GraphQLError('You are not authorized to update entries for this blog.');
                 }
                 return await this.entryStore.publish(id);
             }
             throw Error(`Entry ${id} not found`);
         }
-        throw new AuthenticationError('Must be logged in to updateEntry');
+        throw new GraphQLError('Must be logged in to updateEntry', {
+            extensions: { code: 'FORBIDDEN'}
+        });
     }
 
     async issueApiKey(): Promise<string | null> {
         if (this.user?.id) {
             return await this.apiKeyStore.issue(this.user?.id);
         }
-        throw new AuthenticationError('Must be logged in to request API key');
+        throw new GraphQLError('Must be logged in to request API key', {
+            extensions: { code: 'FORBIDDEN'}
+        });
     }
 }

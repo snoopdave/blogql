@@ -8,7 +8,7 @@ import {Link, useParams} from 'react-router-dom';
 import {useQuery} from '@apollo/client/react/hooks/useQuery';
 import {ENTRIES_QUERY} from '../graphql/queries';
 import {Heading} from "../common/Heading";
-import {Entry, EntryEdge} from "../gql/graphql";
+import {EntryEdge} from "../gql/graphql";
 import {Avatar, List, Space, Tooltip} from "antd";
 import {stripHtml} from "string-strip-html";
 import {RelativeDateTime, SimpleDateTime} from "../common/DateTime";
@@ -20,7 +20,7 @@ function Entries() {
     const userContext: AuthContext = useContext(authContext);
     const {handle} = useParams<{ handle: string }>(); // get handle param from router route
     const {loading, error, data} = useQuery(ENTRIES_QUERY, {
-        variables: {handle} // TODO: pagination!
+        variables: { handle } // TODO: pagination!
     });
     if (loading) { return (<p>Loading...</p>); }
     if (error) { return (<p>error!</p>); }
