@@ -13,7 +13,7 @@ import 'react-quill/dist/quill.snow.css';
 
 import {useMutation, useQuery} from '@apollo/client/react/hooks';
 
-import {Blog, Entry} from '../graphql/schema';
+import {Blog, Entry, EntryCreateInput, EntryUpdateInput} from "../gql/graphql";
 import {
     ENTRY_CREATE_MUTATION,
     ENTRY_DELETE_MUTATION,
@@ -31,6 +31,7 @@ import {useForm} from 'antd/lib/form/Form';
 
 // import BlogQL CSS last to ensure it appears at the end of bundle.css
 import './EntryEditor.css';
+import {BlogRef} from "../App";
 
 export function EditorWelcome() {
     return <Heading title='Entry editor'
@@ -38,7 +39,7 @@ export function EditorWelcome() {
 }
 
 export interface EditorFormInitProps {
-    onBlogUpdated: (blog: Blog | null) => void;
+    onBlogUpdated: (blog: BlogRef | null) => void;
 }
 
 export function EditorFormViaEntryId(props: EditorFormInitProps) {
@@ -91,7 +92,7 @@ interface EditorFormProps {
     updated: Date;
     published: Date | undefined;
     publish: boolean;
-    onBlogUpdated: (blog: Blog | null) => void;
+    onBlogUpdated: (blog: BlogRef | null) => void;
 }
 
 export function EditorForm(props: EditorFormProps) {
@@ -115,12 +116,14 @@ export function EditorForm(props: EditorFormProps) {
 
     const [ form ] = useForm();
 
+    const [ entry, setEntry ] = useState({ title, content });
+
     // eslint-disable-next-line
     let editor: UnprivilegedEditor | null = null; // assigned a value below in handleContentFocus()
 
-    const [createEntryMutation] = useMutation<Entry, { handle: string, title: string, content: string }>(
+    const [createEntryMutation] = useMutation<Entry, { handle: string, entry: EntryCreateInput }>(
         ENTRY_CREATE_MUTATION, {
-            variables: {handle, title, content},
+            variables: { handle, entry },
             refetchQueries: [{
                 query: DRAFTS_QUERY,
                 variables: {handle},
@@ -137,7 +140,7 @@ export function EditorForm(props: EditorFormProps) {
                 setSuccess(true);
                 setSaved(true);
                 setToast('New entry created');
-                const blog: Blog = {'handle': handle!, id: 'dummy', name: 'dummy', 'updated': new Date() };
+                const blog: BlogRef = { handle: handle!, name: name!, };
                 props.onBlogUpdated(blog);
             })
             .catch(() => {
@@ -146,8 +149,8 @@ export function EditorForm(props: EditorFormProps) {
             });
     }
 
-    const [updateEntryMutation] = useMutation<Entry, { handle: string, id: string, title: string, content: string }>(ENTRY_UPDATE_MUTATION, {
-        variables: {handle, id, title, content},
+    const [updateEntryMutation] = useMutation<Entry, { handle: string, id: string, entry: EntryUpdateInput }>(ENTRY_UPDATE_MUTATION, {
+        variables: { handle, id: props.id, entry },
         refetchQueries: [{
             query: DRAFTS_QUERY,
             variables: {handle},
@@ -164,7 +167,7 @@ export function EditorForm(props: EditorFormProps) {
                 setSuccess(true);
                 setSaved(true);
                 setToast('Entry updated');
-                const blog: Blog = {'handle': handle!, id: 'dummy', name: 'dummy', 'updated': new Date()};
+                const blog: BlogRef = {'handle': handle!, name: 'dummy' };
                 props.onBlogUpdated(blog);
             })
             .catch(() => {
@@ -192,7 +195,7 @@ export function EditorForm(props: EditorFormProps) {
                 setSuccess(true);
                 setSaved(true);
                 setToast('Entry published');
-                const blog: Blog = {'handle': handle!, id: 'dummy', name: 'dummy', 'updated': new Date()};
+                const blog: BlogRef = {'handle': handle!, name: 'dummy' };
                 props.onBlogUpdated(blog);
             })
             .catch(() => {
@@ -219,7 +222,7 @@ export function EditorForm(props: EditorFormProps) {
             .then(() => {
                 setSuccess(true);
                 setToast('Entry deleted');
-                const blog: Blog = {'handle': handle!, id: 'dummy', name: 'dummy', 'updated': new Date()};
+                const blog: BlogRef = {'handle': handle!, name: 'dummy' };
                 props.onBlogUpdated(blog);
                 setTimeout(() => {
                     navigate(`/`);
@@ -237,12 +240,14 @@ export function EditorForm(props: EditorFormProps) {
 
     function onTitleChange(event: ChangeEvent<HTMLInputElement>) {
         setTitle(event.target.value);
+        setEntry({title, content});
         setSaved(false);
         validateForm();
     }
 
     function onContentChange(value: string) {
         setContent(value);
+        setEntry({title, content});
         setSaved(false);
         validateForm();
     }

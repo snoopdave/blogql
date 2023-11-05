@@ -25,7 +25,8 @@ export const ENTRY_QUERY = gql`query EntryQuery($handle: String!, $id: ID!) {
     }
 }`;
 
-export const ENTRIES_QUERY = gql`query EntriesQuery($handle: String!, $limit: Int, $offset: Int, $cursor: String) {
+export const ENTRIES_QUERY = gql`query EntriesQuery(
+        $handle: String!, $first: Int, $last: Int, $before: String, $after: String) {
     blog(handle: $handle) {
         id
         handle
@@ -36,40 +37,49 @@ export const ENTRIES_QUERY = gql`query EntriesQuery($handle: String!, $limit: In
             username
             picture
         }
-        entries(limit: $limit, offset: $offset, cursor: $cursor) {
-            nodes {
-                id
-                title
-                content
-                created
-                updated
-                published
+        entries(first: $first, last: $last, before: $before, after: $after) {
+            edges {
+                node {
+                    id
+                    title
+                    content
+                    created
+                    updated
+                    published
+                }
+                cursor
             }
             pageInfo {
-                totalCount
-                cursor
+                hasNextPage
+                hasPreviousPage
+                startCursor
+                endCursor
             }
         }
     }
 }`;
 
-export const DRAFTS_QUERY = gql`query DraftsQuery($handle: String!, $limit: Int, $offset: Int, $cursor: String) {
+export const DRAFTS_QUERY = gql`query DraftsQuery($handle: String!, $first: Int, $last: Int, $before: String, $after: String) {
     blog(handle: $handle) {
         id
         name
-        drafts(limit: $limit, offset: $offset, cursor: $cursor) {
-            nodes {
-                id
-                key: id
-                title
-                content
-                created
-                updated
-                published
+        drafts(first: $first, last: $last, before: $before, after: $after) {
+            edges {
+                node {
+                    id
+                    title
+                    content
+                    created
+                    updated
+                    published
+                }
+                cursor
             }
             pageInfo {
-                totalCount
-                cursor
+                hasNextPage
+                hasPreviousPage
+                startCursor
+                endCursor
             }
         }
     }
@@ -82,19 +92,28 @@ export const USER_BLOG_QUERY = gql`query UserBlogQuery($userId: ID!) {
     }
 }`;
 
-export const BLOGS_QUERY = gql`query Blogs($limit: Int, $offset: Int, $cursor: String) {
-    blogs(limit: $limit, offset: $offset, cursor: $cursor) {
-        nodes {
-            id
-            key: id
-            handle
-            name
-            created
-            updated
-            user {
+export const BLOGS_QUERY = gql`query Blogs($first: Int, $last: Int, $before: String, $after: String) {
+    blogs(first: $first, last: $last, before: $before, after: $after) {
+        edges {
+            node {
                 id
-                username
+                key: id
+                handle
+                name
+                created
+                updated
+                user {
+                    id
+                    username
+                }
             }
+            cursor
+        }
+        pageInfo {
+            hasNextPage
+            hasPreviousPage
+            startCursor
+            endCursor
         }
     }
 }`

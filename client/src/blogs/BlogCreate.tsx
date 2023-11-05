@@ -5,7 +5,6 @@
 
 import React, {ChangeEvent, useContext, useState} from 'react';
 import {useMutation} from '@apollo/client';
-import {Blog} from '../graphql/schema';
 import {BLOG_CREATE_MUTATION} from '../graphql/mutations';
 import {Link} from 'react-router-dom';
 import {authContext, AuthContext, RequireAuth} from "../common/Authentication";
@@ -13,10 +12,12 @@ import {useNavigate} from "react-router";
 import {Heading} from "../common/Heading";
 import {Alert, Button, Form, Input, Space} from "antd";
 import {BLOGS_QUERY, USER_BLOG_QUERY} from "../graphql/queries";
+import {Blog, BlogCreateInput} from "../gql/graphql";
+import {BlogRef} from "../App";
 
 
 export interface BlogCreateProps {
-    onBlogUpdated: (blog: Blog | null) => void;
+    onBlogUpdated: (blog: BlogRef | null) => void;
 }
 
 export function BlogCreate(props: BlogCreateProps) {
@@ -28,18 +29,22 @@ export function BlogCreate(props: BlogCreateProps) {
     const [failure, setFailure] = useState(false);
     const [toast, setToast] = useState('');
 
+    const[blog, setBlog] = useState({ name, handle });
+
     const navigate = useNavigate();
 
     const [blogCreateMutation] = useMutation<Blog, { handle: string | undefined, name: string | undefined }>(BLOG_CREATE_MUTATION, {
         variables: { handle, name },
         refetchQueries: [
-            {query:BLOGS_QUERY},
-            {query: USER_BLOG_QUERY, variables: { userId: userContext.user?.id }}],
+            { query: BLOGS_QUERY},
+            { query: USER_BLOG_QUERY, variables: { userId: userContext.user?.id }}],
         awaitRefetchQueries: true,
     });
 
     function onHandleChange(event: ChangeEvent<HTMLInputElement>) {
         setHandle(event.target.value.toLowerCase());
+        setName(name);
+        setBlog({ name, handle });
         validateForm();
     }
 
@@ -64,7 +69,7 @@ export function BlogCreate(props: BlogCreateProps) {
                 setToast('New blog created');
                 setTimeout(() => {
                     navigate('/blogs');
-                    const newBlog: Blog = { id: '', handle: handle, name: name, 'updated': new Date() }
+                    const newBlog: BlogRef = { handle: handle, name: name }
                     console.table(data.data);
                     console.table(newBlog);
                     props.onBlogUpdated(newBlog);

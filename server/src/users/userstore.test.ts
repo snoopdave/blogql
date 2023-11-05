@@ -4,11 +4,12 @@
  */
 
 import DBConnection from '../dbconnection.js';
-import {User, UserStore} from '../userstore.js';
+import {UserStore} from './userstore.js';
 import {expect, test} from '@jest/globals';
-import {EntryStore} from '../entrystore.js';
+import {EntryStore} from '../entries/entrystore.js';
 import {FindAllResult} from '../pagination.js';
 import {randomString} from "../utils.js";
+import {User} from "./user.js";
 
 
 describe('Test UserStore', () => {
@@ -109,3 +110,5 @@ describe('Test UserStore', () => {
         }
     });
 });
+
+export {}

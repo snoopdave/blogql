@@ -3,15 +3,13 @@
  * Licensed under Apache Software License v2.
  */
 
-
 import { v4 as uuid } from 'uuid';
 import { DataSource, DataSourceConfig } from "apollo-datasource";
-import {Node} from "./node.js";
-import DBConnection from "./dbconnection.js";
+import {Node} from "../node.js";
+import DBConnection from "../dbconnection.js";
 import sequelize from 'sequelize';
-import {randomString} from "./utils.js";
-import {Blog} from "./blogstore.js";
-import { AuthenticationError } from 'apollo-server';
+import {randomString} from "../utils.js";
+import {Blog} from "../blogs/blog.js";
 const { DataTypes, Model } = sequelize; // sequelize is a CommonJS module
 
 
@@ -109,6 +107,6 @@ export class ApiKeyStore implements DataSource<ApiKey> {
       if (keyOnRecord) {
          return keyOnRecord.userId;
       }
-      throw new AuthenticationError('Invalid API Key');
+      throw new Error('Invalid API Key');
    }
 }

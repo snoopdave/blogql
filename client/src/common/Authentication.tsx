@@ -4,9 +4,9 @@
  */
 
 import React, {Context, createContext, ReactNode, useContext, useState} from 'react';
-import GoogleLogin, {GoogleLoginResponse, GoogleLoginResponseOffline} from 'react-google-login';
 import {useNavigate} from "react-router";
-import {Blog, User} from "../graphql/schema";
+import {User} from "../gql/graphql";
+import {GoogleLogin} from "@react-oauth/google";
 
 
 // Context will be used  to provide access to user, login and logout within
@@ -83,32 +83,30 @@ interface LoginButtonProps {
 export function LoginButton(props : LoginButtonProps) {
     let userContext = useContext(authContext);
     const navigate = useNavigate();
-    const cid = process.env.GOOGLE_SIGNON_CID!;
-
-    let login = async (googleData: GoogleLoginResponse | GoogleLoginResponseOffline) => {
-        if ('tokenId' in googleData) {
-            const res = await fetch('http://localhost:4000/auth', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                credentials: 'include',
-                body: JSON.stringify({
-                    token: googleData.tokenId
-                }),
-            })
-            userContext.user = await res.json();
-            userContext.login(userContext.user!);
-            navigate(props.destination);
-        } else {
-            navigate(props.destination);
-        }
-    };
 
     return (
-        <GoogleLogin clientId={cid}
-            buttonText='Log in with Google'
-            onSuccess={login}
-            onFailure={login}
-            cookiePolicy={'single_host_origin'}
+        <GoogleLogin
+            onSuccess={ async credentialResponse => {
+                console.table(credentialResponse);
+                if ('credential' in credentialResponse) {
+                    const res = await fetch('http://localhost:4000/auth', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            token: credentialResponse.credential
+                        }),
+                    })
+                    userContext.user = await res.json();
+                    userContext.login(userContext.user!);
+                    navigate(props.destination);
+                } else {
+                    navigate(props.destination);
+                }
+            }}
+            onError={() => {
+                console.log('Login Failed');
+            }}
         />
     );
 }

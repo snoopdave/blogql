@@ -1,0 +1,13 @@
+
+export APOLLO_KEY=dummy
+export APOLLO_GRAPH_REF=dummy
+
+export APOLLO_SCHEMA_REPORTING=true
+
+# comment out the Postgres hostname and SQLite3 will be used instead
+#export POSTGRES_HOSTNAME=localhost
+export POSTGRES_DATABASE=blogql
+export POSTGRES_USERNAME=scott
+export POSTGRES_PASSWORD=tiger
+
+export SQLITE_DATA_PATH=./db-test1.db

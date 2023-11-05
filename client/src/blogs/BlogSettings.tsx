@@ -5,7 +5,7 @@
 
 import React, {ChangeEvent, useContext, useState} from 'react';
 import {useMutation, useQuery} from '@apollo/client/react/hooks';
-import {Blog, Entry} from '../graphql/schema';
+import {Blog, BlogUpdateInput, Entry} from "../gql/graphql";
 import {BLOG_DELETE_MUTATION, BLOG_UPDATE_MUTATION, ISSUE_API_KEY_MUTATION} from '../graphql/mutations';
 import {Link, useParams} from 'react-router-dom';
 import {BLOG_BY_HANDLE_QUERY, BLOGS_QUERY, USER_BLOG_QUERY} from '../graphql/queries';
@@ -50,9 +50,11 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
     const [ nameForm ] = useForm();
     const [ apiKeyForm ] = useForm();
 
-    const [blogUpdateMutation] = useMutation<Entry, { id: string, name: string }>(
+    const [ blog, setBlog ] = useState({ name });
+
+    const [blogUpdateMutation] = useMutation<Entry, { id: string, blog: BlogUpdateInput }>(
         BLOG_UPDATE_MUTATION, {
-            variables: { id: props.id, name },
+            variables: { id: props.id, blog },
             refetchQueries: [{query: BLOGS_QUERY}],
             awaitRefetchQueries: true,
         });
@@ -70,6 +72,7 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
 
     function onNameChange(event: ChangeEvent<HTMLInputElement>) {
         setName(event.target.value);
+        setBlog({ name });
         validateForm();
     }
 

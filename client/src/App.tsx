@@ -22,11 +22,17 @@ import {EntryView} from './entries/EntryView';
 // import BlogQL CSS last to ensure it appears at the end of bundle.css
 import 'antd/dist/reset.css';
 import './App.css';
-import {Blog, User} from "./graphql/schema";
+
+import {Blog, User} from "./gql/graphql";
+
+export interface BlogRef {
+    name: string,
+    handle: string,
+}
 
 function App() {
     const [user, setUser] = useState<User | null>();
-    const [blog, setBlog] = useState<Blog | null>();
+    const [blog, setBlog] = useState<BlogRef | null>();
 
     useEffect(() => {
         console.log(`Blog: ${blog?.handle}`);
@@ -48,7 +54,7 @@ function App() {
         });
     };
 
-    const onBlogUpdated = (updatedBlog: Blog | null) => {
+    const onBlogUpdated = (updatedBlog: BlogRef | null) => {
         setBlog(updatedBlog);
     }
 

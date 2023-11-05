@@ -4,10 +4,11 @@
  */
 
 import DBConnection from '../dbconnection.js';
-import {EntryStore} from '../entrystore.js';
-import BlogStore from '../blogstore.js';
-import {User, UserStore} from '../userstore.js';
+import {EntryStore} from './entrystore.js';
+import BlogStore from '../blogs/blogstore.js';
+import {User} from '../users/user.js';
 import {randomString} from "../utils.js";
+import {UserStore} from "../users/userstore";
 
 
 describe('Test EntryStore', () => {
@@ -127,3 +128,5 @@ describe('Test EntryStore', () => {
         }
     });
 });
+
+export {}

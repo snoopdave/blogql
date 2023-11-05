@@ -1,4 +1,4 @@
-# This file was generated based on ".graphqlconfig". Do not edit manually.
+# This file was generated. Do not edit manually.
 
 schema {
     query: Query
@@ -11,8 +11,8 @@ interface Node {
 
 type Blog implements Node {
     created: DateTime!
-    drafts(cursor: String, limit: Int, offset: Int): EntryResponse!
-    entries(cursor: String, limit: Int, offset: Int): EntryResponse!
+    drafts(after: String, before: String, first: Int, last: Int): EntryConnection
+    entries(after: String, before: String, first: Int, last: Int): EntryConnection
     entry(id: ID!): Entry
     handle: String!
     id: ID!
@@ -22,16 +22,21 @@ type Blog implements Node {
     userId: ID!
 }
 
-type BlogMutation {
-    createEntry(content: String!, title: String!): Entry
-    delete: Node
-    entry(id: ID!): EntryMutation
-    update(name: String!): Blog
+type BlogConnection {
+    edges: [BlogEdge]!
+    pageInfo: PageInfo!
 }
 
-type BlogResponse {
-    nodes: [Blog]!
-    pageInfo: PageInfo!
+type BlogEdge {
+    cursor: String!
+    node: Blog!
+}
+
+type BlogMutation {
+    createEntry(entry: EntryCreateInput): Entry
+    delete: Node
+    entry(id: ID!): EntryMutation
+    update(blog: BlogUpdateInput): Blog
 }
 
 "Represents a single entry in a blog which is considered a draft if published is not defined."
@@ -50,37 +55,44 @@ type Entry implements Node {
     updated: DateTime!
 }
 
+"Represents a pageable list of entries."
+type EntryConnection {
+    "Entries returned in this response."
+    edges: [EntryEdge]!
+    "Information about the pagination of the entries."
+    pageInfo: PageInfo!
+}
+
+type EntryEdge {
+    cursor: String!
+    node: Entry!
+}
+
 type EntryMutation {
     delete: Node
     publish: Entry
-    update(content: String!, title: String!): Entry
-}
-
-"Represents a pageable list of entries."
-type EntryResponse {
-    "Entries returned in this response."
-    nodes: [Entry]!
-    "Information about the pagination of the entries."
-    pageInfo: PageInfo!
+    update(entry: EntryUpdateInput): Entry
 }
 
 type Mutation {
     blog(handle: String!): BlogMutation
     blogByID(id: ID!): BlogMutation
-    createBlog(handle: String!, name: String!): Blog
+    createBlog(blog: BlogCreateInput): Blog
     issueApiKey: String
 }
 
 type PageInfo {
-    cursor: String
-    totalCount: Int!
+    endCursor: String!
+    hasNextPage: Boolean!
+    hasPreviousPage: Boolean!
+    startCursor: String!
 }
 
 type Query {
     apiKeyForUser(userId: ID!): String
     blog(handle: String!): Blog
     blogForUser(userId: ID!): Blog
-    blogs(cursor: String, limit: Int, offset: Int): BlogResponse
+    blogs(after: String, before: String, first: Int, last: Int): BlogConnection
 }
 
 "Represents a user of BlogQL."
@@ -99,9 +111,23 @@ type User implements Node {
     username: String!
 }
 
-type UserResponse {
-    nodes: [User]!
-    pageInfo: PageInfo!
+scalar DateTime
+
+input BlogCreateInput {
+    handle: String!
+    name: String!
 }
 
-scalar DateTime
+input BlogUpdateInput {
+    name: String!
+}
+
+input EntryCreateInput {
+    content: String
+    title: String
+}
+
+input EntryUpdateInput {
+    content: String
+    title: String
+}

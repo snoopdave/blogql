@@ -22,7 +22,7 @@ module.exports = {
   'webpackFinal': (config) => {
     config.resolve.fallback = {
       'constants': require.resolve('constants-browserify'),
-      'fs': false,
+      'fs': require.resolve('stream-http'),
       'http': require.resolve('stream-http'),
       'https': require.resolve('https-browserify'),
       'path': require.resolve('path-browserify'),
