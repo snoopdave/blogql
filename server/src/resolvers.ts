@@ -28,14 +28,9 @@ const resolvers = {
         blog: async (_: undefined, args: { handle: string }, ctx: BlogQLContext): Promise<Blog | null> => {
             return await ctx.blogService!.getBlog(args.handle);
         },
-        blogs: async (_: undefined, args: {
-            first: number,
-            last: number,
-            before: string,
-            after: string
-        }, ctx: BlogQLContext):
+        blogs: async (_: undefined, args: { first: number, last: number, before: string, after: string }, ctx: BlogQLContext):
             Promise<ResponseConnection<ResponseEdge<Blog>>> => {
-                return await ctx.blogService!.getBlogs(args.first, args.after);
+                return await ctx.blogService!.getBlogs(args.first, args.last, args.before, args.after);
         },
     },
     Blog: {
@@ -52,7 +47,7 @@ const resolvers = {
             after: string,
         }, ctx: BlogQLContext):
             Promise<ResponseConnection<ResponseEdge<Entry>>> => {
-                return await ctx.blogService!.getEntries(blog, args.first, args.after);
+                return await ctx.blogService!.getEntries(blog, args.first, args.last, args.before, args.after);
         },
         drafts: async (blog: Blog, args: {
             first: number,
@@ -61,7 +56,7 @@ const resolvers = {
             after: string,
         }, ctx: BlogQLContext):
             Promise<ResponseConnection<ResponseEdge<Entry>>> => {
-                return await ctx.blogService!.getDrafts(blog, args.first, args.after);
+                return await ctx.blogService!.getDrafts(blog, args.first, args.last, args.before, args.after);
         },
     },
     BlogMutation: {

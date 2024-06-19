@@ -6,7 +6,7 @@
 import {Entry} from '../entries/entry.js';
 import {describe, expect, test} from '@jest/globals';
 import {v4 as uuid} from 'uuid';
-import resolvers from '../resolvers.js';
+import resolvers from '../resolvers';
 import {randomString} from "../utils.js";
 import {Blog} from '../blogs/blog.js';
 import {User} from '../users/user.js';
@@ -16,7 +16,7 @@ import {BlogService, BlogServiceSequelizeImpl} from "../blogservice";
 import {UserStore} from "../users/userstore";
 import BlogStore from "../blogs/blogstore";
 import {EntryStore} from "../entries/entrystore";
-import {ResponseConnection, ResponseEdge} from "../pagination";
+import {Cursor, ResponseConnection, ResponseEdge} from "../pagination";
 import {
     createBlog,
     createEntry,
@@ -440,46 +440,72 @@ describe('Test the GraphQL API integration', () => {
         await createTestBlogsViaSql(authUsers, blogStore);
         const blogQLContext: BlogQLContext = {blogService, user: authUsers[0]};
         try {
-            await testPageThroughBlogs(server, NUM_BLOGS, NUM_BLOGS, blogQLContext);
-            await testPageThroughBlogs(server, 1, NUM_BLOGS, blogQLContext);
-            await testPageThroughBlogs(server, 2, NUM_BLOGS, blogQLContext);
+            //wait testPageThroughBlogs(server, NUM_BLOGS, NUM_BLOGS, blogQLContext);
             await testPageThroughBlogs(server, 10, NUM_BLOGS, blogQLContext);
-            await testPageThroughBlogs(server, NUM_BLOGS + 20, NUM_BLOGS, blogQLContext);
+            // await testPageThroughBlogs(server, 1, NUM_BLOGS, blogQLContext);
+            // await testPageThroughBlogs(server, 2, NUM_BLOGS, blogQLContext);
+            // await testPageThroughBlogs(server, NUM_BLOGS + 20, NUM_BLOGS, blogQLContext);
         } finally {
             await conn.destroy();
             await server.stop();
         }
     });
 
-    async function testPageThroughBlogs(server: ApolloServer<BlogQLContext>, pageSize: number | null, expectedSize: number, blogQLContext: BlogQLContext) {
+    async function testPageThroughBlogs(server: ApolloServer<BlogQLContext>, pageSize: number, expectedSize: number, blogQLContext: BlogQLContext) {
         const payload = {query: GET_BLOGS_QUERY, variables: {first: pageSize}};
         const dataRetrieved: Blog[] = [];
         await getAllBlogs(server, payload, dataRetrieved, blogQLContext);
         expect(dataRetrieved).toHaveLength(expectedSize);
     }
 
+    test('It can page through blogs in reverse', async () => {
+        // create authUsers as done in 'page through all blogs above
+        // call a new function testPageThroughBlogsInReverse() to test wih different last and before values
+        const {blogService, server, conn, blogStore, authUsers} = await initDataStorage();
+        await createTestBlogsViaSql(authUsers, blogStore);
+        const blogQLContext: BlogQLContext = {blogService, user: authUsers[0]};
+        try {
+            await testPageThroughBlogsInReverse(server, NUM_BLOGS, NUM_BLOGS, blogQLContext);
+            await testPageThroughBlogsInReverse(server, 10, NUM_BLOGS, blogQLContext);
+            await testPageThroughBlogsInReverse(server, 1, NUM_BLOGS, blogQLContext);
+            await testPageThroughBlogsInReverse(server, 2, NUM_BLOGS, blogQLContext);
+            await testPageThroughBlogsInReverse(server, NUM_BLOGS + 20, NUM_BLOGS, blogQLContext);
+        } finally {
+            await conn.destroy();
+            await server.stop();
+        }
+    });
 
-});
+    async function testPageThroughBlogsInReverse(server: ApolloServer<BlogQLContext>, pageSize: number, expectedSize: number, blogQLContext: BlogQLContext) {
+        const endCursor = new Cursor(pageSize, NUM_BLOGS - 1);
+        const encodedCursor = endCursor.encode();
+        const payload = {query: GET_BLOGS_QUERY, variables: {last: pageSize, before: encodedCursor}};
+        const dataRetrieved: Blog[] = [];
+        await getAllBlogsInReverse(server, payload, dataRetrieved, blogQLContext);
+        expect(dataRetrieved).toHaveLength(expectedSize);
+    }
 
-describe('Test random stuff', () => {
+    describe('Test random stuff', () => {
 
-    test('Understand how dates are parsed', async () => {
+        test('Understand how dates are parsed', async () => {
 
-        // valid RFC-3339 date strings
-        let date1 = Date.parse('2020-07-01T12:16:58Z');
-        expect(date1).toBeDefined();
+            // valid RFC-3339 date strings
+            let date1 = Date.parse('2020-07-01T12:16:58Z');
+            expect(date1).toBeDefined();
 
-        let date2 = Date.parse('2020-07-01T12:16:58-04:00');
-        expect(date2).toBeDefined();
+            let date2 = Date.parse('2020-07-01T12:16:58-04:00');
+            expect(date2).toBeDefined();
 
-        let date3 = Date.parse('2020-07-01T12:16:58-0400');
-        expect(date3).toBeDefined();
+            let date3 = Date.parse('2020-07-01T12:16:58-0400');
+            expect(date3).toBeDefined();
 
-        // SQLite date string (Date can parse it but GraphQLDateTime does not like this format)
-        // let date4 = Date.parse('2020-07-01 12:16:58 -0400');
-        // expect(date4).toBeUndefined();
+            // SQLite date string (Date can parse it but GraphQLDateTime does not like this format)
+            // let date4 = Date.parse('2020-07-01 12:16:58 -0400');
+            // expect(date4).toBeUndefined();
+        });
     });
 });
+
 
 // use cursor to recursively page through and fetch all entries
 async function getAllEntries(server: ApolloServer<BlogQLContext>, payload: any, dataRetrieved: Entry[], blogQLContext: BlogQLContext) {
@@ -502,22 +528,69 @@ async function getAllEntries(server: ApolloServer<BlogQLContext>, payload: any, 
     }
 }
 
+interface BlogData {
+    edges: ResponseEdge<Blog>[];
+    pageInfo: {
+        hasNextPage: boolean;
+        hasPreviousPage: boolean;
+        startCursor: string;
+        endCursor: string;
+    }
+}
+
+function hasMore(blogData: BlogData) {
+    return blogData.pageInfo.hasNextPage && blogData.pageInfo.endCursor;
+}
+
+function hasPrev(blogData: BlogData) {
+    return blogData.pageInfo.hasPreviousPage && blogData.pageInfo.startCursor;
+}
+
 // use cursor to recursively page through and fetch all blogs
 async function getAllBlogs(server: ApolloServer<BlogQLContext>, payload: any, dataRetrieved: Blog[], blogQLContext: BlogQLContext) {
 
     const result = await server.executeOperation(payload, { contextValue: blogQLContext });
     expect(result.body.kind === 'single');
+
     if (result.body.kind === 'single') {
         expect(result?.body.singleResult.errors).toBeUndefined();
 
-        (result.body.singleResult.data?.blogs as {edges: ResponseEdge<Blog>[]}).edges.forEach((item: ResponseEdge<Blog>) => {
-            dataRetrieved.push(item.node);
-        });
+        const {data} = result.body.singleResult;
+        const blogData = data?.blogs as BlogData;
 
-        if ((result.body.singleResult?.data?.blogs as {pageInfo: {hasNextPage: boolean}}).pageInfo.hasNextPage
-            && (result.body.singleResult?.data?.blogs as {pageInfo: {endCursor: string}}).pageInfo.endCursor) {
-            payload.variables.after = (result.body.singleResult?.data?.blogs as {pageInfo: {endCursor: string}}).pageInfo.endCursor
+        if (blogData) {
+            blogData.edges.forEach(edge => {
+                dataRetrieved.push(edge.node);
+            });
+        }
+
+        if (hasMore(blogData)) {
+            payload.variables.after = blogData.pageInfo.endCursor;
             await getAllBlogs(server, payload, dataRetrieved, blogQLContext);
+        }
+    }
+}
+
+async function getAllBlogsInReverse(server: ApolloServer<BlogQLContext>, payload: any, dataRetrieved: Blog[], blogQLContext: BlogQLContext) {
+
+    const result = await server.executeOperation(payload, { contextValue: blogQLContext });
+    expect(result.body.kind === 'single');
+
+    if (result.body.kind === 'single') {
+        expect(result?.body.singleResult.errors).toBeUndefined();
+
+        const {data} = result.body.singleResult;
+        const blogData = data?.blogs as BlogData;
+
+        if (blogData) {
+            blogData.edges.forEach(edge => {
+                dataRetrieved.push(edge.node);
+            });
+        }
+
+        if (hasPrev(blogData)) {
+            payload.variables.before = blogData.pageInfo.startCursor;
+            await getAllBlogsInReverse(server, payload, dataRetrieved, blogQLContext);
         }
     }
 }

@@ -16,19 +16,23 @@ export class ResponseConnection<T extends ResponseEdge<any>> {
 
 export class ResponseEdge<T> {
     node: T;
-    cursor: String;
-    constructor(node: T, cursor: String) {
+    cursor: string;
+    constructor(node: T, cursor: string) {
         this.node = node;
         this.cursor = cursor;
     }
 }
 
 export class PageInfo {
-    hasNextPage: Boolean;
-    hasPreviousPage: Boolean;
-    startCursor: String;
-    endCursor: String;
-    constructor(hasNextPage: Boolean, hasPreviousPage: Boolean, startCursor: String, endCursor: String) {
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+    startCursor: string | null;
+    endCursor: string | null;
+        constructor(
+            hasNextPage: boolean,
+            hasPreviousPage: boolean,
+            startCursor: string | null,
+            endCursor: string | null) {
         this.hasNextPage = hasNextPage;
         this.hasPreviousPage = hasPreviousPage;
         this.startCursor = startCursor;
@@ -43,25 +47,27 @@ export class Cursor {
         this.limit = limit;
         this.offset = offset;
     }
+    encode(): string {
+        const cursorJson  = JSON.stringify(this);
+        return Buffer.from(cursorJson, 'binary').toString('base64');
+    }
 }
 
-
 export function decodeCursor(cursor: string): Cursor {
-    let cursorJson = Buffer.from(cursor, `base64`).toString(`binary`);
+    const cursorJson = Buffer.from(cursor, `base64`).toString(`binary`);
     return JSON.parse(cursorJson);
 }
 
-export function encodeCursor(cursor: Cursor): string {
-    let cursorJson  = JSON.stringify(cursor);
-    return Buffer.from(cursorJson, 'binary').toString('base64');
-}
-
 export class FindAllArgs {
-    first: number;
-    after: string;
-    constructor(limit: number, after: string) {
-        this.first = limit;
+    first?: number;
+    after?: string;
+    last?: number;
+    before?: string;
+    constructor(first?: number, after?: string, last?: number, before?: string) {
+        this.first = first;
         this.after = after;
+        this.last = last;
+        this.before = before;
     }
 }
 
@@ -77,45 +83,54 @@ export class FindAllResult<T> {
 function log(msg: string) {
     appendFileSync('/tmp/jest.log.txt', msg + '\n', {'encoding': 'utf8'});
 }
+
 export async function resolveCollection<T>(
-        args: FindAllArgs,
-        fetchData: (cursor: Cursor) => Promise<FindAllResult<T>>):
-    Promise<ResponseConnection<ResponseEdge<T>>> {
+    args: FindAllArgs,
+    fetchData: (cursor: Cursor) => Promise<FindAllResult<T>>
+): Promise<ResponseConnection<ResponseEdge<T>>> {
     try {
+        let limit = 10;
         let offset = 0;
-        if (args.after && args.after !== '') {
-            let cursorDecoded = decodeCursor(args.after);
-            args.first = cursorDecoded.limit;
-            offset = cursorDecoded.offset;
-        }
-        args.first = args.first ? args.first : 10;
-        const cursor = new Cursor(args.first, offset);
 
-        // fetchData will attempt to fetch one more result than we need
-        let result: FindAllResult<T> = await fetchData(cursor);
+         if (args.after && args.after !== '') {
+            const cursorDecoded = decodeCursor(args.after);
+            limit = args.first ? args.first : cursorDecoded.limit;
+            offset = cursorDecoded.offset + 1;
 
-        let endCursor: String = "";
-        let hasNextPage = false;
-        if (result.rows.length > args.first) {
-            hasNextPage = true;
-            endCursor = encodeCursor(new Cursor(cursor.limit, cursor.offset + cursor.limit));
-        }
-        // slice off that extra result
-        result.rows = result.rows.slice(0, args.first);
+        } else if (args.before && args.before !== '') {
+            const cursorDecoded = decodeCursor(args.before);
+            limit = args.last ? args.last : cursorDecoded.limit;
+            offset = cursorDecoded.offset - limit;
 
-        const edges: ResponseEdge<T>[] = [];
-        for (let i = 0; i < result.rows.length; i++) {
-            let cursor = { limit: args.first, offset: offset + args.first + i };
-            edges.push(new ResponseEdge<T>(result.rows[i], encodeCursor(cursor)));
+        } else {
+            limit = args.first ? args.first : limit;
         }
-        const hasPreviousPage = false;
+
+        // ask for one more than we need to see if there is a next page
+        const result: FindAllResult<T> = await fetchData(new Cursor(limit + 1, offset));
+
+        const hasNextPage = result.rows.length > limit;
+        const hasPreviousPage = offset >= 0;
+
+        const edges: ResponseEdge<T>[] = result.rows.slice(0, limit).map((row, index) => {
+            const rowCursor: Cursor = new Cursor(limit, offset + index);
+            return new ResponseEdge<T>(row, rowCursor.encode());
+        });
+
+        const startCursor = edges.length > 0 ? edges[0].cursor : null;
+        const endCursor = edges.length > 0 ? edges[edges.length - 1].cursor : null;
+
         return new ResponseConnection<ResponseEdge<T>>(edges, new PageInfo(
             hasNextPage,
             hasPreviousPage,
-            "",  // TODO: support backwards paging
+            startCursor,
             endCursor
         ));
-    } catch (e) {
-        throw e;
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            throw new Error(`Failed to resolve collection: ${error.message}`);
+        } else {
+            throw new Error('Failed to resolve collection: An unknown error occurred');
+        }
     }
 }

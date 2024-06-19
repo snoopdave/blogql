@@ -22,7 +22,7 @@ import {EntryView} from './entries/EntryView';
 // import BlogQL CSS last to ensure it appears at the end of bundle.css
 import 'antd/dist/reset.css';
 import './App.css';
-import {Blog, User} from "./gql/graphql";
+import {User} from "./gql/graphql";
 
 export interface BlogRef {
     name: string,
