@@ -1,0 +1,133 @@
+# This file was generated. Do not edit manually.
+
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+interface Node {
+    id: ID!
+}
+
+type Blog implements Node {
+    created: DateTime!
+    drafts(after: String, before: String, first: Int, last: Int): EntryConnection
+    entries(after: String, before: String, first: Int, last: Int): EntryConnection
+    entry(id: ID!): Entry
+    handle: String!
+    id: ID!
+    name: String!
+    updated: DateTime!
+    user: User!
+    userId: ID!
+}
+
+type BlogConnection {
+    edges: [BlogEdge]!
+    pageInfo: PageInfo!
+}
+
+type BlogEdge {
+    cursor: String!
+    node: Blog!
+}
+
+type BlogMutation {
+    createEntry(entry: EntryCreateInput): Entry
+    delete: Node
+    entry(id: ID!): EntryMutation
+    update(blog: BlogUpdateInput): Blog
+}
+
+"Represents a single entry in a blog which is considered a draft if published is not defined."
+type Entry implements Node {
+    "Content of the entry which can include HTML markup."
+    content: String!
+    "Date that the entry was created."
+    created: DateTime!
+    "Unique identifier of the entry."
+    id: ID!
+    "Date that the entry was published or undefined if entry is a draft."
+    published: DateTime
+    "Title of the entry, a plain-text string with no HTML markup."
+    title: String!
+    "Date that the entry was updated."
+    updated: DateTime!
+}
+
+"Represents a pageable list of entries."
+type EntryConnection {
+    "Entries returned in this response."
+    edges: [EntryEdge]!
+    "Information about the pagination of the entries."
+    pageInfo: PageInfo!
+}
+
+type EntryEdge {
+    cursor: String!
+    node: Entry!
+}
+
+type EntryMutation {
+    delete: Node
+    publish: Entry
+    update(entry: EntryUpdateInput): Entry
+}
+
+type Mutation {
+    blog(handle: String!): BlogMutation
+    blogByID(id: ID!): BlogMutation
+    createBlog(blog: BlogCreateInput): Blog
+    issueApiKey: String
+}
+
+type PageInfo {
+    endCursor: String!
+    hasNextPage: Boolean!
+    hasPreviousPage: Boolean!
+    startCursor: String!
+}
+
+type Query {
+    apiKeyForUser(userId: ID!): String
+    blog(handle: String!): Blog
+    blogForUser(userId: ID!): Blog
+    blogs(after: String, before: String, first: Int, last: Int): BlogConnection
+}
+
+"Represents a user of BlogQL."
+type User implements Node {
+    "Date user was created."
+    created: DateTime!
+    "User's email address."
+    email: String!
+    "User's and unchangeable unique identifier."
+    id: ID!
+    "URL of user's avatar."
+    picture: String
+    "Date user was updated."
+    updated: DateTime!
+    "User's unique username."
+    username: String!
+}
+
+scalar DateTime
+
+input BlogCreateInput {
+    handle: String!
+    name: String!
+}
+
+input BlogUpdateInput {
+    name: String!
+}
+
+input EntryCreateInput {
+    content: String
+    title: String
+}
+
+input EntryUpdateInput {
+    content: String
+    title: String
+}
