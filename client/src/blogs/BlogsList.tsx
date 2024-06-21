@@ -34,12 +34,11 @@ export function BlogsList() {
             <Heading title='Welcome to BlogQL'
                      heading='This is where you can find a list of all the blogs in the system.' />
             <Table
-                rowKey='id'
+                rowKey={(record) => record.node.id} // Ensure each row has a unique key
                 loading={loading}
                 dataSource={dataSource}
                 columns={columns}
                 pagination={{
-                    total: data.blogs?.pageInfo.totalCount,
                     pageSize: pageSize,
                     onChange: e => {
                 }

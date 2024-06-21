@@ -1,6 +1,6 @@
 // src/setupTests.js
 import {ApolloClient, HttpLink, InMemoryCache} from '@apollo/client';
-import { server } from './mocks/server.js'
+import { server } from './mocks/node.js'
 import fetch from 'cross-fetch';
 
 export const client = new ApolloClient({
