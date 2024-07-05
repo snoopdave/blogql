@@ -498,7 +498,8 @@ export const fixture: Export = {
         hasNextPage: false,
         hasPreviousPage: false,
         endCursor: "",
-        startCursor: ""
+        startCursor: "",
+        totalCount: 100
       }
     },
     handle: "yIyjNNkmQu",
@@ -1007,7 +1008,8 @@ export const fixture: Export = {
         hasNextPage: false,
         hasPreviousPage: false,
         endCursor: "",
-        startCursor: ""
+        startCursor: "",
+        totalCount: 100
       }
     },
     handle: "r80iehb",
@@ -1516,7 +1518,8 @@ export const fixture: Export = {
         hasNextPage: false,
         hasPreviousPage: false,
         endCursor: "",
-        startCursor: ""
+        startCursor: "",
+        totalCount: 100
       }
     },
     handle: "fLkhg26",
@@ -2025,7 +2028,8 @@ export const fixture: Export = {
         hasNextPage: false,
         hasPreviousPage: false,
         endCursor: "",
-        startCursor: ""
+        startCursor: "",
+        totalCount: 100
       }
     },
     handle: "ODGFk",
@@ -2534,7 +2538,8 @@ export const fixture: Export = {
         hasNextPage: false,
         hasPreviousPage: false,
         endCursor: "",
-        startCursor: ""
+        startCursor: "",
+        totalCount: 100
       }
     },
     handle: "chYDqUA",
@@ -3043,7 +3048,8 @@ export const fixture: Export = {
         hasNextPage: false,
         hasPreviousPage: false,
         endCursor: "",
-        startCursor: ""
+        startCursor: "",
+        totalCount: 100
       }
     },
     handle: "rww46I",
@@ -3552,7 +3558,8 @@ export const fixture: Export = {
         hasNextPage: false,
         hasPreviousPage: false,
         endCursor: "",
-        startCursor: ""
+        startCursor: "",
+        totalCount: 100
       }
     },
     handle: "TvnCEjOE7",
@@ -4061,7 +4068,8 @@ export const fixture: Export = {
         hasNextPage: false,
         hasPreviousPage: false,
         endCursor: "",
-        startCursor: ""
+        startCursor: "",
+        totalCount: 100
       }
     },
     handle: "svRr1n7",
@@ -4570,7 +4578,8 @@ export const fixture: Export = {
         hasNextPage: false,
         hasPreviousPage: false,
         endCursor: "",
-        startCursor: ""
+        startCursor: "",
+        totalCount: 100
       }
     },
     handle: "kMqcI7",
@@ -5079,7 +5088,8 @@ export const fixture: Export = {
         hasNextPage: false,
         hasPreviousPage: false,
         endCursor: "",
-        startCursor: ""
+        startCursor: "",
+        totalCount: 100
       }
     },
     handle: "2jqtKeb",
@@ -5102,7 +5112,8 @@ export const fixture: Export = {
       hasNextPage: false,
       hasPreviousPage: false,
       endCursor: "",
-      startCursor: ""
+      startCursor: "",
+      totalCount: 100
     }
   }
 };

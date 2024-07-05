@@ -2,32 +2,45 @@
  * Copyright David M. Johnson (snoopdave@gmail.com).
  * Licensed under Apache Software License v2.
  */
-
-import React from "react";
+import {useMemo} from "react";
 
 export type DateTimeProps = {
     when: Date,
 }
 
+export const MILLISECONDS_IN_A_SECOND = 1000;
+export const MILLISECONDS_IN_A_MINUTE = 60 * MILLISECONDS_IN_A_SECOND;
+export const MILLISECONDS_IN_AN_HOUR = 60 * MILLISECONDS_IN_A_MINUTE;
+export const MILLISECONDS_IN_A_DAY= 24 * MILLISECONDS_IN_AN_HOUR;
+export const MILLISECONDS_IN_A_WEEK = 7 * MILLISECONDS_IN_A_DAY;
+export const MILLISECONDS_IN_A_MONTH = 30 * MILLISECONDS_IN_A_WEEK;
+
+type TimeUnit = 'month' | 'week' | 'day' | 'hour' | 'minute' | 'second';
+
 // for use on Entries page, e.g. "4 days ago"
 export function RelativeDateTime(props: DateTimeProps) {
-    const updated = new Date(props.when).getTime();
+    const updated = props.when.getTime();
     const span = Date.now() - updated;
-    const rtf = new Intl.RelativeTimeFormat('en-US', { style: 'long', numeric: 'auto' });
-    const daysAgo = -1 * Math.round(span / (24 * 60 * 60 * 1000));
-    const hoursAgo = -1 * Math.round(span / (60 * 60 * 1000));
-    const minutesAgo = -1 * Math.round(span / (60 * 1000));
-    const secondsAgo = -1 * Math.round(span / (1000));
-    if (daysAgo < 0) {
-        return <>{rtf.format(daysAgo, 'day')}</>;
-    } else if (hoursAgo < 0) {
-        return <>{rtf.format(hoursAgo, 'hour')}</>
-    } else if (minutesAgo < 0) {
-        return <>{rtf.format(minutesAgo, 'minute')}</>;
-    } else {
-        return <>{rtf.format(secondsAgo, 'second')}</>;
+
+    const rtf = useMemo(() => new Intl.RelativeTimeFormat('en-US', { style: 'long', numeric: 'auto' }), []);
+
+    const timeUnits: { unit: TimeUnit, value: number }[] = [
+        { unit: 'month', value: MILLISECONDS_IN_A_MONTH },
+        { unit: 'week', value: MILLISECONDS_IN_A_WEEK },
+        { unit: 'day', value: MILLISECONDS_IN_A_DAY },
+        { unit: 'hour', value: MILLISECONDS_IN_AN_HOUR },
+        { unit: 'minute', value: MILLISECONDS_IN_A_MINUTE },
+        { unit: 'second', value: MILLISECONDS_IN_A_SECOND },
+    ];
+
+    for (const { unit, value } of timeUnits) {
+        const timeAgo = -1 * Math.round(span / value);
+        if (Math.abs(timeAgo) > 0) {
+            return <>{rtf.format(timeAgo, unit)}</>;
+        }
     }
 
+    return <>Just now</>;
 }
 
 // for use in editor and drafts page, e.g. "Sunday, July 3, 2022, 10:34 AM"

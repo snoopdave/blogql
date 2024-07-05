@@ -3,7 +3,7 @@
  * Licensed under Apache Software License v2.
  */
 
-import React from 'react';
+import React, {useState} from 'react';
 import {useQuery} from '@apollo/client/react/hooks/useQuery';
 import {DRAFTS_QUERY} from '../graphql/queries';
 import {Link, useParams} from 'react-router-dom';
@@ -17,8 +17,22 @@ import {SimpleDateTime} from "../common/DateTime";
 
 function Drafts() {
     const navigate = useNavigate();
+    const [currentPage, setCurrentPage] = useState(1);
     const { handle } = useParams<{handle : string}>(); // get handle param from router route
-    const { loading, error, data } = useQuery(DRAFTS_QUERY, { variables: { handle } });
+    const [afterCursor, setAfterCursor] = useState<string | null>(null);
+    const [beforeCursor, setBeforeCursor] = useState<string | null>(null);
+
+    const PAGE_SIZE = 10;
+
+    const { loading, error, data, fetchMore } = useQuery(DRAFTS_QUERY, {
+        variables: {
+            handle,
+            first: PAGE_SIZE,
+            after: afterCursor,
+            before: beforeCursor,
+        },
+    });
+
     if (loading) { return (<p>Loading...</p>); }
     if (error) { return (<p>error!</p>); }
     if (!data) { return (<p>no data!</p>); }
@@ -26,6 +40,36 @@ function Drafts() {
     function newEntry() {
         navigate(`/blogs/${handle}/edit`);
     }
+
+    const handleTableChange = async (pagination: any) => {
+        const { current } = pagination;
+
+        if (current > currentPage) {
+            // Next page
+            const endCursor = data?.blog?.drafts?.pageInfo.endCursor;
+            setAfterCursor(endCursor || null);
+            setBeforeCursor(null);
+        } else if (current < currentPage) {
+            // Previous page
+            const startCursor = data?.blog?.drafts?.pageInfo.startCursor;
+            setBeforeCursor(startCursor || null);
+            setAfterCursor(null);
+        }
+
+        setCurrentPage(current);
+
+        await fetchMore({
+            variables: {
+                first: current > currentPage ? PAGE_SIZE : undefined,
+                last: current < currentPage ? PAGE_SIZE : undefined,
+                after: current > currentPage ? data?.blog?.drafts?.pageInfo.endCursor : undefined,
+                before: current < currentPage ? data?.blog?.drafts?.pageInfo.startCursor : undefined,
+            },
+            updateQuery: (prevResult, { fetchMoreResult }) => {
+                return fetchMoreResult || prevResult;
+            },
+        });
+    };
 
     const columns = [
         { title:'Title', dataIndex:'title', key:'title', render: (_: any, edge: EntryEdge) =>
@@ -42,14 +86,38 @@ function Drafts() {
         marginTop: '1em',
     };
 
-    console.log('Drafts: rendering');
+    return (
+        <RequireAuth redirectTo="/login">
+            <Heading title="Drafts"
+                     heading='This is where you find your unpublished draft blog entries, and create new ones.' />
+            <Button onClick={() => { newEntry(); }}>New</Button>
+            <Table
+                style={tableStyle}
+                loading={loading}
+                columns={columns}
+                dataSource={data?.blog?.drafts?.edges || []}
+                rowKey={(record) => record.node.id}
+                pagination={{
+                    current: currentPage,
+                    pageSize: PAGE_SIZE,
+                    total: data?.blog?.drafts?.pageInfo.totalCount,
+                    showSizeChanger: false,
+                    showQuickJumper: false,
+                    itemRender: (_, type, originalElement) => {
+                        if (type === 'prev') {
+                            return <Button type="primary" disabled={!data?.blog?.drafts?.pageInfo.hasPreviousPage}>Previous</Button>;
+                        }
+                        if (type === 'next') {
+                            return <Button type="primary" disabled={!data?.blog?.drafts?.pageInfo.hasNextPage}>Next</Button>;
+                        }
+                        return null; // This will hide page numbers
+                    },
+                }}
+                onChange={handleTableChange}
+            />
+        </RequireAuth>
+    );
 
-    return <RequireAuth redirectTo='/login'>
-        <Heading title='Drafts'
-            heading='This is where you find your unpublished draft blog entries, and create new ones.' />
-        <Button onClick={() => { newEntry(); }}>New</Button>
-        <Table style={tableStyle} dataSource={data.blog?.drafts?.edges} columns={columns} />
-    </RequireAuth>
 }
 
 export default Drafts;

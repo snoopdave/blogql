@@ -28,15 +28,21 @@ export class PageInfo {
     hasPreviousPage: boolean;
     startCursor: string | null;
     endCursor: string | null;
-        constructor(
+    totalCount: number;
+    constructor(
             hasNextPage: boolean,
             hasPreviousPage: boolean,
             startCursor: string | null,
-            endCursor: string | null) {
+            endCursor: string | null,
+            totalCount: number) {
         this.hasNextPage = hasNextPage;
         this.hasPreviousPage = hasPreviousPage;
         this.startCursor = startCursor;
         this.endCursor = endCursor;
+        if (!totalCount) {
+            throw new Error('totalCount must be defined');
+        }
+        this.totalCount = totalCount;
     }
 }
 
@@ -74,9 +80,14 @@ export class FindAllArgs {
 export class FindAllResult<T> {
     rows: T[];
     count: number;
-    constructor(rows: T[], count: number) {
+    totalCount: number;
+    constructor(rows: T[], count: number, totalCount: number) {
         this.rows = rows;
         this.count = count;
+        if (!totalCount) {
+            throw new Error('totalCount must be provided');
+        }
+        this.totalCount = totalCount;
     }
 }
 
@@ -124,7 +135,8 @@ export async function resolveCollection<T>(
             hasNextPage,
             hasPreviousPage,
             startCursor,
-            endCursor
+            endCursor,
+            result.count
         ));
     } catch (error: unknown) {
         if (error instanceof Error) {

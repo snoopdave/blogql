@@ -6,7 +6,7 @@
 import DBConnection from '../dbconnection.js';
 import {randomString} from "../utils.js";
 import BlogStore from './blogstore.js';
-import {User} from '../users/user.js';
+import {User} from '../users/user';
 import {UserStore} from "../users/userstore";
 
 

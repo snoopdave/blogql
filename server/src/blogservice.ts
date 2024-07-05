@@ -160,7 +160,8 @@ export class BlogServiceSequelizeImpl implements BlogService {
         Promise<ResponseConnection<ResponseEdge<Blog>>> {
         await this.initDataSources();
         return resolveCollection<Blog>({first, last, before, after}, async (cursor: Cursor) => {
-            return await this.blogStore.retrieveAll(cursor.limit, cursor.offset);
+            const blogs = await this.blogStore.retrieveAll(cursor.limit, cursor.offset);
+            return blogs;
         });
     }
 

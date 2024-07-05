@@ -162,6 +162,7 @@ const generateData = (): Export => {
                 endCursor: "",
                 hasNextPage: false,
                 hasPreviousPage: false,
+                totalCount: 100
             },
         };
 
@@ -191,6 +192,7 @@ const generateData = (): Export => {
             endCursor: "",
             hasNextPage: false,
             hasPreviousPage: false,
+            totalCount: 100
         },
     };
 

@@ -13,21 +13,27 @@ export const handlers = [
     }),
     // @ts-ignore
     graphql.query('Blogs', (req, res, ctx) => {
+        const {limit, offset} = req.variables;
+        const blogs = fixture.blogs.edges.slice(offset, offset + limit);
         return res(ctx.data({ blogs: fixture.blogs }));
     }),
     // @ts-ignore
     graphql.query('EntriesQuery', (req, res, ctx) => {
+        const {limit, offset} = req.variables;
+        const entries = fixture.blogs.edges[0].node.entries?.edges.slice(offset, offset + limit);
         return res(ctx.data({ blog: {
-            ...fixture.blogs.edges[0]!.node,
-            entries: fixture.blogs.edges[0]!.node.entries
-        }}));
+                ...fixture.blogs.edges[0].node,
+                entries
+            } }));
     }),
     // @ts-ignore
     graphql.query('DraftsQuery', (req, res, ctx) => {
+        const {limit, offset} = req.variables;
+        const drafts = fixture.blogs.edges[1].node.entries?.edges.slice(offset, offset + limit);
         return res(ctx.data({ blog: {
-            ...fixture.blogs.edges[1]!.node,
-            drafts: fixture.blogs!.edges[1]!.node.entries
-        }}));
+                ...fixture.blogs.edges[1].node,
+                drafts: fixture.blogs.edges[1].node.entries
+            } }));
     }),
     // @ts-ignore
     graphql.query('EntryQuery', (req, res, ctx) => {

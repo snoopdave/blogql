@@ -6,7 +6,7 @@
 import {Entry} from '../entries/entry.js';
 import {describe, expect, test} from '@jest/globals';
 import {v4 as uuid} from 'uuid';
-import resolvers from '../resolvers';
+import resolvers from '../resolvers.js';
 import {randomString} from "../utils.js";
 import {Blog} from '../blogs/blog.js';
 import {User} from '../users/user.js';
@@ -16,7 +16,7 @@ import {BlogService, BlogServiceSequelizeImpl} from "../blogservice";
 import {UserStore} from "../users/userstore";
 import BlogStore from "../blogs/blogstore";
 import {EntryStore} from "../entries/entrystore";
-import {Cursor, ResponseConnection, ResponseEdge} from "../pagination";
+import {Cursor, PageInfo, ResponseConnection, ResponseEdge} from "../pagination";
 import {
     createBlog,
     createEntry,
@@ -151,7 +151,6 @@ describe('Test the GraphQL API integration', () => {
     test('It can page through all entries', async () => {
         const {blogService, server, conn, blogStore, entryStore, authUsers} = await initDataStorage();
         const blog = await createBlogAndTestEntriesViaSql(authUsers[0], blogStore, entryStore);
-        const dataRetrieved: Entry[] = [];
         const blogQLContext: BlogQLContext = {blogService, user: authUsers[0]};
         try {
             await testPageThroughEntries(server, blog.handle, NUM_ENTRIES, NUM_ENTRIES, blogQLContext);
@@ -217,7 +216,7 @@ describe('Test the GraphQL API integration', () => {
                 if (response.body.kind === 'single') {
                     expect(response.body.singleResult?.errors).toBeUndefined();
 
-                    const pageInfo = (response.body.singleResult.data?.blog as { entries: ResponseConnection<ResponseEdge<Entry>> }).entries.pageInfo;
+                    const pageInfo= (response.body.singleResult.data?.blog as { entries: ResponseConnection<ResponseEdge<Entry>> }).entries.pageInfo;
                     afterCursor = pageInfo.endCursor;
 
                     const edges= (response.body.singleResult.data?.blog as { entries: ResponseConnection<ResponseEdge<Entry>> }).entries.edges;
@@ -440,11 +439,11 @@ describe('Test the GraphQL API integration', () => {
         await createTestBlogsViaSql(authUsers, blogStore);
         const blogQLContext: BlogQLContext = {blogService, user: authUsers[0]};
         try {
-            //wait testPageThroughBlogs(server, NUM_BLOGS, NUM_BLOGS, blogQLContext);
+            await testPageThroughBlogs(server, NUM_BLOGS, NUM_BLOGS, blogQLContext);
             await testPageThroughBlogs(server, 10, NUM_BLOGS, blogQLContext);
-            // await testPageThroughBlogs(server, 1, NUM_BLOGS, blogQLContext);
-            // await testPageThroughBlogs(server, 2, NUM_BLOGS, blogQLContext);
-            // await testPageThroughBlogs(server, NUM_BLOGS + 20, NUM_BLOGS, blogQLContext);
+            await testPageThroughBlogs(server, 1, NUM_BLOGS, blogQLContext);
+            await testPageThroughBlogs(server, 2, NUM_BLOGS, blogQLContext);
+            await testPageThroughBlogs(server, NUM_BLOGS + 20, NUM_BLOGS, blogQLContext);
         } finally {
             await conn.destroy();
             await server.stop();
@@ -515,6 +514,10 @@ async function getAllEntries(server: ApolloServer<BlogQLContext>, payload: any, 
     if (result.body.kind === 'single') {
         expect(result?.body.singleResult.errors).toBeUndefined();
 
+        // expect pageInfo.totalCount to be equal to NUM_ENTRIES
+        expect((result?.body.singleResult.data?.blog as { entries: { edges: [], pageInfo: PageInfo }} )
+            .entries.pageInfo.totalCount).toBe(NUM_ENTRIES);
+
         expect((result?.body.singleResult.data?.blog as {entries: {edges: ResponseEdge<Entry>[]}}).entries.edges).toBeDefined();
         (result.body.singleResult.data?.blog as {entries: {edges: ResponseEdge<Entry>[]}}).entries.edges
             .forEach((item: ResponseEdge<Entry>) => {
@@ -535,6 +538,7 @@ interface BlogData {
         hasPreviousPage: boolean;
         startCursor: string;
         endCursor: string;
+        totalCount: number;
     }
 }
 
@@ -563,6 +567,8 @@ async function getAllBlogs(server: ApolloServer<BlogQLContext>, payload: any, da
                 dataRetrieved.push(edge.node);
             });
         }
+
+        expect(blogData.pageInfo.totalCount).toBe(NUM_BLOGS);
 
         if (hasMore(blogData)) {
             payload.variables.after = blogData.pageInfo.endCursor;
