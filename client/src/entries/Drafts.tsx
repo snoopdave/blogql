@@ -102,6 +102,16 @@ function Drafts() {
                     pageSize: PAGE_SIZE,
                     total: data?.blog?.drafts?.pageInfo.totalCount,
                     showSizeChanger: false,
+                    showQuickJumper: false,
+                    itemRender: (_, type, originalElement) => {
+                        if (type === 'prev') {
+                            return <Button type="primary" disabled={!data?.blog?.drafts?.pageInfo.hasPreviousPage}>Previous</Button>;
+                        }
+                        if (type === 'next') {
+                            return <Button type="primary" disabled={!data?.blog?.drafts?.pageInfo.hasNextPage}>Next</Button>;
+                        }
+                        return null; // This will hide page numbers
+                    },
                 }}
                 onChange={handleTableChange}
             />
