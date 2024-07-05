@@ -54,6 +54,7 @@ export const ENTRIES_QUERY = gql`query EntriesQuery(
                 hasPreviousPage
                 startCursor
                 endCursor
+                totalCount
             }
         }
     }
@@ -80,6 +81,7 @@ export const DRAFTS_QUERY = gql`query DraftsQuery($handle: String!, $first: Int,
                 hasPreviousPage
                 startCursor
                 endCursor
+                totalCount
             }
         }
     }
@@ -114,6 +116,7 @@ export const BLOGS_QUERY = gql`query Blogs($first: Int, $last: Int, $before: Str
             hasPreviousPage
             startCursor
             endCursor
+            totalCount
         }
     }
 }`

@@ -86,6 +86,7 @@ type PageInfo {
     hasNextPage: Boolean!
     hasPreviousPage: Boolean!
     startCursor: String!
+    totalCount: Int!
 }
 
 type Query {

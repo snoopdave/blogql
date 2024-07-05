@@ -109,7 +109,7 @@ export default class BlogStore implements DataSource<Blog> {
         result.rows.map(blog => {
             rows.push(blog.get());
         });
-        return {rows, count: await Blog.count()};
+        return {rows, count: await Blog.count(), totalCount: result.count};
     }
 
     async delete(id: string): Promise<void> {

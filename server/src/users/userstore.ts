@@ -84,7 +84,7 @@ export class UserStore implements DataSource<User> {
         result.rows.map(user => {
             rows.push(user.get());
         });
-        return { rows, count: await User.count() };
+        return { rows, count: await User.count(), totalCount: result.count};
     }
 
     async update(id: string, username: string, email: string, picture: string) : Promise<User | null> {

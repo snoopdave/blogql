@@ -91,14 +91,14 @@ export class EntryStore implements DataSource<Entry> {
             where,
             limit,
             offset,
-            order: [['updated', 'DESC']]
-            //,logging: console.log
+            order: [['updated', 'DESC']],
+            logging: console.log
         });
         const rows: Entry[] = [];
         result.rows.map(entry => {
             rows.push(entry.get());
         });
-        return { rows, count: await this.countAll(where) }; // TODO: why is countAll necessary
+        return { rows, count: await this.countAll(where), totalCount: result.count }; // TODO: why is countAll necessary
     }
 
     async retrieveAll(blogId: string, limit: number, offset: number) : Promise<FindAllResult<Entry>> {

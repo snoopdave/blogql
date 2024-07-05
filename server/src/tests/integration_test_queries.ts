@@ -24,6 +24,7 @@ export const GET_ENTRIES_QUERY = `
                         hasNextPage
                         startCursor
                         endCursor
+                        totalCount
                     } 
                 }
             }
@@ -171,6 +172,7 @@ export const GET_BLOGS_QUERY= `query getBlogs($first: Int, $last: Int, $before: 
                 hasNextPage
                 startCursor
                 endCursor
+                totalCount
             } 
         }
     }`;
