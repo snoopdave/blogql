@@ -14,5 +14,5 @@ export class Entry extends Model implements Node {
     declare content: string;
     declare created: Date;
     declare updated: Date;
-    declare published: Date;
+    declare published: Date | null;
 }
