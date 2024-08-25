@@ -184,7 +184,16 @@ export class BlogServiceSequelizeImpl implements BlogService {
 
     async getEntry(blog: Blog, id: string): Promise<Entry | null> {
         await this.initDataSources();
-        return await this.entryStore.retrieve(id);
+        const entry = await this.entryStore.retrieve(id);
+
+        // Authorization check
+        if (entry && !entry.published && blog.userId !== this.user?.id) {
+            throw new GraphQLError('You are not authorized to view this entry.', {
+                extensions: { code: 'FORBIDDEN' }
+            });
+        }
+
+        return entry;
     }
 
     async getUser(blog: Blog, id: string): Promise<User | null> {
