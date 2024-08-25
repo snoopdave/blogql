@@ -23,37 +23,7 @@ export class UserStore implements DataSource<User> {
     initialize?(config: DataSourceConfig<User>): void | Promise<void> {}
 
     async init() {
-        User.init({
-            id: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                primaryKey: true
-            },
-            username: {
-                type: DataTypes.STRING,
-                allowNull: false
-            },
-            email: {
-                type: DataTypes.STRING,
-                allowNull: false
-            },
-            picture: {
-                type: DataTypes.STRING,
-                allowNull: false
-            },
-            created: {
-                type: DataTypes.DATE,
-                allowNull: false
-            },
-            updated: {
-                type: DataTypes.DATE,
-                allowNull: false
-            }
-        }, {
-            sequelize: this.db,
-            modelName: 'user'
-        });
-        await User.sync();
+        User.initialize(this.db);
     }
 
     async create(username: string, email: string, picture: string): Promise<User> {
