@@ -96,7 +96,7 @@ setTimeout(function() {
 
                 return {
                     user: null,
-                    blogService: new BlogServiceSequelizeImpl(user, conn)
+                    blogService: new BlogServiceSequelizeImpl(user, conn, null, null, null, null)
                 } as BlogQLContext;
             },
         }));

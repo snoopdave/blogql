@@ -7,7 +7,7 @@ import {Blog} from './blogs/blog.js';
 import {Entry} from './entries/entry.js';
 import {User} from './users/user.js';
 import {Node} from './node.js';
-import {ResponseConnection, Cursor, resolveCollection, ResponseEdge} from './pagination.js';
+import {Cursor, resolveCollection, ResponseConnection, ResponseEdge} from './pagination.js';
 import {DEBUG, log} from "./utils.js";
 import DBConnection from "./dbconnection.js";
 import {ApiKeyStore} from "./apikeys/apikeystore.js";
@@ -59,12 +59,13 @@ export class BlogServiceSequelizeImpl implements BlogService {
     userStore: UserStore;
     apiKeyStore: ApiKeyStore;
 
-    constructor(user: User | null, conn: DBConnection) {
+    constructor(user: User | null, conn: DBConnection,
+                blogStore: BlogStore | null, entryStore: EntryStore | null, userStore: UserStore | null, apiKeyStore: ApiKeyStore | null) {
         this.user = user;
-        this.blogStore = new BlogStore(conn);
-        this.entryStore = new EntryStore(conn);
-        this.userStore = new UserStore(conn);
-        this.apiKeyStore = new ApiKeyStore(conn);
+        this.blogStore = blogStore ?? new BlogStore(conn);
+        this.entryStore = entryStore ?? new EntryStore(conn);
+        this.userStore = userStore ?? new UserStore(conn);
+        this.apiKeyStore = apiKeyStore ?? new ApiKeyStore(conn);
     }
 
     async initDataSources() {
@@ -160,8 +161,7 @@ export class BlogServiceSequelizeImpl implements BlogService {
         Promise<ResponseConnection<ResponseEdge<Blog>>> {
         await this.initDataSources();
         return resolveCollection<Blog>({first, last, before, after}, async (cursor: Cursor) => {
-            const blogs = await this.blogStore.retrieveAll(cursor.limit, cursor.offset);
-            return blogs;
+            return await this.blogStore.retrieveAll(cursor.limit, cursor.offset);
         });
     }
 

@@ -39,9 +39,6 @@ export class PageInfo {
         this.hasPreviousPage = hasPreviousPage;
         this.startCursor = startCursor;
         this.endCursor = endCursor;
-        if (!totalCount) {
-            throw new Error('totalCount must be defined');
-        }
         this.totalCount = totalCount;
     }
 }
@@ -121,7 +118,7 @@ export async function resolveCollection<T>(
         const result: FindAllResult<T> = await fetchData(new Cursor(limit + 1, offset));
 
         const hasNextPage = result.rows.length > limit;
-        const hasPreviousPage = offset >= 0;
+        const hasPreviousPage = offset > 0;
 
         const edges: ResponseEdge<T>[] = result.rows.slice(0, limit).map((row, index) => {
             const rowCursor: Cursor = new Cursor(limit, offset + index);

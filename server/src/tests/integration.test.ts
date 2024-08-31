@@ -68,7 +68,7 @@ describe('Test the GraphQL API integration', () => {
             resolvers
         });
         const user = authUsers[0];
-        const blogService: BlogServiceSequelizeImpl = new BlogServiceSequelizeImpl(user, conn);
+        const blogService: BlogServiceSequelizeImpl = new BlogServiceSequelizeImpl(user, conn, null, null, null, null);
         await blogService.initDataSources();
 
         const { url } = await startStandaloneServer(server, {

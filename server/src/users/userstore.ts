@@ -11,8 +11,6 @@ import {DataSourceConfig} from 'apollo-datasource/src';
 import {FindAllResult} from '../pagination.js';
 import {User} from "./user.js";
 
-const { DataTypes } = sequelize; // sequelize is a CommonJS module
-
 export class UserStore implements DataSource<User> {
     db: sequelize.Sequelize;
 
