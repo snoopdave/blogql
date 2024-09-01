@@ -26,7 +26,7 @@ export class ApiKey extends Model {
                 allowNull: false
             },
             created: {
-                type: DataTypes.STRING,
+                type: DataTypes.DATE,
                 allowNull: false
             }
         }, {

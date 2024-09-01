@@ -4,17 +4,15 @@
  */
 
 import {v4 as uuid} from 'uuid';
-import {DataSource, DataSourceConfig} from "apollo-datasource";
+import {DataSource} from "apollo-datasource";
 import DBConnection from "../utils/dbconnection.js";
 import sequelize from 'sequelize';
 import {randomString} from "../utils/utils.js";
-import {Blog} from "../blogs/blog.js";
 import {ApiKey} from "./apikey";
+import {DataSourceConfig} from "apollo-datasource/src";
 
-const { DataTypes } = sequelize; // sequelize is a CommonJS module
 
-
-export class ApiKeyStore implements DataSource<ApiKey> {
+export default class ApiKeyStore implements DataSource<ApiKey> {
    db: sequelize.Sequelize;
 
    constructor(conn: DBConnection) {
@@ -25,43 +23,17 @@ export class ApiKeyStore implements DataSource<ApiKey> {
    }
 
    async init() {
-      ApiKey.init({
-         id: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            primaryKey: true
-         },
-         apiKey: { // TODO: encryption
-            type: DataTypes.STRING,
-            allowNull: false,
-            field: 'api_key',
-         },
-         userId: {
-            type: DataTypes.STRING,
-            allowNull: false,
-         },
-         created: {
-            type: DataTypes.DATE,
-            allowNull: false
-         },
-      }, {
-         sequelize: this.db,
-         modelName: 'apiKey',
-         createdAt: 'created',
-         updatedAt: 'updated'
-      });
-      await ApiKey.sync();
+      await ApiKey.initialize(this.db);
    }
 
    async issue(userId: string): Promise<string> {
       // user can have one and only one key
       const existingKey: ApiKey | null = await ApiKey.findOne({where: {userId}});
-      const now = new Date();
       const newKey = randomString(10);
       if (existingKey) { // issue and replace existing apiKey
          const [number] = await ApiKey.update({
                 apiKey: newKey,
-                created: now
+                created: new Date().getTime()
              },
              {where: {id: existingKey.id}});
          if (number === 0) {
@@ -74,7 +46,7 @@ export class ApiKeyStore implements DataSource<ApiKey> {
             id: `${uuid()}-apikey`,
             userId,
             apiKey: newKey,
-            created: now,
+            created: new Date().getTime(),
          });
          await createdApiKey.save();
       }
@@ -82,7 +54,7 @@ export class ApiKeyStore implements DataSource<ApiKey> {
    }
 
    async delete(userId: string) {
-      const number = await Blog.destroy({where: {userId}});
+      const number = await ApiKey.destroy({where: {userId}});
       if (number === 0) {
          throw Error('API key not found');
       } else if (number > 1) {

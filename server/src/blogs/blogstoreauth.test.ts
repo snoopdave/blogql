@@ -13,7 +13,7 @@ import DBConnection from "../utils/dbconnection";
 import { User } from "../users/user";
 import { Blog } from "./blog";
 import { Entry } from "../entries/entry";
-import { ApiKeyStore } from "../apikeys/apikeystore";
+import ApiKeyStore from "../apikeys/apikeystore";
 import { FindAllResult } from "../pagination";
 
 describe('BlogService Authentication Tests', () => {

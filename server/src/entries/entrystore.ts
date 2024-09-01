@@ -24,44 +24,7 @@ export class EntryStore implements DataSource<Entry> {
     initialize?(config: DataSourceConfig<Entry>): void | Promise<void> {}
 
     async init() {
-        Entry.init({
-            id: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                primaryKey: true
-            },
-            blogId: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                field: 'blog_id'
-            },
-            title: {
-                type: DataTypes.STRING,
-                allowNull: false
-            },
-            content: {
-                type: DataTypes.STRING,
-                allowNull: false
-            },
-            created: {
-                type: DataTypes.DATE,
-                allowNull: false
-            },
-            updated: {
-                type: DataTypes.DATE,
-                allowNull: false
-            },
-            published: {
-                type: DataTypes.DATE,
-                allowNull: true
-            },
-        }, {
-            sequelize: this.db,
-            modelName: 'entry',
-            createdAt: 'created',
-            updatedAt: 'updated'
-        });
-        await Entry.sync();
+        await Entry.initialize(this.db);
     }
 
     async create(blogId: string, title: string, content: string) : Promise<Entry> {

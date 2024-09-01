@@ -66,26 +66,12 @@ export class FindAllArgs {
     after?: string;
     last?: number;
     before?: string;
-    constructor(first?: number, after?: string, last?: number, before?: string) {
-        this.first = first;
-        this.after = after;
-        this.last = last;
-        this.before = before;
-    }
 }
 
 export class FindAllResult<T> {
-    rows: T[];
-    count: number;
-    totalCount: number;
-    constructor(rows: T[], count: number, totalCount: number) {
-        this.rows = rows;
-        this.count = count;
-        if (!totalCount) {
-            throw new Error('totalCount must be provided');
-        }
-        this.totalCount = totalCount;
-    }
+    rows?: T[];
+    count?: number;
+    totalCount?: number;
 }
 
 function log(msg: string) {
@@ -117,10 +103,10 @@ export async function resolveCollection<T>(
         // ask for one more than we need to see if there is a next page
         const result: FindAllResult<T> = await fetchData(new Cursor(limit + 1, offset));
 
-        const hasNextPage = result.rows.length > limit;
+        const hasNextPage = result.rows!.length > limit;
         const hasPreviousPage = offset > 0;
 
-        const edges: ResponseEdge<T>[] = result.rows.slice(0, limit).map((row, index) => {
+        const edges: ResponseEdge<T>[] = result.rows!.slice(0, limit).map((row, index) => {
             const rowCursor: Cursor = new Cursor(limit, offset + index);
             return new ResponseEdge<T>(row, rowCursor.encode());
         });
@@ -133,7 +119,7 @@ export async function resolveCollection<T>(
             hasPreviousPage,
             startCursor,
             endCursor,
-            result.count
+            result.count!
         ));
     } catch (error: unknown) {
         if (error instanceof Error) {

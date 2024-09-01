@@ -55,16 +55,15 @@ export class UserStore implements DataSource<User> {
         return { rows, count: await User.count(), totalCount: result.count};
     }
 
-    async update(id: string, username: string, email: string, picture: string) : Promise<User | null> {
+    async update(id: string, username: string, picture: string) : Promise<User | null> {
         const now = new Date();
-        const [ number ] = await User.update({ username, email, picture, updated: now },
-            { where: { id } });
+        const [ number ] = await User.update({ username, picture, updated: now }, { where: { id } });
         if (number === 0) {
             throw Error('User not found');
         } else if (number > 1) {
             throw Error('Unexpected outcome: multiple users updated');
         }
-        return this.retrieveByEmail(email);
+        return this.retrieve(id);
     }
 
     async upsert(username: string, email: string, picture: string) {

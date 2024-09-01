@@ -92,7 +92,7 @@ describe('Test the GraphQL API integration', () => {
     test('It can get blog for a user', async () => {
         const {blogService, server, conn, authUsers} = await initDataStorage();
         const slug = randomString(5);
-        const blog = await createBlog(server, `My Blog ${slug}`, `myblog${slug}`, { blogService, user: authUsers[0] });
+        const blog = await createBlog(server, `myblog${slug}`, `My Blog ${slug}`, { blogService, user: authUsers[0] });
 
         expect(blog.body).toEqual({
             kind: 'single',
@@ -100,8 +100,8 @@ describe('Test the GraphQL API integration', () => {
                 data: {
                     createBlog: {
                         id: expect.any(String),
-                        handle: `My Blog ${slug}`,
-                        name: `myblog${slug}`,
+                        name: `My Blog ${slug}`,
+                        handle: `myblog${slug}`,
                         created: expect.any(Date),
                         updated: expect.any(Date),
                         userId: authUsers[0].id,
@@ -121,8 +121,8 @@ describe('Test the GraphQL API integration', () => {
                     data: {
                         blogForUser: {
                             id: blog.body.kind === 'single' ? (blog.body.singleResult?.data?.createBlog as {id: string}).id : undefined,
-                            handle: `My Blog ${slug}`,
-                            name: `myblog${slug}`,
+                            name: `My Blog ${slug}`,
+                            handle: `myblog${slug}`,
                             created: expect.any(Date),
                             updated: expect.any(Date)
                         }

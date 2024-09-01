@@ -10,7 +10,7 @@ import BlogQL from './blogql.js';
 import {DEBUG, INFO, log} from './utils/utils.js';
 import {readFileSync} from 'fs';
 import {config} from './utils/config.js';
-import {ApiKeyStore} from "./apikeys/apikeystore.js";
+import ApiKeyStore from "./apikeys/apikeystore.js";
 import {BlogService, BlogServiceSequelizeImpl} from "./blogservice.js";
 import {UserStore} from "./users/userstore.js";
 import {expressMiddleware} from "@apollo/server/express4";

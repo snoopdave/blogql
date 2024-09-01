@@ -136,6 +136,73 @@ describe('Test UserStore', () => {
             await conn.destroy();
         }
     });
+
+    it("Can update of user picture and username", async () => {
+        let slug = randomString(5);
+        let conn = new DBConnection(`./db-test-${slug}.db`);
+        const us = new UserStore(conn);
+        await us.init();
+
+        try {
+            let user = await us.upsert('Test User', 'test@example.com', 'https://example.com/test.png');
+            const updatedUser = await us.update(user.id, 'Updated User', 'https://example.com/updated.png');
+            if (updatedUser) {
+                expect(updatedUser).toEqual({
+                    id: expect.any(String),
+                    username: 'Updated User',
+                    email: 'test@example.com',
+                    picture: 'https://example.com/updated.png',
+                    created: expect.any(Date),
+                    updated: expect.any(Date)
+                });
+            } else {
+                throw new Error('User update failed');
+            }
+        } finally {
+            await conn.destroy();
+        }
+    });
+
+    it("It throws error if attempt to update user that does not exist", async () => {
+        let slug = randomString(5);
+        let conn = new DBConnection(`./db-test-${slug}.db`);
+        const us = new UserStore(conn);
+        await us.init();
+
+        try {
+            await expect(us.update('non-existent-id', 'Non Existent User', 'https://example.com/nonexistent.png')).rejects.toThrow('User not found');
+        } finally {
+            await conn.destroy();
+        }
+    });
+
+    it("It throws error on attempt to update user that does not exist", async () => {
+        let slug = randomString(5);
+        let conn = new DBConnection(`./db-test-${slug}.db`);
+        const us = new UserStore(conn);
+        await us.init();
+
+        try {
+            await expect(us.update('non-existent-id', 'Non Existent User', 'https://example.com/nonexistent.png')).rejects.toThrow('User not found');
+        } finally {
+            await conn.destroy();
+        }
+    });
+
+    it("It throws error on attempt to delete user that does not exist", async () => {
+        let slug = randomString(5);
+        let conn = new DBConnection(`./db-test-${slug}.db`);
+        const us = new UserStore(conn);
+        await us.init();
+
+        try {
+            await expect(us.delete('non-existent-id')).rejects.toThrow('User not found');
+        } finally {
+            await conn.destroy();
+        }
+    });
+
+
 });
 
 export {}

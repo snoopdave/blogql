@@ -5,7 +5,7 @@
 
 import DBConnection from '../utils/dbconnection.js';
 import {randomString} from "../utils/utils.js";
-import {ApiKeyStore} from "./apikeystore.js";
+import ApiKeyStore from "./apikeystore.js";
 
 
 async function createApiKeyStore(): Promise<{ apiKeyStore: ApiKeyStore, conn: DBConnection }> {
@@ -79,6 +79,20 @@ describe('Test ApiKeyStore', () => {
             await conn.destroy();
         }
     });
-});
+
+    test('It can delete an API key', async () => {
+        const { apiKeyStore, conn } = await createApiKeyStore();
+        try {
+            const userId = 'dummy id string';
+            const key = await apiKeyStore.issue(userId);
+            expect(await apiKeyStore.verify(userId, key)).toBe(true);
+
+            await apiKeyStore.delete(userId);
+            expect(await apiKeyStore.verify(userId, key)).toBe(false);
+        } finally {
+            await conn.destroy();
+        }
+    });
+})
 
 export {}

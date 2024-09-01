@@ -11,7 +11,6 @@ import {DataSourceConfig} from 'apollo-datasource/src';
 import {FindAllResult} from '../pagination.js';
 import {Blog} from "./blog.js";
 
-const { DataTypes} = sequelize; // sequelize is a CommonJS module
 
 export default class BlogStore implements DataSource<Blog> {
     db: sequelize.Sequelize;

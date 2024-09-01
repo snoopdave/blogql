@@ -119,6 +119,24 @@ describe('Test BlogStore', () => {
             await conn.destroy();
         }
     });
+
+    test('It will not allow a user to create more than one blog', async () => {
+        let dbslug = randomString(5);
+        let conn = new DBConnection(`./db-test-${dbslug}.db`);
+        let blogStore = new BlogStore(conn);
+        await blogStore.init();
+        const userStore = new UserStore(conn);
+        await userStore.init();
+        try {
+            let slug = randomString(5);
+            const user: User = await userStore.create(
+                `test-user-${slug}`, 'test-user-${slug}@example.com', 'dummy.png')
+            await blogStore.create(user.id, `myblog-${slug}`, `My Blog ${slug}`);
+            await expect(blogStore.create(user.id, `myblog2-${slug}`, `My Blog 2 ${slug}`)).rejects.toThrow();
+        } finally {
+            await conn.destroy();
+        }
+    });
 });
 
 export {}
