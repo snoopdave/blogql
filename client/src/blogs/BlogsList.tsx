@@ -7,7 +7,7 @@ import {useQuery} from '@apollo/client/react/hooks/useQuery';
 import {BLOGS_QUERY} from '../graphql/queries';
 import React, {useState} from 'react';
 import {Heading} from "../common/Heading";
-import {Button, Table} from "antd";
+import {Button, Spin, Table} from "antd";
 import {Link} from "react-router-dom";
 import {BlogEdge} from "../gql/graphql";
 
@@ -30,7 +30,14 @@ export function BlogsList() {
         }
     );
 
-    if (loading) { return (<p>Loading...</p>); }
+    if (loading) {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                <Spin size="large" tip="Loading blogs..." />
+            </div>
+        );
+    }
+
     if (error) { return (<p>error!</p>); }
     if (!data) { return (<p>no data!</p>); }
 

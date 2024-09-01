@@ -19,7 +19,8 @@ type TimeUnit = 'month' | 'week' | 'day' | 'hour' | 'minute' | 'second';
 
 // for use on Entries page, e.g. "4 days ago"
 export function RelativeDateTime(props: DateTimeProps) {
-    const updated = props.when.getTime();
+    const date = new Date(props.when); // Convert to Date object
+    const updated = date.getTime();
     const span = Date.now() - updated;
 
     const rtf = useMemo(() => new Intl.RelativeTimeFormat('en-US', { style: 'long', numeric: 'auto' }), []);

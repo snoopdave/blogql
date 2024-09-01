@@ -3,6 +3,22 @@
 # Licensed under Apache Software License v2.
 #
 
+# public user can only do these things:
+# get a list of blogs in the system
+# view the public (published) entries of any blog
+# cannot create a blog
+# cannot view draft entries of any blog
+# cannot create blog entries
+# cannot update blogs
+# cannot create API keys
+
+# a logged in user can do these things:
+# create one blog
+# create an API key
+# update blog settings
+# within that blog, create, view, update and delete blog entries
+# within that blog, edit settings and get an API key
+
 scalar DateTime
 
 schema {
@@ -16,6 +32,7 @@ interface Node {
 
 type Blog implements Node {
     created: DateTime!
+    # only owner of blog can access drafts of blog
     drafts(first: Int, last: Int, before: String, after: String): EntryConnection
     entries(first: Int, last: Int, before: String, after: String): EntryConnection
     entry(id: ID!): Entry
@@ -41,6 +58,7 @@ input EntryCreateInput {
     title: String
 }
 
+# only owner of blog can mutate that blog
 type BlogMutation {
     createEntry(entry: EntryCreateInput): Entry
     delete: Node
@@ -79,6 +97,7 @@ input EntryUpdateInput {
     title: String
 }
 
+# only user who ones blog can perform these mutations
 type EntryMutation {
     delete: Node
     publish: Entry
@@ -98,6 +117,7 @@ type EntryConnection {
     pageInfo: PageInfo!
 }
 
+# Only authenticated users can perform these mutations
 type Mutation {
     issueApiKey: String
     blog(handle: String!): BlogMutation
@@ -118,10 +138,13 @@ type Query {
     blog(handle: String!): Blog
     blogForUser(userId: ID!): Blog
     blogs(first: Int, last: Int, before: String, after: String): BlogConnection
+
+    # only logged in user with userId can access this
     apiKeyForUser(userId: ID!): String
 }
 
 "Represents a user of BlogQL."
+# only logged in user with userId can access this
 type User implements Node {
     "Date user was created."
     created: DateTime!

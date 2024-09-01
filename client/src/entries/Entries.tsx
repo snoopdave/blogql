@@ -9,7 +9,7 @@ import {useQuery} from '@apollo/client/react/hooks/useQuery';
 import {ENTRIES_QUERY} from '../graphql/queries';
 import {Heading} from "../common/Heading";
 import {EntryEdge} from "../gql/graphql";
-import {Avatar, Button, List, Space, Tooltip} from "antd";
+import {Avatar, Button, List, Space, Spin, Tooltip} from "antd";
 import {stripHtml} from "string-strip-html";
 import {RelativeDateTime, SimpleDateTime} from "../common/DateTime";
 import {ClockCircleOutlined, EditOutlined, LinkOutlined} from "@ant-design/icons";
@@ -33,7 +33,14 @@ function Entries() {
         },
     });
 
-    if (loading) { return (<p>Loading...</p>); }
+    if (loading) {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                <Spin size="large" tip="Loading blogs..." />
+            </div>
+        );
+    }
+
     if (error) { return (<p>error!</p>); }
     if (!data) { return (<p>no data!</p>); }
 

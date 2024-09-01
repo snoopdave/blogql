@@ -25,6 +25,7 @@ export class Entry extends Model implements Node {
             blogId: {
                 type: DataTypes.STRING,
                 allowNull: false,
+                field: 'blog_id'
             },
             title: {
                 type: DataTypes.STRING,
