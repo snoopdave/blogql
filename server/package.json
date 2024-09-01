@@ -11,7 +11,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "start": "yarn build && node --experimental-modules src/index.js",
-    "build": "tsc --noEmit",
+    "build": "tsc",
     "test": "yarn build && NODE_OPTIONS=\"--experimental-vm-modules --input-type module\" npx jest  --detectOpenHandles",
     "clean": "rm -rf src/*.js src/*/*.js",
     "nuke": "rm -rf node_modules/*"
