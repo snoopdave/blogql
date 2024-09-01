@@ -3,22 +3,16 @@
  * Licensed under Apache Software License v2.
  */
 
-import { v4 as uuid } from 'uuid';
-import { DataSource, DataSourceConfig } from "apollo-datasource";
-import {Node} from "../types/node.js";
+import {v4 as uuid} from 'uuid';
+import {DataSource, DataSourceConfig} from "apollo-datasource";
 import DBConnection from "../utils/dbconnection.js";
 import sequelize from 'sequelize';
 import {randomString} from "../utils/utils.js";
 import {Blog} from "../blogs/blog.js";
-const { DataTypes, Model } = sequelize; // sequelize is a CommonJS module
+import {ApiKey} from "./apikey";
 
+const { DataTypes } = sequelize; // sequelize is a CommonJS module
 
-export class ApiKey extends Model implements Node {
-   declare id: string;
-   declare userId: string;
-   declare apiKey: string;
-   declare created: string;
-}
 
 export class ApiKeyStore implements DataSource<ApiKey> {
    db: sequelize.Sequelize;
@@ -52,7 +46,9 @@ export class ApiKeyStore implements DataSource<ApiKey> {
          },
       }, {
          sequelize: this.db,
-         modelName: 'apiKey'
+         modelName: 'apiKey',
+         createdAt: 'created',
+         updatedAt: 'updated'
       });
       await ApiKey.sync();
    }

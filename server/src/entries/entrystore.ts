@@ -57,7 +57,9 @@ export class EntryStore implements DataSource<Entry> {
             },
         }, {
             sequelize: this.db,
-            modelName: 'entry'
+            modelName: 'entry',
+            createdAt: 'created',
+            updatedAt: 'updated'
         });
         await Entry.sync();
     }

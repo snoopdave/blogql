@@ -48,7 +48,9 @@ export class User extends Model {
             }
         }, {
             sequelize: db,
-            modelName: 'user'
+            modelName: 'user',
+            createdAt: 'created',
+            updatedAt: 'updated'
         });
         await User.sync();
     }

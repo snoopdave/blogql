@@ -24,42 +24,7 @@ export default class BlogStore implements DataSource<Blog> {
     }
 
     async init() {
-        Blog.init({
-            id: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                primaryKey: true
-            },
-            name: {
-                type: DataTypes.STRING,
-                allowNull: false
-            },
-            handle: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                unique: true
-            },
-            created: {
-                type: DataTypes.DATE,
-                allowNull: false
-            },
-            updated: {
-                type: DataTypes.DATE,
-                allowNull: false
-            },
-            published: {
-                type: DataTypes.DATE,
-                allowNull: true
-            },
-            userId: {
-                type: DataTypes.STRING,
-                allowNull: false
-            }
-        }, {
-            sequelize: this.db,
-            modelName: 'blog'
-        });
-        await Blog.sync();
+        await Blog.initialize(this.db);
     }
 
     async create(userId: string, handle: string, name: string): Promise<Blog> {

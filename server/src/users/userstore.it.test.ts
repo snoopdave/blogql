@@ -35,19 +35,38 @@ describe('Test UserStore', () => {
             const userCreated = await us.create(
                 'snoopdave',
                 'snoopdave@example.com',
-                'http://example.com/img/snoopdave.jpg'
+                'https://example.com/img/snoopdave.jpg'
             );
-            expect(userCreated).toHaveProperty('id');
-            expect(userCreated).toHaveProperty('created');
-            expect(userCreated).toHaveProperty('updated');
+            expect(userCreated).toEqual(expect.objectContaining({
+                id: expect.any(String),
+                created: expect.any(Date),
+                updated: expect.any(Date),
+                username: 'snoopdave',
+                email: 'snoopdave@example.com',
+                picture: 'https://example.com/img/snoopdave.jpg'
+            }));
 
             const userRetrieved = await us.retrieve(userCreated.id);
-            expect(userRetrieved).toHaveProperty('id');
-            expect(userRetrieved).toHaveProperty('created');
-            expect(userRetrieved).toHaveProperty('updated');
+            expect(userRetrieved).toEqual(expect.objectContaining({
+                id: userCreated.id,
+                created: userCreated.created,
+                updated: userCreated.updated,
+                username: 'snoopdave',
+                email: 'snoopdave@example.com',
+                picture: 'https://example.com/img/snoopdave.jpg'
+            }));
 
             const entriesRetrieved: FindAllResult<User> = await us.retrieveAll(10, 0);
-            expect(entriesRetrieved.rows).toHaveLength(1);
+            expect(entriesRetrieved.rows).toEqual(expect.arrayContaining([
+                expect.objectContaining({
+                    id: userCreated.id,
+                    created: userCreated.created,
+                    updated: userCreated.updated,
+                    username: 'snoopdave',
+                    email: 'snoopdave@example.com',
+                    picture: 'https://example.com/img/snoopdave.jpg'
+                })
+            ]));
 
         } finally {
             await conn.destroy();
@@ -94,17 +113,25 @@ describe('Test UserStore', () => {
         await us.init();
 
         try {
-            let user = await us.upsert('Test User', 'test@example.com', 'http://example.com/test.png');
-            expect(user).toBeDefined();
-            expect(user.email).toBe('test@example.com');
-            expect(user.username).toBe('Test User');
-            expect(user.picture).toBe('http://example.com/test.png');
+            let user = await us.upsert('Test User', 'test@example.com', 'https://example.com/test.png');
+            expect(user).toEqual({
+                id: expect.any(String),
+                username: 'Test User',
+                email: 'test@example.com',
+                picture: 'https://example.com/test.png',
+                created: expect.any(Date),
+                updated: expect.any(Date)
+            });
 
-            user = await us.upsert('Test User1', 'test1@example.com', 'http://example.com/test1.png');
-            expect(user).toBeDefined();
-            expect(user.email).toBe('test1@example.com');
-            expect(user.username).toBe('Test User1');
-            expect(user.picture).toBe('http://example.com/test1.png');
+            user = await us.upsert('Test User1', 'test1@example.com', 'https://example.com/test1.png');
+            expect(user).toEqual({
+                id: expect.any(String),
+                username: 'Test User1',
+                email: 'test1@example.com',
+                picture: 'https://example.com/test1.png',
+                created: expect.any(Date),
+                updated: expect.any(Date)
+            });
         } finally {
             await conn.destroy();
         }

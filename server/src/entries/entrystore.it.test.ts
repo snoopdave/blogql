@@ -39,18 +39,26 @@ describe('Test EntryStore', () => {
         try {
             const blog = await blogStore.create(user.id, `blog-${slug}`, `Blog ${slug}`)
             const entryCreated = await entryStore.create(blog.id, 'entry title', 'has content');
-            expect(entryCreated).toHaveProperty('id');
-            expect(entryCreated).toHaveProperty('title', 'entry title');
-            expect(entryCreated).toHaveProperty('content', 'has content');
-            expect(entryCreated).toHaveProperty('created');
-            expect(entryCreated).toHaveProperty('updated');
+            expect(entryCreated).toEqual({
+                id: expect.any(String),
+                blogId: expect.any(String),
+                title: 'entry title',
+                content: 'has content',
+                created: expect.any(Date),
+                updated: expect.any(Date),
+                published: null,
+            });
 
             const entryRetrieved = await entryStore.retrieve(entryCreated.id);
-            expect(entryRetrieved).toHaveProperty('id');
-            expect(entryRetrieved).toHaveProperty('title', 'entry title');
-            expect(entryRetrieved).toHaveProperty('content', 'has content');
-            expect(entryRetrieved).toHaveProperty('created');
-            expect(entryRetrieved).toHaveProperty('updated');
+            expect(entryRetrieved).toEqual({
+                id: expect.any(String),
+                blogId: expect.any(String),
+                title: 'entry title',
+                content: 'has content',
+                created: expect.any(Date),
+                updated: expect.any(Date),
+                published: null,
+            });
 
             const entriesRetrieved = await entryStore.retrieveAllDrafts(blog.id, 10, 0);
             expect(entriesRetrieved.rows).toHaveLength(1);

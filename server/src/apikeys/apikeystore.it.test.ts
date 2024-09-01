@@ -35,7 +35,13 @@ describe('Test ApiKeyStore', () => {
 
             const keyIsValid = await apiKeyStore.verify(userId, key);
             expect(keyIsValid).toBe(true);
-            expect(await apiKeyStore.lookupUserId(key)).toBe(userId);
+
+            const userIdFromLookup = await apiKeyStore.lookupUserId(key);
+            expect({ key, keyIsValid, userIdFromLookup }).toEqual({
+                key,
+                keyIsValid: true,
+                userIdFromLookup: userId
+            });
 
         } finally {
             await conn.destroy();
@@ -47,14 +53,18 @@ describe('Test ApiKeyStore', () => {
         try {
             const userId = 'dummy id string';
             const key = await apiKeyStore.issue(userId);
-            expect(key).toBeDefined();
-            expect(await apiKeyStore.verify(userId, key)).toBe(true);
-            expect(await apiKeyStore.lookupUserId(key)).toBe(userId);
+            expect({ key, isValid: await apiKeyStore.verify(userId, key), userId: await apiKeyStore.lookupUserId(key) }).toEqual({
+                key,
+                isValid: true,
+                userId
+            });
 
             const newKey = await apiKeyStore.issue(userId);
-            expect(newKey).not.toBe(key);
-            expect(await apiKeyStore.verify(userId, newKey)).toBe(true);
-            expect(await apiKeyStore.verify(userId, key)).toBe(false);
+            expect({ newKey, isValid: await apiKeyStore.verify(userId, newKey), oldKeyValid: await apiKeyStore.verify(userId, key) }).toEqual({
+                newKey,
+                isValid: true,
+                oldKeyValid: false
+            });
 
         } finally {
             await conn.destroy();

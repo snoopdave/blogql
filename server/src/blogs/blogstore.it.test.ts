@@ -35,18 +35,24 @@ describe('Test BlogStore', () => {
             'test-user', 'test-user@example.com', 'dummy.png')
         try {
             const blogCreated = await blogStore.create(user.id, `myblog-${slug}`, 'My Blog');
-            expect(blogCreated).toHaveProperty('id');
-            expect(blogCreated).toHaveProperty('name', 'My Blog');
-            expect(blogCreated).toHaveProperty('handle', `myblog-${slug}`);
-            expect(blogCreated).toHaveProperty('created');
-            expect(blogCreated).toHaveProperty('updated');
+            expect(blogCreated).toEqual({
+                id: expect.any(String),
+                name: 'My Blog',
+                handle: `myblog-${slug}`,
+                created: expect.any(Date),
+                updated: expect.any(Date),
+                userId: user.id
+            });
 
             const blogRetrieved = await blogStore.retrieve(blogCreated.handle);
-            expect(blogRetrieved).toHaveProperty('id');
-            expect(blogRetrieved).toHaveProperty('name', 'My Blog');
-            expect(blogRetrieved).toHaveProperty('handle', `myblog-${slug}`);
-            expect(blogRetrieved).toHaveProperty('created');
-            expect(blogRetrieved).toHaveProperty('updated');
+            expect(blogRetrieved).toEqual({
+                id: blogCreated.id,
+                name: 'My Blog',
+                handle: `myblog-${slug}`,
+                created: blogCreated.created,
+                updated: blogCreated.updated,
+                userId: user.id
+            });
 
             const blogsRetrieved = await blogStore.retrieveAll(10, 0);
             expect(blogsRetrieved.rows).toHaveLength(1);
