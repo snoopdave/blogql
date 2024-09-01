@@ -3,7 +3,7 @@
  * Licensed under Apache Software License v2.
  */
 
-import {Node} from "../node";
+import {Node} from "../types/node";
 import {Model} from "sequelize";
 
 export class ApiKey extends Model implements Node {

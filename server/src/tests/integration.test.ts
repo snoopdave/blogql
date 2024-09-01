@@ -247,9 +247,7 @@ describe('Test the GraphQL API integration', () => {
 
     test('It can retrieve entry by ID', async () => {
         const {blogService, server, conn, userStore, blogStore, entryStore, authUsers} = await initDataStorage();
-        const user: User = await userStore.create(
-            'test-user', 'test-user@example.com', 'dummy.png')
-        const blog: Blog = await blogStore.create(user.id, 'bloghandle', 'Blog Name');
+        const blog: Blog = await blogStore.create(authUsers[0].id, 'bloghandle', 'Blog Name');
         const entry = await entryStore.create(blog.id, 'entry 1 title', 'entry 1 content');
         try {
             const entryFetched = await getEntry(server, blog.handle, entry.id, { blogService, user: authUsers[0] });
@@ -476,7 +474,7 @@ describe('Test the GraphQL API integration', () => {
     });
 
     async function testPageThroughBlogsInReverse(server: ApolloServer<BlogQLContext>, pageSize: number, expectedSize: number, blogQLContext: BlogQLContext) {
-        const endCursor = new Cursor(pageSize, NUM_BLOGS - 1);
+        const endCursor = new Cursor(pageSize, NUM_BLOGS);
         const encodedCursor = endCursor.encode();
         const payload = {query: GET_BLOGS_QUERY, variables: {last: pageSize, before: encodedCursor}};
         const dataRetrieved: Blog[] = [];

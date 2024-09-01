@@ -21,7 +21,7 @@ export class UserStore implements DataSource<User> {
     initialize?(config: DataSourceConfig<User>): void | Promise<void> {}
 
     async init() {
-        User.initialize(this.db);
+        await User.initialize(this.db);
     }
 
     async create(username: string, email: string, picture: string): Promise<User> {

@@ -5,7 +5,7 @@
 
 import {Entry} from './entries/entry.js';
 import {ResponseConnection, ResponseEdge} from './pagination.js';
-import {Node} from './node.js';
+import {Node} from './types/node.js';
 import {Blog} from './blogs/blog.js';
 import {User} from './users/user.js';
 import {BlogQLContext} from './index.js';

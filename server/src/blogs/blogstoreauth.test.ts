@@ -1,15 +1,20 @@
-import { describe, expect, it, jest } from '@jest/globals';
+/**
+ * Copyright David M. Johnson (snoopdave@gmail.com).
+ * Licensed under Apache Software License v2.
+ */
+
+import { describe, expect, it, jest, beforeEach } from '@jest/globals';
 import { GraphQLError } from 'graphql';
-import {BlogServiceSequelizeImpl} from "./blogservice";
-import {UserStore} from "./users/userstore";
-import BlogStore from "./blogs/blogstore";
-import {EntryStore} from "./entries/entrystore";
-import DBConnection from "./dbconnection";
-import {User} from "./users/user";
-import {Blog} from "./blogs/blog";
-import {Entry} from "./entries/entry";
-import {ApiKeyStore} from "./apikeys/apikeystore";
-import {FindAllResult, PageInfo, ResponseConnection, ResponseEdge} from "./pagination";
+import { BlogServiceSequelizeImpl } from "../blogservice";
+import { UserStore } from "../users/userstore";
+import BlogStore from "./blogstore";
+import { EntryStore } from "../entries/entrystore";
+import DBConnection from "../dbconnection";
+import { User } from "../users/user";
+import { Blog } from "./blog";
+import { Entry } from "../entries/entry";
+import { ApiKeyStore } from "../apikeys/apikeystore";
+import { FindAllResult } from "../pagination";
 
 describe('BlogService Authentication Tests', () => {
     let authenticatedBlogService: BlogServiceSequelizeImpl;
@@ -22,7 +27,7 @@ describe('BlogService Authentication Tests', () => {
 
     beforeEach(() => {
 
-        jest.mock("./blogs/blogstore");
+        jest.mock("./blogstore");
 
         mockDBConnection = new DBConnection('') as jest.Mocked<DBConnection>;
 

@@ -6,7 +6,7 @@
 import {Blog} from './blogs/blog.js';
 import {Entry} from './entries/entry.js';
 import {User} from './users/user.js';
-import {Node} from './node.js';
+import {Node} from './types/node.js';
 import {Cursor, resolveCollection, ResponseConnection, ResponseEdge} from './pagination.js';
 import {DEBUG, log} from "./utils.js";
 import DBConnection from "./dbconnection.js";

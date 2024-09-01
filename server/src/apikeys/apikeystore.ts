@@ -5,7 +5,7 @@
 
 import { v4 as uuid } from 'uuid';
 import { DataSource, DataSourceConfig } from "apollo-datasource";
-import {Node} from "../node.js";
+import {Node} from "../types/node.js";
 import DBConnection from "../dbconnection.js";
 import sequelize from 'sequelize';
 import {randomString} from "../utils.js";
