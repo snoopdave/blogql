@@ -8,7 +8,7 @@ import {DataSource} from "apollo-datasource";
 import DBConnection from "../utils/dbconnection.js";
 import sequelize from 'sequelize';
 import {randomString} from "../utils/utils.js";
-import {ApiKey} from "./apikey";
+import {ApiKey} from "./apikey.js";
 import {DataSourceConfig} from "apollo-datasource/src";
 
 
