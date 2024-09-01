@@ -10,7 +10,6 @@ import {Blog} from './blogs/blog.js';
 import {User} from './users/user.js';
 import {BlogQLContext} from './index.js';
 import {EntryCreateInput, EntryUpdateInput} from "./entries/entrytypes";
-import {GraphQLError} from "graphql/error";
 
 const resolvers = {
     Node: {

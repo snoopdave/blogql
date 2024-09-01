@@ -428,7 +428,7 @@ describe('Test the GraphQL API integration', () => {
 
         } finally {
             await conn.destroy();
-            server.stop();
+            await server.stop();
         }
     });
 
