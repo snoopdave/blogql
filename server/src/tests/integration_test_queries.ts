@@ -101,6 +101,10 @@ const CREATE_BLOG_MUTATION = `mutation CreateBlog($blog: BlogCreateInput) {
             name 
             created
             updated
+            userId
+            user {
+                id
+            }
         } 
     }`;
 

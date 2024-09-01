@@ -94,17 +94,42 @@ describe('Test the GraphQL API integration', () => {
         const slug = randomString(5);
         const blog = await createBlog(server, `My Blog ${slug}`, `myblog${slug}`, { blogService, user: authUsers[0] });
 
-        expect(blog.body.kind === 'single');
-        try {
-            let response = await getBlogForUser(server, authUsers[0].id, { blogService, user: authUsers[0] });
-            expect(response.body.kind === 'single');
-            if (response.body.kind === 'single') {
-                expect(response.body.singleResult?.errors).toBeUndefined();
-                if (blog.body.kind === 'single') {
-                    expect((response.body.singleResult?.data?.blogForUser as {id: string}).id)
-                        .toBe((blog.body.singleResult?.data?.createBlog as {id: string}).id);
+        expect(blog.body).toEqual({
+            kind: 'single',
+            singleResult: {
+                data: {
+                    createBlog: {
+                        id: expect.any(String),
+                        handle: `My Blog ${slug}`,
+                        name: `myblog${slug}`,
+                        created: expect.any(Date),
+                        updated: expect.any(Date),
+                        userId: authUsers[0].id,
+                        user: {
+                            id: authUsers[0].id
+                        }
+                    }
                 }
             }
+        })
+
+        try {
+            let response = await getBlogForUser(server, authUsers[0].id, { blogService, user: authUsers[0] });
+            expect(response.body).toEqual({
+                kind: 'single',
+                singleResult: {
+                    data: {
+                        blogForUser: {
+                            id: blog.body.kind === 'single' ? (blog.body.singleResult?.data?.createBlog as {id: string}).id : undefined,
+                            handle: `My Blog ${slug}`,
+                            name: `myblog${slug}`,
+                            created: expect.any(Date),
+                            updated: expect.any(Date)
+                        }
+                    },
+                    errors: undefined
+                }
+            });
         } finally {
             await conn.destroy();
             await server.stop();
@@ -116,11 +141,24 @@ describe('Test the GraphQL API integration', () => {
         try {
             const blog: Blog = await blogStore.create(authUsers[0].id, 'bloghandle', 'Blog Name');
             const entryCreated = await createEntry(server, blog.handle, 'First post!', 'LOL', { blogService, user: authUsers[0] });
-            expect(entryCreated.body.kind === 'single');
+            expect(entryCreated.body).toEqual({
+                kind: 'single',
+                singleResult: {
+                    data: {
+                        blog: {
+                            createEntry: {
+                                id: expect.any(String),
+                                title: 'First post!',
+                                content: 'LOL',
+                                created: expect.any(Date),
+                                updated: expect.any(Date)
+                            }
+                        }
+                    },
+                    errors: undefined
+                }
+            });
             if (entryCreated.body.kind === 'single') {
-                expect(entryCreated.body.singleResult?.errors).toBeUndefined();
-                expect((entryCreated.body.singleResult?.data?.blog as { createEntry: { title: string} } )
-                    .createEntry.title).toBe('First post!');
                 verifyDate((entryCreated.body.singleResult?.data?.blog as { createEntry: { created: string }}).createEntry?.created);
                 verifyDate((entryCreated.body.singleResult?.data?.blog as { createEntry: { updated: string }}).createEntry?.updated);
             }
@@ -130,18 +168,41 @@ describe('Test the GraphQL API integration', () => {
         }
     });
 
-    // rewrite this to use the singleResult field as above
     test('It can return limited blog entries from the database', async () => {
         const limit = 2;
         const {blogService, server, conn, blogStore, authUsers} = await initDataStorage();
         await createTestBlogsViaSql(authUsers, blogStore);
         try {
             const result = await getBlogs(server, limit, undefined, { blogService, user: authUsers[0] });
-            expect(result.body.kind === 'single');
-            if (result.body.kind === 'single') {
-                expect(result.body.singleResult?.errors).toBeUndefined();
-                expect((result.body.singleResult?.data?.blogs as {edges: ResponseEdge<Blog>[] }).edges.length).toBe(limit);
-            }
+            expect(result.body).toEqual({
+                kind: 'single',
+                singleResult: {
+                    data: {
+                        blogs: {
+                            edges: expect.arrayContaining([
+                                {
+                                    node: {
+                                        id: expect.any(String),
+                                        handle: expect.any(String),
+                                        name: expect.any(String),
+                                        created: expect.any(Date),
+                                        updated: expect.any(Date)
+                                    },
+                                    cursor: expect.any(String)
+                                }
+                            ]),
+                            pageInfo: {
+                                startCursor: expect.any(String),
+                                endCursor: expect.any(String),
+                                hasNextPage: true,
+                                hasPreviousPage: false,
+                                totalCount: NUM_ENTRIES,
+                            }
+                        }
+                    },
+                    errors: undefined
+                }
+            });
         } finally {
             await conn.destroy();
             await server.stop();
@@ -253,11 +314,15 @@ describe('Test the GraphQL API integration', () => {
             const entryFetched = await getEntry(server, blog.handle, entry.id, { blogService, user: authUsers[0] });
             if (entryFetched.body.kind  === 'single') {
                 expect(entryFetched.body.singleResult?.errors).toBeUndefined();
-                const entry = (entryFetched.body.singleResult?.data?.blog as { entry: Entry }).entry;
-                expect(entry.id).toBe(entry.id);
+                const fetchedEntry = (entryFetched.body.singleResult?.data?.blog as { entry: Entry }).entry;
+                expect(fetchedEntry).toEqual({
+                    id: entry.id,
+                    title: entry.title,
+                    content: entry.content,
+                    created: entry.created,
+                    updated: entry.updated,
+                });
                 expect(entryFetched.body.singleResult.data?.message).toBeUndefined();
-                expect(entry.content).toBe('entry 1 content');
-                expect(entry.updated).toBeDefined();
             }
         } finally {
             await conn.destroy();
@@ -391,22 +456,43 @@ describe('Test the GraphQL API integration', () => {
 
                 // get the blog
                 const blog = (blogResponse.body.singleResult.data?.createBlog as Blog);
-                expect(blog.id).toBeDefined();
+                expect(blog).toEqual({
+                    id: expect.any(String),
+                    handle: `test-blog-${slug}`,
+                    name: `Test Blog ${slug}`,
+                    created: expect.any(Date),
+                    updated: expect.any(Date),
+                    userId: authUsers[0].id,
+                    user: {
+                        id: authUsers[0].id
+                    }
+                });
+
                 const fetchedBlogResponse = await getBlog(server, blog.handle, { blogService, user: authUsers[0] });
                 if (fetchedBlogResponse.body.kind === 'single') {
                     expect(fetchedBlogResponse.body.singleResult.errors).toBeUndefined();
 
                     const fetchedBlog = fetchedBlogResponse.body.singleResult.data?.blog as Blog;
-                    expect(fetchedBlog.id).toBe(blog.id);
-                    expect(fetchedBlog.name).toBe(`Test Blog ${slug}`);
-                    expect(fetchedBlog.handle).toBe(`test-blog-${slug}`);
-                    expect(fetchedBlog.userId).toBe(authUsers[0].id);
+                    expect(fetchedBlog).toEqual({
+                        id: blog.id,
+                        handle: `test-blog-${slug}`,
+                        name: `Test Blog ${slug}`,
+                        created: expect.any(Date),
+                        updated: expect.any(Date),
+                        userId: authUsers[0].id,
+                        user: {
+                            id: authUsers[0].id
+                        }
+                    });
 
                     // update the blog
                     const updatedBlog = await updateBlog(server, blog.handle, `Test Blog ${slug} - Updated`, { blogService, user: authUsers[0] });
                     if (updatedBlog.body.kind === 'single') {
                         expect(updatedBlog.body.singleResult.errors).toBeUndefined();
-                        expect((updatedBlog.body.singleResult.data?.blog as { update: Blog }).update.name).toBe(`Test Blog ${slug} - Updated`);
+                        expect((updatedBlog.body.singleResult.data?.blog as { update: Blog }).update).toEqual({
+                            id: blog.id,
+                            name: `Test Blog ${slug} - Updated`,
+                        });
                     }
 
                     // delete the blog
@@ -423,9 +509,6 @@ describe('Test the GraphQL API integration', () => {
                     }
                 }
             }
-
-
-
         } finally {
             await conn.destroy();
             await server.stop();
