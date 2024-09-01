@@ -8,10 +8,10 @@ import {OAuth2Client} from 'google-auth-library';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import session from 'express-session';
-import {DEBUG, log} from './utils.js';
-import {config} from './config.js';
+import {DEBUG, log} from './utils/utils.js';
+import {config} from './utils/config.js';
 import {UserStore} from "./users/userstore.js";
-import DBConnection from "./dbconnection.js";
+import DBConnection from "./utils/dbconnection.js";
 import {User} from "./users/user";
 
 

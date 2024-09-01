@@ -9,7 +9,7 @@ import { BlogServiceSequelizeImpl } from "../blogservice";
 import { UserStore } from "../users/userstore";
 import BlogStore from "./blogstore";
 import { EntryStore } from "../entries/entrystore";
-import DBConnection from "../dbconnection";
+import DBConnection from "../utils/dbconnection";
 import { User } from "../users/user";
 import { Blog } from "./blog";
 import { Entry } from "../entries/entry";

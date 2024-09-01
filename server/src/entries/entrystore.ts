@@ -6,7 +6,7 @@
 import {v4 as uuid} from 'uuid';
 import {DataSource} from 'apollo-datasource';
 import {DataSourceConfig} from 'apollo-datasource/src';
-import DBConnection from '../dbconnection.js';
+import DBConnection from '../utils/dbconnection.js';
 import {FindAllResult} from '../pagination.js';
 import sequelize, {Op} from 'sequelize';
 import {WhereOptions} from "sequelize/types/model";

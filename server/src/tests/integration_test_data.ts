@@ -5,7 +5,7 @@
 
 import {Entry} from '../entries/entry.js';
 import {expect} from '@jest/globals';
-import {randomString} from "../utils.js";
+import {randomString} from "../utils/utils.js";
 import {Blog} from '../blogs/blog.js';
 import {User} from '../users/user.js';
 import BlogStore from "../blogs/blogstore";

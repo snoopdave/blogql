@@ -3,11 +3,11 @@
  * Licensed under Apache Software License v2.
  */
 
-import DBConnection from '../dbconnection.js';
+import DBConnection from '../utils/dbconnection.js';
 import {EntryStore} from './entrystore.js';
 import BlogStore from '../blogs/blogstore.js';
 import {User} from '../users/user.js';
-import {randomString} from "../utils.js";
+import {randomString} from "../utils/utils.js";
 import {UserStore} from "../users/userstore";
 
 

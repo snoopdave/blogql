@@ -3,12 +3,12 @@
  * Licensed under Apache Software License v2.
  */
 
-import DBConnection from '../dbconnection.js';
+import DBConnection from '../utils/dbconnection.js';
 import {UserStore} from './userstore.js';
 import {expect, test} from '@jest/globals';
 import {EntryStore} from '../entries/entrystore.js';
 import {FindAllResult} from '../pagination.js';
-import {randomString} from "../utils.js";
+import {randomString} from "../utils/utils.js";
 import {User} from "./user.js";
 
 

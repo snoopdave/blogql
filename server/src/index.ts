@@ -3,13 +3,13 @@
  * Licensed under Apache Software License v2.
  */
 
-import DBConnection from './dbconnection.js';
+import DBConnection from './utils/dbconnection.js';
 import resolvers from './resolvers.js';
 import {User} from './users/user.js';
 import BlogQL from './blogql.js';
-import {DEBUG, INFO, log} from './utils.js';
+import {DEBUG, INFO, log} from './utils/utils.js';
 import {readFileSync} from 'fs';
-import {config} from './config.js';
+import {config} from './utils/config.js';
 import {ApiKeyStore} from "./apikeys/apikeystore.js";
 import {BlogService, BlogServiceSequelizeImpl} from "./blogservice.js";
 import {UserStore} from "./users/userstore.js";

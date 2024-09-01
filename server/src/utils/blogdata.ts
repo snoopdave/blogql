@@ -5,10 +5,10 @@
 
 import {faker} from '@faker-js/faker';
 import DBConnection from "./dbconnection.js";
-import {UserStore} from "./users/userstore.js";
-import BlogStore from "./blogs/blogstore.js";
-import {EntryStore} from "./entries/entrystore.js";
-import {Entry} from "./entries/entry.js";
+import {UserStore} from "../users/userstore.js";
+import BlogStore from "../blogs/blogstore.js";
+import {EntryStore} from "../entries/entrystore.js";
+import {Entry} from "../entries/entry.js";
 
 const startDate = new Date('2022-01-01');
 

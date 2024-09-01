@@ -3,7 +3,7 @@
  * Licensed under Apache Software License v2.
  */
 
-import DBConnection from '../dbconnection.js';
+import DBConnection from '../utils/dbconnection.js';
 import {v4 as uuid} from 'uuid';
 import sequelize from 'sequelize';
 import {DataSource} from 'apollo-datasource';

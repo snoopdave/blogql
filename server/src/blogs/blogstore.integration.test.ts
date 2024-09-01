@@ -3,8 +3,8 @@
  * Licensed under Apache Software License v2.
  */
 
-import DBConnection from '../dbconnection.js';
-import {randomString} from "../utils.js";
+import DBConnection from '../utils/dbconnection.js';
+import {randomString} from "../utils/utils.js";
 import BlogStore from './blogstore.js';
 import {User} from '../users/user';
 import {UserStore} from "../users/userstore";
