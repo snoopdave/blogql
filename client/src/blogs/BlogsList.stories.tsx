@@ -5,10 +5,9 @@
 
 import {BlogsList} from "./BlogsList";
 import {BrowserRouter as Router} from 'react-router-dom';
-import {client} from "../setupTests";
-import {ApolloProvider} from "@apollo/client";
+import {MockedProvider} from "@apollo/client/testing";
 import {ComponentMeta, ComponentStory} from "@storybook/react";
-import {Routes, Route} from "react-router";
+import {Route, Routes} from "react-router";
 
 export default {
     title: 'BlogList',
@@ -16,11 +15,10 @@ export default {
 } as ComponentMeta<typeof BlogsList>;
 
 export const Primary: ComponentStory<typeof BlogsList> = () =>
-    <ApolloProvider client={client}>
+    <MockedProvider mocks={mocks} addTypename={false}>
         <Router>
             <Routes>
                 <Route path='*' element={<BlogsList />} />
             </Routes>
         </Router>
-    </ApolloProvider>;
-
+    </MockedProvider>;

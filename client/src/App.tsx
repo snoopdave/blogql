@@ -16,7 +16,7 @@ import {BlogsList} from './blogs/BlogsList';
 import {BlogCreate} from './blogs/BlogCreate';
 import {BlogSettings} from './blogs/BlogSettings';
 import {Welcome} from './Welcome';
-import {BlogNav} from './BlogNav';
+import {BlogNav} from './common/BlogNav';
 import {EntryView} from './entries/EntryView';
 
 // import BlogQL CSS last to ensure it appears at the end of bundle.css

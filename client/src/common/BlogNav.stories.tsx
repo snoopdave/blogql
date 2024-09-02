@@ -6,9 +6,9 @@
 import {ComponentMeta, ComponentStory} from '@storybook/react';
 import {Route} from 'react-router';
 import {BlogNav} from "./BlogNav";
-import {TestHarness} from "./tests/TestHarness";
+import {TestHarness} from "../tests/TestHarness";
 import {withRouter} from "storybook-addon-react-router-v6";
-import {Blog} from "./gql/graphql";
+import {Blog} from "../gql/graphql";
 
 export default {
     title: 'BlogNav',
