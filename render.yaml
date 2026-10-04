@@ -11,7 +11,7 @@ services:
     runtime: node
     plan: free
     rootDir: server
-    buildCommand: yarn install --frozen-lockfile && yarn build
+    buildCommand: yarn install --frozen-lockfile --production=false && yarn build # NODE_ENV=production would skip devDependencies (tsc, types)
     startCommand: node src/index.js
     envVars:
       - key: NODE_VERSION
@@ -48,16 +48,16 @@ services:
     routes:
       - type: rewrite
         source: /graphql
-        destination: https://blogql-server.onrender.com/graphql
+        destination: https://blogql-server-cgpu.onrender.com/graphql
       - type: rewrite
         source: /auth
-        destination: https://blogql-server.onrender.com/auth
+        destination: https://blogql-server-cgpu.onrender.com/auth
       - type: rewrite
         source: /me
-        destination: https://blogql-server.onrender.com/me
+        destination: https://blogql-server-cgpu.onrender.com/me
       - type: rewrite
         source: /logout
-        destination: https://blogql-server.onrender.com/logout
+        destination: https://blogql-server-cgpu.onrender.com/logout
       - type: rewrite
         source: /*
         destination: /index.html
