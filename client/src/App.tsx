@@ -114,7 +114,7 @@ function App() {
                         </Routes>
                     </Content>
                     <Footer style={footerStyle}>
-                        <Divider style={{fontSize: '10pt'}}>BlogQL Copyright Dave Johnson 2023</Divider>
+                        <Divider style={{fontSize: '10pt'}}>BlogQL Copyright Dave Johnson 2026</Divider>
                     </Footer>
                 </Layout>
 
