@@ -5,25 +5,23 @@
 
 import {v4 as uuid} from 'uuid';
 import sequelize from 'sequelize';
-import {DataSource} from 'apollo-datasource';
 import DBConnection from '../utils/dbconnection.js';
-import {DataSourceConfig} from 'apollo-datasource/src';
 import {FindAllResult} from '../pagination.js';
 import {Blog} from "./blog.js";
 
 
-export default class BlogStore implements DataSource<Blog> {
+export default class BlogStore {
     db: sequelize.Sequelize;
 
     constructor(conn: DBConnection) {
         this.db = conn.db;
     }
 
-    initialize?(config: DataSourceConfig<Blog>): void | Promise<void> {
-    }
+    private initialized?: Promise<void>;
 
     async init() {
-        await Blog.initialize(this.db);
+        this.initialized ??= Blog.initialize(this.db);
+        await this.initialized;
     }
 
     async create(userId: string, handle: string, name: string): Promise<Blog> {

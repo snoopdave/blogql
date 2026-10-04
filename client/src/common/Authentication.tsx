@@ -89,7 +89,7 @@ export function LoginButton(props : LoginButtonProps) {
             onSuccess={ async credentialResponse => {
                 console.table(credentialResponse);
                 if ('credential' in credentialResponse) {
-                    const res = await fetch('http://localhost:4000/auth', {
+                    const res = await fetch('/auth', {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
                         credentials: 'include',
@@ -113,7 +113,7 @@ export function LoginButton(props : LoginButtonProps) {
 
 // checks login status, calls caller-provided callback with user or null on error.
 export function checkLoginStatus(callback: (user: User | null) => void) {
-    fetch('http://localhost:4000/me', {
+    fetch('/me', {
         method: 'GET',
         credentials: 'include',
         headers: {'Content-Type': 'application/json'}
@@ -130,7 +130,7 @@ export function checkLoginStatus(callback: (user: User | null) => void) {
 // logs out of the server-side
 export function logout(afterLogout: (message: string) => void) {
     console.log(`Logging out`);
-    fetch('http://localhost:4000/logout', {
+    fetch('/logout', {
         method: 'DELETE',
         credentials: 'include',
         headers: {'Content-Type': 'application/json'}

@@ -4,26 +4,24 @@
  */
 
 import {v4 as uuid} from 'uuid';
-import {DataSource} from "apollo-datasource";
 import DBConnection from "../utils/dbconnection.js";
 import sequelize from 'sequelize';
 import {randomString} from "../utils/utils.js";
 import {ApiKey} from "./apikey.js";
-import {DataSourceConfig} from "apollo-datasource/src";
 
 
-export default class ApiKeyStore implements DataSource<ApiKey> {
+export default class ApiKeyStore {
    db: sequelize.Sequelize;
 
    constructor(conn: DBConnection) {
       this.db = conn.db;
    }
 
-   initialize?(config: DataSourceConfig<ApiKey>): void | Promise<void> {
-   }
+   private initialized?: Promise<void>;
 
    async init() {
-      await ApiKey.initialize(this.db);
+      this.initialized ??= ApiKey.initialize(this.db);
+      await this.initialized;
    }
 
    async issue(userId: string): Promise<string> {

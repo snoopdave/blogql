@@ -4,8 +4,6 @@
  */
 
 import {v4 as uuid} from 'uuid';
-import {DataSource} from 'apollo-datasource';
-import {DataSourceConfig} from 'apollo-datasource/src';
 import DBConnection from '../utils/dbconnection.js';
 import {FindAllResult} from '../pagination.js';
 import sequelize, {Op} from 'sequelize';
@@ -14,17 +12,18 @@ import {Entry} from "./entry.js";
 
 const { DataTypes} = sequelize; // sequelize is a CommonJS module
 
-export class EntryStore implements DataSource<Entry> {
+export class EntryStore {
     db: sequelize.Sequelize;
 
     constructor(conn: DBConnection) {
         this.db = conn.db;
     }
 
-    initialize?(config: DataSourceConfig<Entry>): void | Promise<void> {}
+    private initialized?: Promise<void>;
 
     async init() {
-        await Entry.initialize(this.db);
+        this.initialized ??= Entry.initialize(this.db);
+        await this.initialized;
     }
 
     async create(blogId: string, title: string, content: string) : Promise<Entry> {

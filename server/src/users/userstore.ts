@@ -6,22 +6,21 @@
 import DBConnection from '../utils/dbconnection.js';
 import {v4 as uuid} from 'uuid';
 import sequelize from 'sequelize';
-import {DataSource} from 'apollo-datasource';
-import {DataSourceConfig} from 'apollo-datasource/src';
 import {FindAllResult} from '../pagination.js';
 import {User} from "./user.js";
 
-export class UserStore implements DataSource<User> {
+export class UserStore {
     db: sequelize.Sequelize;
 
     constructor(conn: DBConnection) {
         this.db = conn.db;
     }
 
-    initialize?(config: DataSourceConfig<User>): void | Promise<void> {}
+    private initialized?: Promise<void>;
 
     async init() {
-        await User.initialize(this.db);
+        this.initialized ??= User.initialize(this.db);
+        await this.initialized;
     }
 
     async create(username: string, email: string, picture: string): Promise<User> {

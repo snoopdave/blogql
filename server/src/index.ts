@@ -7,23 +7,21 @@ import DBConnection from './utils/dbconnection.js';
 import resolvers from './resolvers.js';
 import {User} from './users/user.js';
 import BlogQL from './blogql.js';
-import {DEBUG, INFO, log} from './utils/utils.js';
+import {DEBUG, ERROR, INFO, log} from './utils/utils.js';
 import {readFileSync} from 'fs';
 import {config} from './utils/config.js';
 import ApiKeyStore from "./apikeys/apikeystore.js";
 import {BlogService, BlogServiceSequelizeImpl} from "./blogservice.js";
 import {UserStore} from "./users/userstore.js";
+import BlogStore from "./blogs/blogstore.js";
+import {EntryStore} from "./entries/entrystore.js";
 import {expressMiddleware} from "@apollo/server/express4";
-import http from 'http';
 import pkg from 'body-parser';
 import {ApolloServer} from "@apollo/server";
 import cors from 'cors';
 import gql from 'graphql-tag';
 
 const { json } = pkg;
-
-const blogQL = new BlogQL();
-const httpServer = http.createServer(blogQL.app);
 
 export interface BlogQLContext {
     blogService: BlogService | null;
@@ -49,13 +47,22 @@ const apolloServer = new ApolloServer<BlogQLContext>({
     //plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
 });
 
-// This oddness is working around the lack of top-level await
-(async () => {
-    await apolloServer.start();
-})();
+async function main() {
 
-// Wait a sec or two for server start
-setTimeout(function() {
+    // One database connection (and pool) for the whole process
+    const conn = new DBConnection(config.filePath);
+    const userStore = new UserStore(conn);
+    const blogStore = new BlogStore(conn);
+    const entryStore = new EntryStore(conn);
+    const apiKeyStore = new ApiKeyStore(conn);
+    await userStore.init();
+    await blogStore.init();
+    await entryStore.init();
+    await apiKeyStore.init();
+
+    await apolloServer.start();
+
+    const blogQL = new BlogQL(userStore);
 
     // Hook Apollo Server into Express as middleware
     blogQL.app.use('/graphql',
@@ -65,9 +72,6 @@ setTimeout(function() {
             context: async ({ req }) => {
 
                 let user: User | null = null;
-                const conn = new DBConnection(config.filePath);
-                const userStore = new UserStore(conn);
-                await userStore.init();
 
                 if (req.session) {
                     log(DEBUG, `Session: ${req.session.id}`);
@@ -83,8 +87,6 @@ setTimeout(function() {
 
                 const apiKey = req.get('x-api-key');
                 if (apiKey) {
-                    const apiKeyStore = new ApiKeyStore(conn);
-                    await apiKeyStore.init();
                     const userId = await apiKeyStore.lookupUserId(apiKey);
                     user = await userStore.retrieve(userId);
                     if (user) {
@@ -96,12 +98,18 @@ setTimeout(function() {
 
                 return {
                     user: null,
-                    blogService: new BlogServiceSequelizeImpl(user, conn, null, null, null, null)
+                    blogService: new BlogServiceSequelizeImpl(
+                        user, conn, blogStore, entryStore, userStore, apiKeyStore)
                 } as BlogQLContext;
             },
         }));
-    let port = 4000;
+
+    const port = Number(process.env.PORT) || 4000;
     log(INFO, `🚀 BlogQL starting at http://localhost:${port}/graphql`);
     blogQL.startBlogQL(port);
-}, 2000);
+}
 
+main().catch((err) => {
+    log(ERROR, `BlogQL failed to start: ${err}`);
+    process.exit(1);
+});

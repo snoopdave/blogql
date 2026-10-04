@@ -13,7 +13,14 @@ export default class DBConnection {
     db: sequelize.Sequelize;
 
     constructor(filePath: string | undefined) {
-        if (process.env.POSTGRES_HOSTNAME) {
+        if (process.env.DATABASE_URL) {
+            // e.g. Render Postgres internal connection string
+            log(INFO, 'Connecting to Postgres via DATABASE_URL');
+            this.db = new sequelize.Sequelize(process.env.DATABASE_URL, {
+                dialect: 'postgres',
+                logging: false
+            });
+        } else if (process.env.POSTGRES_HOSTNAME) {
             this.db = new sequelize.Sequelize(`postgres://${process.env.POSTGRES_USERNAME}:${process.env.POSTGRES_PASSWORD}@${process.env.POSTGRES_HOSTNAME}/${process.env.POSTGRES_DATABASE}`);
         } else {
             // fall back to SQLite

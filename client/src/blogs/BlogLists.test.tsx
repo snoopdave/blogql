@@ -8,15 +8,18 @@ import {BlogsList} from './BlogsList';
 import {BrowserRouter as Router} from 'react-router-dom';
 import {screen} from '@testing-library/react';
 import {Route, Routes} from "react-router";
-import './MatchMediaMock';
 import {act} from 'react';
-import {createRoot} from "react-dom/client"; // Import act from react
+import {createRoot} from "react-dom/client";
+import {MockedProvider} from "@apollo/client/testing"; // Import act from react
+
+global.IS_REACT_ACT_ENVIRONMENT = true;
 
 it('BlogsList renders without error with Mocked Service Worker', async () => {
     const container = document.createElement('div');
     document.body.appendChild(container);
     const root = createRoot(container);
     await act(async () => {
+        let mocks;
         root.render(
             <MockedProvider mocks={mocks} addTypename={false}>
                 <Router>

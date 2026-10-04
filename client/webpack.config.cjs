@@ -43,6 +43,11 @@ module.exports = {
         },
         port: 3000,
         historyApiFallback: true,
+        // Same paths the Render static site rewrites to the server
+        proxy: [{
+            context: ['/graphql', '/auth', '/me', '/logout'],
+            target: 'http://localhost:4000',
+        }],
         hot: true
     },
     resolve: {

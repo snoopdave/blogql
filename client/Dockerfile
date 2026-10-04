@@ -14,4 +14,4 @@ COPY webpack.config.cjs .
 COPY yarn.lock .
 RUN yarn build
 CMD [ "yarn", "start" ]
-EXPOSE 4000
+EXPOSE 3000

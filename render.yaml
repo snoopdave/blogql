@@ -1,0 +1,63 @@
+# Render Blueprint for BlogQL: Postgres database, server web service, client static site.
+# See https://render.com/docs/blueprint-spec
+
+databases:
+  - name: blogql-db
+    plan: free # expires 30 days after creation unless upgraded
+
+services:
+  - name: blogql-server
+    type: web
+    runtime: node
+    plan: free
+    rootDir: server
+    buildCommand: yarn install --frozen-lockfile && yarn build
+    startCommand: node src/index.js
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: blogql-db
+          property: connectionString
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: CLIENT_ID # Google OAuth client ID, same value as GOOGLE_SIGNON_CID
+        sync: false
+
+  - name: blogql-client
+    type: web
+    runtime: static
+    rootDir: client
+    buildCommand: >-
+      echo "export const GOOGLE_SIGNON_CID='$GOOGLE_SIGNON_CID';" > src/googlecid.ts &&
+      yarn install --frozen-lockfile &&
+      NODE_ENV=production yarn build
+    staticPublishPath: ./public
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: GOOGLE_SIGNON_CID # Google OAuth client ID
+        sync: false
+    # The client calls the API on its own origin, so the session cookie is first-party.
+    # onrender.com is a public suffix, so cookies set directly by blogql-server would be third-party.
+    # Blueprints do not support variables: if Render gives the server another hostname, update these.
+    # API rewrites must come before the SPA fallback.
+    routes:
+      - type: rewrite
+        source: /graphql
+        destination: https://blogql-server.onrender.com/graphql
+      - type: rewrite
+        source: /auth
+        destination: https://blogql-server.onrender.com/auth
+      - type: rewrite
+        source: /me
+        destination: https://blogql-server.onrender.com/me
+      - type: rewrite
+        source: /logout
+        destination: https://blogql-server.onrender.com/logout
+      - type: rewrite
+        source: /*
+        destination: /index.html

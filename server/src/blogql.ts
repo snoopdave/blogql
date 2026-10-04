@@ -8,11 +8,11 @@ import {OAuth2Client} from 'google-auth-library';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import session from 'express-session';
+import connectPgSimple from 'connect-pg-simple';
 import {DEBUG, log} from './utils/utils.js';
 import {config} from './utils/config.js';
 import {UserStore} from "./users/userstore.js";
-import DBConnection from "./utils/dbconnection.js";
-import {User} from "./users/user";
+import {User} from "./users/user.js";
 
 
 export default class BlogQL {
@@ -20,8 +20,12 @@ export default class BlogQL {
     client = new OAuth2Client(process.env.CLIENT_ID);
     jsonParser = bodyParser.json();
 
-    constructor() {
+    // userStore must already be initialized
+    constructor(userStore: UserStore) {
         dotenv.config();
+
+        // Render (and other hosts) terminate TLS at a proxy, needed for secure cookies
+        this.app.set('trust proxy', true);
 
         this.app.use('*', function(req, res, next) {
             // There is also some CORS setup in index.ts
@@ -33,18 +37,36 @@ export default class BlogQL {
             next();
         });
 
+        if (process.env.NODE_ENV === 'production' && !process.env.SESSION_SECRET) {
+            throw new Error('SESSION_SECRET must be set in production');
+        }
+
+        // Keep sessions in Postgres when available so they survive restarts
+        let store: session.Store | undefined = undefined;
+        if (process.env.DATABASE_URL) {
+            const PgStore = connectPgSimple(session);
+            store = new PgStore({
+                conString: process.env.DATABASE_URL,
+                createTableIfMissing: true
+            });
+        }
+
         this.app.use(session({
             secret: process.env.SESSION_SECRET || 'default_secret',
-            saveUninitialized: true,
-            resave: false
+            store,
+            saveUninitialized: false, // only store sessions after login
+            resave: false,
+            cookie: {
+                secure: 'auto',
+                sameSite: 'lax',
+                httpOnly: true
+            }
         }));
 
         this.app.get('/me',
             async (req, res) => {
                 //console.log(JSON.stringify(req.session, null, 4));
                 if (req.session?.userId) {
-                    const userStore = new UserStore(new DBConnection(undefined));
-                    await userStore.init();
                     const user = await userStore.retrieve(req.session?.userId);
                     if (!user) {
                         res.status(500);
@@ -71,8 +93,6 @@ export default class BlogQL {
                     audience: process.env.CLIENT_ID
                 });
                 const {name, email, picture} = ticket.getPayload()!;
-                const userStore = new UserStore(new DBConnection(undefined));
-                await userStore.init();
                 const user: User = await userStore.upsert(name!, email!, picture!);
                 req.session.userId = user.id;
                 log(DEBUG, `Logged in as username 
