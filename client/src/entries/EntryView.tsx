@@ -35,31 +35,33 @@ export function EntryView(props: EntryViewProps) {
     if (!data) { return (<p>no data!</p>); }
 
     return (
-        <>
-            <h1>{data.blog.name}</h1>
-            <h2>{data.blog.entry.title}</h2>
-            <i>Published <RelativeDateTime when={data.blog.entry.updated as Date}/></i>
-            <hr />
-            <div dangerouslySetInnerHTML={{__html: data.blog.entry.content}} />
-            <br/>
-            <p><b>Author</b>: {data.blog.user.username}</p>
-            <p><b>Published</b>: <SimpleDateTime when={data.blog.entry.published as Date} /></p>
-            <Space>
-                <Tooltip title="Link">
-                    <Link to={`/blogs/${data.blog.handle}/entries/${data.blog.entry.id}`}>
-                        <LinkOutlined />
-                    </Link>
-                </Tooltip>
-                <Tooltip title={ <>Published: <SimpleDateTime when={data.blog.entry.published}/></> }>
-                    <ClockCircleOutlined />
-                </Tooltip>
-                <Link style={showIfLoggedIn()}
-                      to={`/blogs/${data.blog.handle}/edit/${data.blog.entry.id}`}>
-                    <Tooltip title="Edit">
-                        <EditOutlined />
+        <article className="entry-view">
+            <header className="entry-header">
+                <Link className="entry-blog-name" to={`/blogs/${data.blog.handle}`}>{data.blog.name}</Link>
+                <h1>{data.blog.entry.title}</h1>
+                <p className="entry-meta">By {data.blog.user.username} · Published <RelativeDateTime when={data.blog.entry.published as Date}/></p>
+            </header>
+            <div className="entry-body" dangerouslySetInnerHTML={{__html: data.blog.entry.content}} />
+            <footer className="entry-footer">
+                <p><b>Author</b>: {data.blog.user.username}</p>
+                <p><b>Published</b>: <SimpleDateTime when={data.blog.entry.published as Date} /></p>
+                <Space>
+                    <Tooltip title="Link">
+                        <Link aria-label="Permalink" to={`/blogs/${data.blog.handle}/entries/${data.blog.entry.id}`}>
+                            <LinkOutlined />
+                        </Link>
                     </Tooltip>
-                </Link>
-            </Space>
-        </>
+                    <Tooltip title={ <>Published: <SimpleDateTime when={data.blog.entry.published}/></> }>
+                        <ClockCircleOutlined />
+                    </Tooltip>
+                    <Link aria-label="Edit entry" style={showIfLoggedIn()}
+                          to={`/blogs/${data.blog.handle}/edit/${data.blog.entry.id}`}>
+                        <Tooltip title="Edit">
+                            <EditOutlined />
+                        </Tooltip>
+                    </Link>
+                </Space>
+            </footer>
+        </article>
     );
 }

@@ -97,7 +97,7 @@ function Drafts() {
         <RequireAuth redirectTo="/login">
             <Heading title="Drafts"
                      heading='This is where you find your unpublished draft blog entries, and create new ones.' />
-            <Button onClick={() => { newEntry(); }}>New</Button>
+            <Button type="primary" onClick={() => { newEntry(); }}>New entry</Button>
             <Table
                 style={tableStyle}
                 loading={loading}

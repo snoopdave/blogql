@@ -2,9 +2,38 @@
  * Copyright David M. Johnson (snoopdave@gmail.com).
  * Licensed under Apache Software License v2.
  */
-
-img.profile-pic {
-    width: 3em;
-    height: 3em;
-    margin-right: 0.75em;
+.entry-view { max-width: 760px; margin: 0 auto; }
+.entry-header { margin-bottom: 32px; padding-bottom: 28px; border-bottom: 1px solid var(--line); }
+.entry-blog-name { display: inline-block; margin-bottom: 16px; font-size: 16px; font-weight: 600; }
+.entry-header h1 { margin: 0 0 20px; color: #15263b; font-size: clamp(32px, 4vw, 44px); line-height: 1.15; font-weight: 750; letter-spacing: -0.035em; overflow-wrap: anywhere; }
+.entry-meta { margin: 0; color: var(--muted); font-size: 15px; }
+.entry-body { font-size: 18px; line-height: 1.8; overflow-wrap: anywhere; }
+.entry-body p, .entry-body ul, .entry-body ol { margin: 0 0 1.25em; }
+.entry-body h1, .entry-body h2, .entry-body h3, .entry-body h4 { margin: 1.8em 0 0.65em; color: #15263b; font-weight: 650; line-height: 1.3; letter-spacing: -0.02em; }
+.entry-body h1 { font-size: 32px; }
+.entry-body h2 { font-size: 28px; }
+.entry-body h3 { font-size: 23px; }
+.entry-body h4 { font-size: 20px; }
+.entry-body ul, .entry-body ol { padding-left: 1.5em; }
+.entry-body li { margin: 0.4em 0; }
+.entry-body li > p { margin-bottom: 0.5em; }
+.entry-body a { text-decoration: underline; text-underline-offset: 3px; }
+.entry-body blockquote { margin: 1.5em 0; padding: 12px 24px; border-left: 4px solid #73bce6; background: #f3f7fb; color: #46576c; }
+.entry-body code { padding: 0.15em 0.3em; border-radius: 4px; background: #edf2f7; font-size: 0.85em; }
+.entry-body pre { max-width: 100%; overflow-x: auto; margin: 1.5em 0; padding: 20px 24px; border-radius: 8px; background: #0b1c30; color: #e0edf9; font-size: 15px; line-height: 1.65; white-space: pre; overflow-wrap: normal; tab-size: 2; }
+.entry-body pre code { padding: 0; background: none; color: inherit; font-size: inherit; }
+.entry-body img, .entry-body video { max-width: 100%; height: auto; border-radius: 6px; }
+.entry-body iframe { max-width: 100%; }
+.entry-body table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; }
+.entry-body th, .entry-body td { padding: 10px 14px; border: 1px solid var(--line); }
+.entry-body .ql-align-center { text-align: center; }
+.entry-body .ql-align-right { text-align: right; }
+.entry-body .ql-align-justify { text-align: justify; }
+.entry-footer { margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+.entry-footer p { margin-bottom: 8px; }
+img.profile-pic { width: 3em; height: 3em; margin-right: 0.75em; }
+@media (max-width: 640px) {
+  .entry-body { font-size: 18px; line-height: 1.75; }
+  .entry-body h2 { font-size: 25px; }
+  .entry-body pre { padding: 16px; font-size: 14px; }
 }

@@ -102,7 +102,7 @@ export function BlogCreate(props: BlogCreateProps) {
                 <Alert message={'Um... not good!'} type={'error'} onClose={clearToast}/>
             )}
 
-            <Form labelCol={{ span: 2 }} wrapperCol={{ span: 24 }}>
+            <Form layout="vertical" className="blog-form">
 
                 <Form.Item
                     label="Name"
@@ -118,9 +118,9 @@ export function BlogCreate(props: BlogCreateProps) {
                     <Input onChange={onHandleChange} placeholder='mybloghandle' />
                 </Form.Item>
 
-                <Form.Item wrapperCol={{ offset: 2, span: 12 }}>
-                    <Space>
-                        <Button disabled={!valid} onClick={() => {
+                <Form.Item>
+                    <Space wrap>
+                        <Button type="primary" disabled={!valid} onClick={() => {
                             save();
                         }}>Save</Button>
                         <Link to='/blogs'>

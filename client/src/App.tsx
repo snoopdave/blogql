@@ -5,8 +5,8 @@
 
 import React, {useEffect, useState} from 'react';
 import {Route, Routes} from 'react-router';
-import {BrowserRouter as Router} from 'react-router-dom';
-import {Divider, Layout} from "antd";
+import {BrowserRouter as Router, Link} from 'react-router-dom';
+import {ConfigProvider, Layout} from "antd";
 
 import {EditorFormViaBlogHandle, EditorFormViaEntryId} from './entries/EntryEditor';
 import Entries from './entries/Entries';
@@ -57,69 +57,69 @@ function App() {
         setBlog(updatedBlog);
     }
 
-    const headerStyle: React.CSSProperties = {
-    };
-
-    const contentStyle: React.CSSProperties = {
-        padding: 0,
-        margin: '3em 5em 3em 5em', // trbl
-    };
-
-    const footerStyle: React.CSSProperties = {
-        padding: 0,
-        margin: '2em 5em 2em 5em',
-        textAlign: 'center'
-    };
-
     const { Header, Footer, Content } = Layout;
     return (
-        <ProvideAuth onLogin={onLogin} onLogout={onLogout}>
-            <Router>
+        <ConfigProvider theme={{ token: {
+            fontSize: 16,
+            lineHeight: 1.6,
+            controlHeight: 44,
+            colorPrimary: '#1763bd',
+            colorText: '#243247',
+            colorTextSecondary: '#59677a',
+            colorBorder: '#ccd5e0',
+            borderRadius: 8,
+        } }}>
+            <ProvideAuth onLogin={onLogin} onLogout={onLogout}>
+                <Router>
 
-                <Layout>
-                    <Header style={headerStyle}>
-                        <BlogNav onBlogUpdated={onBlogUpdated} />
-                    </Header>
-                    <Content style={contentStyle}>
-                        <Routes>
-                            <Route path='/'
-                                   element={<BlogsList/>} />
+                    <Layout className="app-layout">
+                        <Header className="app-header">
+                            <div className="app-header-inner">
+                                <Link className="app-brand" to="/blogs">BlogQL</Link>
+                                <BlogNav onBlogUpdated={onBlogUpdated} />
+                            </div>
+                        </Header>
+                        <Content className="app-content">
+                            <Routes>
+                                <Route path='/'
+                                       element={<BlogsList/>} />
 
-                            <Route path='/login'
-                                   element={<Welcome />} />
+                                <Route path='/login'
+                                       element={<Welcome />} />
 
-                            <Route path='/create-blog'
-                                   element={<BlogCreate onBlogUpdated={onBlogUpdated} />} />
+                                <Route path='/create-blog'
+                                       element={<BlogCreate onBlogUpdated={onBlogUpdated} />} />
 
-                            <Route path='/blogs'
-                                   element={<BlogsList/>} />
+                                <Route path='/blogs'
+                                       element={<BlogsList/>} />
 
-                            <Route path='/blogs/:handle'
-                                   element={<Entries />} />
+                                <Route path='/blogs/:handle'
+                                       element={<Entries />} />
 
-                            <Route path='/blogs/:handle/settings'
-                                   element={<BlogSettings onBlogUpdated={onBlogUpdated} />} />
+                                <Route path='/blogs/:handle/settings'
+                                       element={<BlogSettings onBlogUpdated={onBlogUpdated} />} />
 
-                            <Route path='/blogs/:handle/drafts'
-                                   element={<Drafts/>} />
+                                <Route path='/blogs/:handle/drafts'
+                                       element={<Drafts/>} />
 
-                            <Route path='/blogs/:handle/edit'
-                                   element={<EditorFormViaBlogHandle onBlogUpdated={onBlogUpdated} />} />
+                                <Route path='/blogs/:handle/edit'
+                                       element={<EditorFormViaBlogHandle onBlogUpdated={onBlogUpdated} />} />
 
-                            <Route path='/blogs/:handle/edit/:id'
-                                   element={<EditorFormViaEntryId onBlogUpdated={onBlogUpdated}/>} />
+                                <Route path='/blogs/:handle/edit/:id'
+                                       element={<EditorFormViaEntryId onBlogUpdated={onBlogUpdated}/>} />
 
-                            <Route path='/blogs/:handle/entries/:id'
-                                   element={<EntryView/>} />
-                        </Routes>
-                    </Content>
-                    <Footer style={footerStyle}>
-                        <Divider style={{fontSize: '10pt'}}>BlogQL Copyright Dave Johnson 2026</Divider>
-                    </Footer>
-                </Layout>
+                                <Route path='/blogs/:handle/entries/:id'
+                                       element={<EntryView/>} />
+                            </Routes>
+                        </Content>
+                        <Footer className="app-footer">
+                            BlogQL · Copyright Dave Johnson 2026
+                        </Footer>
+                    </Layout>
 
-            </Router>
-        </ProvideAuth>
+                </Router>
+            </ProvideAuth>
+        </ConfigProvider>
     );
 }
 

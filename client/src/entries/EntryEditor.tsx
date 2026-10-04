@@ -296,8 +296,7 @@ export function EditorForm(props: EditorFormProps) {
 
             <Form form={form}
                   initialValues={ {title: title, content: content} }
-                  labelCol={{ span: 2 }}
-                  wrapperCol={{ span: 24 }} >
+                  layout="vertical" className="blog-form entry-editor">
 
                 <Form.Item label='Title' name='title'>
                     <Input onChange={onTitleChange} placeholder='Title' />
@@ -326,9 +325,9 @@ export function EditorForm(props: EditorFormProps) {
                                 onFocus={handleContentFocus}/>
                 </Form.Item>
 
-                <Form.Item wrapperCol={{ offset: 2, span: 12 }}>
-                    <Space>
-                    <Button disabled={!valid || saved} onClick={() => {
+                <Form.Item>
+                    <Space wrap>
+                    <Button type="primary" disabled={!valid || saved} onClick={() => {
                         if (id) {
                             updateEntry();
                         } else {
@@ -338,7 +337,7 @@ export function EditorForm(props: EditorFormProps) {
                     </Button>
 
                     { (!published && saved) &&
-                        <Button disabled={!valid} onClick={() => { publishEntry(); }}>Publish </Button>
+                        <Button type="primary" disabled={!valid} onClick={() => { publishEntry(); }}>Publish </Button>
                     }
                     { saved &&
                         <Link to={`/blogs/${handle}`}> <Button>Done</Button> </Link>
@@ -350,7 +349,7 @@ export function EditorForm(props: EditorFormProps) {
                 </Form.Item>
 
                 <br />
-                <Form.Item wrapperCol={{ offset: 2, span: 12 }}>
+                <Form.Item>
                 { props.id.length > 0 &&
                     <>
                         <p>Deleting an entry is an irreversible action.</p>

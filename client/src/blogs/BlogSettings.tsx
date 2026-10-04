@@ -141,16 +141,16 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
     const tabItems = [
         {key: 'settings', label: 'Settings', children:
             <Form form={nameForm} initialValues={{name: name}}
-                  labelCol={{ span: 2 }} wrapperCol={{ span: 24 }}>
+                  layout="vertical" className="blog-form">
                 <br/>
                 <p>This is where you can set the display name of your weblog.</p>
                 <Form.Item label="Name" name='name'
                     rules={[{ required: true, message: 'Please input a blog name' }]} >
                     <Input onChange={onNameChange} />
                 </Form.Item>
-                <Form.Item wrapperCol={{ offset: 2, span: 12 }}>
-                    <Space>
-                        <Button disabled={!valid} onClick={() => { save(); }}>Save</Button>
+                <Form.Item>
+                    <Space wrap>
+                        <Button type="primary" disabled={!valid} onClick={() => { save(); }}>Save</Button>
                         <Link to='/entries'> <Button>Cancel</Button> </Link>
                     </Space>
                 </Form.Item>
@@ -159,15 +159,15 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
 
         {key: 'apikey', label: 'API Key', children:
            <Form form={apiKeyForm} initialValues={{apiKey: '*******************'}}
-                 labelCol={{ span: 2 }} wrapperCol={{ span: 24 }}>
+                 layout="vertical" className="blog-form">
                <br/>
                 <p>This is where you get an API key for accessing your blog via GraphQL.
                    If you have lost it you'll have to create another one here.</p>
                 <Form.Item label="API Key" name="apiKey">
                     <Input />
                 </Form.Item>
-               <Form.Item wrapperCol={{ offset: 2, span: 12 }}>
-                   <Space>
+               <Form.Item>
+                   <Space wrap>
                        <Button onClick={() => { issueApiKey(); }}>Issue API Key</Button>
                    </Space>
                </Form.Item>

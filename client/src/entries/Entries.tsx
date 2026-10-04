@@ -106,7 +106,7 @@ function Entries() {
     return (
         <>
             <Heading title={data.blog.name} heading={'Tagline coming soon'}/>
-            <List itemLayout='vertical'
+            <List className="entry-list" itemLayout='vertical'
                   dataSource={entries}
                   footer={<div></div>}
                   renderItem={(item: EntryEdge) => (
@@ -115,14 +115,14 @@ function Entries() {
                           actions={[
                               <Space>
                                   <Tooltip title="Link">
-                                      <Link to={`/blogs/${data.blog.handle}/entries/${item.node.id}`}>
+                                      <Link aria-label="Permalink" to={`/blogs/${data.blog.handle}/entries/${item.node.id}`}>
                                           <LinkOutlined />
                                       </Link>
                                   </Tooltip>
                                   <Tooltip title={ <>Published: <SimpleDateTime when={item.node.published}/></> }>
                                       <ClockCircleOutlined />
                                   </Tooltip>
-                                  <Link style={showIfLoggedIn()}
+                                  <Link aria-label="Edit entry" style={showIfLoggedIn()}
                                         to={`/blogs/${data.blog.handle}/edit/${item.node.id}`}>
                                       <Tooltip title="Edit">
                                           <EditOutlined />
@@ -134,13 +134,17 @@ function Entries() {
                               <img width={150} height={100} alt="" src={thumbnailFor(item.node.id)}/>
                       }>
                           <List.Item.Meta
-                              avatar={<Avatar src={data.blog.user.picture}/>}
+                              avatar={<Avatar
+                                  className={data.blog.handle === 'testblog' ? 'author-avatar author-avatar-dave' : 'author-avatar'}
+                                  src={data.blog.handle === 'testblog' ? '/images/dave-avatar.png' : data.blog.user.picture}
+                                  alt={data.blog.user.username}
+                              />}
                               title={(
                                   <Link to={`/blogs/${data.blog.handle}/entries/${item.node.id}`}>
                                       {item.node.title}
                                   </Link>
                               )}
-                              description={<i>Published <RelativeDateTime when={item.node.updated as Date}/></i>}
+                              description={<>Published <RelativeDateTime when={item.node.published as Date}/></>}
                           ></List.Item.Meta>
                           <TruncatedContent content={item.node.content} truncateAt={250}
                               link={`/blogs/${data.blog.handle}/entries/${item.node.id}`} />

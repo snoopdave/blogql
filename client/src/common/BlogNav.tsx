@@ -7,7 +7,7 @@ import {authContext, AuthContext} from './Authentication';
 import React, {useContext} from 'react';
 import {Menu} from "antd";
 import {MenuItemType} from "antd/lib/menu/hooks/useItems";
-import {Link} from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
 import {Blog} from "../gql/graphql";
 import {useQuery} from "@apollo/client/react/hooks";
 import {USER_BLOG_QUERY} from "../graphql/queries";
@@ -18,6 +18,7 @@ interface BlogNavProps {
 
 export function BlogNav(props: BlogNavProps) {
     const userContext: AuthContext = useContext(authContext);
+    const {pathname} = useLocation();
     let menuItems: MenuItemType[] = [];
 
     const { loading, error, data } = useQuery(USER_BLOG_QUERY, {
@@ -42,7 +43,12 @@ export function BlogNav(props: BlogNavProps) {
         <Menu
             theme="dark"
             mode="horizontal"
-            defaultSelectedKeys={['2']}
+            className="blog-nav"
+            selectedKeys={[pathname.endsWith('/settings') ? 'settings'
+                : /\/(drafts|edit)(\/|$)/.test(pathname) ? 'drafts'
+                : pathname === '/create-blog' ? 'create-blog'
+                : pathname === '/login' ? 'login'
+                : pathname === '/' || pathname === '/blogs' ? 'blogs' : 'blog']}
             items={menuItems}
         />
     );
@@ -50,7 +56,7 @@ export function BlogNav(props: BlogNavProps) {
 
 function hasBlogMenu(handle: string, userContext: AuthContext) {
     return [
-        {label: <Link to={'/blogs'}>Blogs</Link>, key: "create-blog"},
+        {label: <Link to={'/blogs'}>Blogs</Link>, key: "blogs"},
         {label: <Link to={`/blogs/${handle}`}>Blog</Link>, key: "blog"},
         {label: <Link to={`/blogs/${handle}/drafts`}>Drafts</Link>, key: "drafts"},
         {label: <Link to={`/blogs/${handle}/settings`}>Settings</Link>, key: "settings"},

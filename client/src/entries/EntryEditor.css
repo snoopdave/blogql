@@ -2,27 +2,15 @@
  * Copyright David M. Johnson (snoopdave@gmail.com).
  * Licensed under Apache Software License v2.
  */
-
-.ql-editor {
-    min-height: 20em;
-}
-
-img.spinner {
-   display: flex;
-   justify-content: center;
-   align-items: center;
-}
-
-.ql-container {
-    font-size: 1em;
-}
-
-.ql-editor p {
-    margin-bottom: 0.5em;
-}
-
-.readonly-date {
-    font-size: 0.8em;
-    margin-bottom: 0.3em;
-    margin-left: 1em;
-}
+.entry-editor .ql-toolbar.ql-snow { padding: 12px; border-color: #ccd5e0; border-radius: 8px 8px 0 0; background: #f3f6fa; }
+.entry-editor .ql-container.ql-snow { border-color: #ccd5e0; border-radius: 0 0 8px 8px; font-family: inherit; font-size: 18px; }
+.entry-editor .ql-editor { min-height: 24rem; padding: 24px; line-height: 1.8; }
+.entry-editor .ql-editor p { margin-bottom: 1em; }
+.entry-editor .ql-editor h1, .entry-editor .ql-editor h2, .entry-editor .ql-editor h3 { margin: 1em 0 0.5em; line-height: 1.3; }
+.entry-editor .ql-toolbar button { width: 32px; height: 32px; }
+.entry-editor .ql-toolbar .ql-picker { height: 32px; }
+.entry-editor .ql-toolbar button:focus-visible, .entry-editor .ql-picker-label:focus-visible { outline: 2px solid #1763bd; }
+.entry-editor .ql-editor:focus-visible { outline: 2px solid #1763bd; outline-offset: -2px; }
+img.spinner { display: flex; justify-content: center; align-items: center; }
+.readonly-date { color: #59677a; font-size: 14px; }
+@media (max-width: 640px) { .entry-editor .ql-editor { padding: 16px; } }
