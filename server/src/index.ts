@@ -9,7 +9,7 @@ import {User} from './users/user.js';
 import BlogQL from './blogql.js';
 import {DEBUG, ERROR, INFO, log} from './utils/utils.js';
 import {readFileSync} from 'fs';
-import {config} from './utils/config.js';
+import {config, isEmailAllowed} from './utils/config.js';
 import ApiKeyStore from "./apikeys/apikeystore.js";
 import {BlogService, BlogServiceSequelizeImpl} from "./blogservice.js";
 import {UserStore} from "./users/userstore.js";
@@ -94,6 +94,12 @@ async function main() {
                     } else {
                         throw new Error('User not found');
                     }
+                }
+
+                // Users not in ALLOWED_EMAILS (old sessions, API keys) only get public access
+                if (user && !isEmailAllowed(user.email)) {
+                    log(INFO, `Ignoring credentials of user not allowed: ${user.email}`);
+                    user = null;
                 }
 
                 return {

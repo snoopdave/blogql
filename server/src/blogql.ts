@@ -9,8 +9,8 @@ import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import session from 'express-session';
 import connectPgSimple from 'connect-pg-simple';
-import {DEBUG, log} from './utils/utils.js';
-import {config} from './utils/config.js';
+import {DEBUG, INFO, log} from './utils/utils.js';
+import {config, isEmailAllowed} from './utils/config.js';
 import {UserStore} from "./users/userstore.js";
 import {User} from "./users/user.js";
 
@@ -70,6 +70,10 @@ export default class BlogQL {
                     const user = await userStore.retrieve(req.session?.userId);
                     if (!user) {
                         res.status(500);
+                    } else if (!isEmailAllowed(user.email)) {
+                        // session from before this user was removed from ALLOWED_EMAILS
+                        req.session.destroy(() => {});
+                        res.status(401);
                     } else {
                         res.status(200);
                         res.json(user);
@@ -92,7 +96,14 @@ export default class BlogQL {
                     idToken: token,
                     audience: process.env.CLIENT_ID
                 });
-                const {name, email, picture} = ticket.getPayload()!;
+                const {name, email, picture, email_verified} = ticket.getPayload()!;
+                if (!email_verified || !isEmailAllowed(email)) {
+                    log(INFO, `Login refused for ${email}`);
+                    res.status(403);
+                    res.json({message: 'This Google account is not allowed to log in.'});
+                    res.end();
+                    return;
+                }
                 const user: User = await userStore.upsert(name!, email!, picture!);
                 req.session.userId = user.id;
                 log(DEBUG, `Logged in as username 

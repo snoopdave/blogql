@@ -26,6 +26,8 @@ services:
         generateValue: true
       - key: CLIENT_ID # Google OAuth client ID, same value as GOOGLE_SIGNON_CID
         sync: false
+      - key: ALLOWED_EMAILS # comma-separated Google accounts that may log in; empty = nobody
+        sync: false
 
   - name: blogql-client
     type: web

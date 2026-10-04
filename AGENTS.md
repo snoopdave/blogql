@@ -56,6 +56,7 @@ When `DATABASE_URL` is set, sessions are stored in Postgres (`connect-pg-simple`
 
 - The client calls the API with relative URLs (`/graphql`, `/auth`, `/me`, `/logout`), so the API and the client always share an origin and the session cookie is first-party. Locally, the webpack dev server proxies these paths to `localhost:4000`. On Render, static-site rewrites send them to the server. If you add an API path, add it in both `webpack.config.cjs` and `render.yaml`.
 - `src/index.tsx` creates the Apollo Client.
+- Only Google accounts in the server's `ALLOWED_EMAILS` (comma-separated) may log in. `isEmailAllowed()` in `server/src/utils/config.ts` is checked in `/auth`, in `/me`, and in the GraphQL context, so it also covers old sessions and API keys. An empty list allows everyone, except when `NODE_ENV=production`, where it allows nobody.
 - `Authentication.tsx` provides the auth context (`ProvideAuth`) and the login, logout, and `/me` calls. `App.tsx` defines the React Router v6 routes.
 - UI uses Ant Design. The entry editor uses Quill.
 - GraphQL operations are in `src/graphql/queries.ts` and `src/graphql/mutations.ts`. Import types from the generated `src/gql/graphql`.

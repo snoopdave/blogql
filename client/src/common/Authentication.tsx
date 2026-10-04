@@ -7,6 +7,7 @@ import React, {Context, createContext, ReactNode, useContext, useState} from 're
 import {useNavigate} from "react-router";
 import {Blog, User} from "../gql/graphql";
 import {GoogleLogin} from "@react-oauth/google";
+import {message} from "antd";
 
 
 // Context will be used  to provide access to user, login and logout within
@@ -97,6 +98,12 @@ export function LoginButton(props : LoginButtonProps) {
                             token: credentialResponse.credential
                         }),
                     })
+                    if (!res.ok) {
+                        // e.g. 403 when the account is not in the server's ALLOWED_EMAILS
+                        const body = await res.json().catch(() => ({}));
+                        message.error(body.message ?? `Login failed (${res.status})`);
+                        return;
+                    }
                     userContext.user = await res.json();
                     userContext.login(userContext.user!);
                     navigate(props.destination);
