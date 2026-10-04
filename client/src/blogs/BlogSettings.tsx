@@ -71,17 +71,10 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
     const [issueApiKeyMutation] = useMutation(ISSUE_API_KEY_MUTATION, { variables: {} })
 
     function onNameChange(event: ChangeEvent<HTMLInputElement>) {
-        setName(event.target.value);
-        setBlog({ name });
-        validateForm();
-    }
-
-    function validateForm() {
-        if (name && name.length > 0 && name.length < 20) {
-            setValid(true);
-        } else {
-            setValid(false);
-        }
+        const nextName = event.target.value;
+        setName(nextName);
+        setBlog({ name: nextName });
+        setValid(nextName.length > 0 && nextName.length <= 20);
     }
 
     function save() {
@@ -146,7 +139,7 @@ export function BlogSettingsById(props: BlogSettingsByIdProps) {
                 <p>This is where you can set the display name of your weblog.</p>
                 <Form.Item label="Name" name='name'
                     rules={[{ required: true, message: 'Please input a blog name' }]} >
-                    <Input onChange={onNameChange} />
+                    <Input maxLength={20} onChange={onNameChange} />
                 </Form.Item>
                 <Form.Item>
                     <Space wrap>

@@ -42,24 +42,22 @@ export function BlogCreate(props: BlogCreateProps) {
     });
 
     function onHandleChange(event: ChangeEvent<HTMLInputElement>) {
-        setHandle(event.target.value.toLowerCase());
-        setName(name);
-        setBlog({ name, handle });
-        validateForm();
+        const nextHandle = event.target.value.toLowerCase();
+        setHandle(nextHandle);
+        setBlog({ name, handle: nextHandle });
+        validateForm(name, nextHandle);
     }
 
     function onNameChange(event: ChangeEvent<HTMLInputElement>) {
-        setName(event.target.value);
-        validateForm();
+        const nextName = event.target.value;
+        setName(nextName);
+        setBlog({ name: nextName, handle });
+        validateForm(nextName, handle);
     }
 
-    function validateForm() {
-        if (handle && handle.length > 0 && handle.length < 10 && isAlphanumberic(handle)
-            && name && name.length > 0 && name.length < 20) {
-            setValid(true);
-        } else {
-            setValid(false);
-        }
+    function validateForm(nextName: string, nextHandle: string) {
+        setValid(nextHandle.length > 0 && nextHandle.length < 10 && isAlphanumberic(nextHandle)
+            && nextName.length > 0 && nextName.length <= 20);
     }
 
     function save() {
@@ -108,7 +106,7 @@ export function BlogCreate(props: BlogCreateProps) {
                     label="Name"
                     name="name"
                     rules={[{ required: true, message: 'Please input a blog name' }]}>
-                    <Input onChange={onNameChange} placeholder='My Blog Name' />
+                    <Input maxLength={20} onChange={onNameChange} placeholder='My Blog Name' />
                 </Form.Item>
 
                 <Form.Item
