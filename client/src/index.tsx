@@ -21,6 +21,9 @@ const client = new ApolloClient({
     version: '1.0',
     defaultOptions: {
         watchQuery: {
+            // Show cached data at once, but always ask the server too, so lists
+            // are fresh after a mutation on another page (e.g. publish a draft)
+            fetchPolicy: 'cache-and-network',
             nextFetchPolicy: 'network-only',
         },
     },

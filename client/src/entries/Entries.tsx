@@ -15,6 +15,22 @@ import {RelativeDateTime, SimpleDateTime} from "../common/DateTime";
 import {ClockCircleOutlined, EditOutlined, LinkOutlined} from "@ant-design/icons";
 import {authContext, AuthContext} from "../common/Authentication";
 
+// Generic images in public/thumbnails, one per entry
+const THUMBNAILS = [
+    '/thumbnails/01-circuit-board.jpg',
+    '/thumbnails/02-cosmic-brain.jpg',
+    '/thumbnails/03-retro-satellite.jpg',
+    '/thumbnails/04-data-network-orbit.jpg',
+];
+
+// Same entry always gets the same image; entries spread over all images
+function thumbnailFor(entryId: string): string {
+    let hash = 0;
+    for (let i = 0; i < entryId.length; i++) {
+        hash = (hash * 31 + entryId.charCodeAt(i)) >>> 0;
+    }
+    return THUMBNAILS[hash % THUMBNAILS.length];
+}
 
 function Entries() {
     const userContext: AuthContext = useContext(authContext);
@@ -115,7 +131,7 @@ function Entries() {
                               </Space>
                           ]}
                           extra={
-                              <img width={150} alt="logo" src="https://placekitten.com/150/100"/>
+                              <img width={150} height={100} alt="" src={thumbnailFor(item.node.id)}/>
                       }>
                           <List.Item.Meta
                               avatar={<Avatar src={data.blog.user.picture}/>}
