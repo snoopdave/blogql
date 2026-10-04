@@ -5,21 +5,21 @@
 
 import {BlogsList} from "./BlogsList";
 import {BrowserRouter as Router} from 'react-router-dom';
-import {MockedProvider, MockedResponse} from "@apollo/client/testing";
+import {ApolloProvider} from '@apollo/client';
 import {ComponentMeta, ComponentStory} from "@storybook/react";
 import {Route, Routes} from "react-router";
+import {client} from '../setupTests';
 
 export default {
     title: 'BlogList',
     component: BlogsList,
 } as ComponentMeta<typeof BlogsList>;
 
-let mocks: readonly MockedResponse<any, any>[] | undefined;
 export const Primary: ComponentStory<typeof BlogsList> = () =>
-    <MockedProvider mocks={mocks} addTypename={false}>
+    <ApolloProvider client={client}>
         <Router>
             <Routes>
                 <Route path='*' element={<BlogsList />} />
             </Routes>
         </Router>
-    </MockedProvider>;
+    </ApolloProvider>;

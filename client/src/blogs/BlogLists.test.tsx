@@ -10,26 +10,27 @@ import {screen} from '@testing-library/react';
 import {Route, Routes} from "react-router";
 import {act} from 'react';
 import {createRoot} from "react-dom/client";
-import {MockedProvider} from "@apollo/client/testing"; // Import act from react
+import {ApolloProvider} from '@apollo/client';
+import {client} from '../setupTests';
+import '../tests/MatchMediaMock';
 
 global.IS_REACT_ACT_ENVIRONMENT = true;
 
-it('BlogsList renders without error with Mocked Service Worker', async () => {
+it('renders the first page of blogs from the MSW fixture', async () => {
     const container = document.createElement('div');
     document.body.appendChild(container);
     const root = createRoot(container);
     await act(async () => {
-        let mocks;
         root.render(
-            <MockedProvider mocks={mocks} addTypename={false}>
+            <ApolloProvider client={client}>
                 <Router>
                     <Routes>
                         <Route path="/" element={<BlogsList />} />
                     </Routes>
                 </Router>
-            </MockedProvider>
+            </ApolloProvider>
         );
     });
-    expect(await screen.findByText('Blog Title 0')).toBeInTheDocument();
-    expect(await screen.findByText('Blog Title 1')).toBeInTheDocument();
+    expect(await screen.findByText('Blog 1')).toBeInTheDocument();
+    expect(await screen.findByText('Blog 2')).toBeInTheDocument();
 });

@@ -13,8 +13,9 @@ export const handlers = [
     }),
     // @ts-ignore
     graphql.query('Blogs', (req, res, ctx) => {
-        const {limit, offset} = req.variables;
-        const blogs = fixture.blogs.edges.slice(offset, offset + limit);
+        // The client uses Relay cursor pagination (first/last/before/after),
+        // not the old limit/offset variables. This fixture is already a
+        // complete connection, including cursors and pageInfo.
         return res(ctx.data({ blogs: fixture.blogs }));
     }),
     // @ts-ignore
@@ -63,5 +64,4 @@ export const userBlogQueryData = {
 export const userNoBlogQueryData = {
     'blogForUser': null
 };
-
 
