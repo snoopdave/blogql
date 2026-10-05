@@ -239,29 +239,22 @@ export function EditorForm(props: EditorFormProps) {
     }
 
     function onTitleChange(event: ChangeEvent<HTMLInputElement>) {
-        setTitle(event.target.value);
-        setEntry({title, content});
+        const nextTitle = event.target.value;
+        setTitle(nextTitle);
+        setEntry({title: nextTitle, content});
         setSaved(false);
-        validateForm();
+        setValid(Boolean(nextTitle && content && nextTitle.length > 0 && content.length > 0));
     }
 
     function onContentChange(value: string) {
         setContent(value);
-        setEntry({title, content});
+        setEntry({title, content: value});
         setSaved(false);
-        validateForm();
+        setValid(Boolean(title && value && title.length > 0 && value.length > 0));
     }
 
     function isValid() {
         return title && content && title.length > 0 && content.length > 0;
-    }
-
-    function validateForm() {
-        if (isValid()) {
-            setValid(true);
-        } else {
-            setValid(false);
-        }
     }
 
     let handleContentFocus = (range: ReactQuill.Range, source: Sources, theEditor: UnprivilegedEditor) => {
@@ -372,6 +365,5 @@ export function EditorForm(props: EditorFormProps) {
         </RequireAuth>
     )
 }
-
 
 
