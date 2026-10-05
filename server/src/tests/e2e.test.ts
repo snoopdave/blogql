@@ -390,6 +390,7 @@ describe('Test the GraphQL API integration', () => {
         const {blogService, server, conn, blogStore, entryStore, authUsers} = await initDataStorage();
         const blog: Blog = await blogStore.create(authUsers[0].id, 'bloghandle', 'Blog Name');
         const entry = await entryStore.create(blog.id, 'entry 1 title', 'entry 1 content');
+        const linkedContent = '<p>Read <a href="https://blogql-client.onrender.com/blogs/testblog/entries/483624be-7999-430d-8065-09ba76db466e-entry">BlogQL</a></p>';
         try {
             let entryFetched: GraphQLResponse = await getEntry(server, blog.handle, entry.id, { blogService, user: authUsers[0] });
             if (entryFetched.body.kind  === 'single') {
@@ -402,7 +403,7 @@ describe('Test the GraphQL API integration', () => {
                 blog.handle,
                 entry.id,
                 entry.title + ' (EDITED)',
-                entry.content + ' (EDITED)', { blogService, user: authUsers[0] });
+                linkedContent, { blogService, user: authUsers[0] });
             if (entryUpdatedResponse.body.kind  === 'single') {
                 expect(entryUpdatedResponse.body.singleResult.errors).toBeUndefined();
 
@@ -418,7 +419,7 @@ describe('Test the GraphQL API integration', () => {
                         entry: Entry
                     }).entry;
                     expect(entryRefetched.title).toBe('entry 1 title (EDITED)');
-                    expect(entryRefetched.content).toBe('entry 1 content (EDITED)');
+                    expect(entryRefetched.content).toBe(linkedContent);
                 }
             }
         } finally {
@@ -688,4 +689,3 @@ function verifyDate(dateString: string) {
     date.setTime(Date.parse(dateString));
     expect(date.getFullYear()).toBeGreaterThan(2020);
 }
-

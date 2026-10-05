@@ -116,14 +116,11 @@ export function EditorForm(props: EditorFormProps) {
 
     const [ form ] = useForm();
 
-    const [ entry, setEntry ] = useState({ title, content });
-
     // eslint-disable-next-line
     let editor: UnprivilegedEditor | null = null; // assigned a value below in handleContentFocus()
 
     const [createEntryMutation] = useMutation<Entry, { handle: string, entry: EntryCreateInput }>(
         ENTRY_CREATE_MUTATION, {
-            variables: { handle, entry },
             refetchQueries: [{
                 query: DRAFTS_QUERY,
                 variables: {handle},
@@ -135,7 +132,7 @@ export function EditorForm(props: EditorFormProps) {
         });
 
     function createEntry() {
-        createEntryMutation()
+        createEntryMutation({variables: {handle: handle!, entry: {title, content}}})
             .then(() => {
                 setSuccess(true);
                 setSaved(true);
@@ -150,7 +147,6 @@ export function EditorForm(props: EditorFormProps) {
     }
 
     const [updateEntryMutation] = useMutation<Entry, { handle: string, id: string, entry: EntryUpdateInput }>(ENTRY_UPDATE_MUTATION, {
-        variables: { handle, id: props.id, entry },
         refetchQueries: [{
             query: DRAFTS_QUERY,
             variables: {handle},
@@ -162,7 +158,7 @@ export function EditorForm(props: EditorFormProps) {
     });
 
     function updateEntry() {
-        updateEntryMutation()
+        updateEntryMutation({variables: {handle: handle!, id: props.id, entry: {title, content}}})
             .then(() => {
                 setSuccess(true);
                 setSaved(true);
@@ -241,14 +237,12 @@ export function EditorForm(props: EditorFormProps) {
     function onTitleChange(event: ChangeEvent<HTMLInputElement>) {
         const nextTitle = event.target.value;
         setTitle(nextTitle);
-        setEntry({title: nextTitle, content});
         setSaved(false);
         setValid(Boolean(nextTitle && content && nextTitle.length > 0 && content.length > 0));
     }
 
     function onContentChange(value: string) {
         setContent(value);
-        setEntry({title, content: value});
         setSaved(false);
         setValid(Boolean(title && value && title.length > 0 && value.length > 0));
     }
@@ -365,5 +359,3 @@ export function EditorForm(props: EditorFormProps) {
         </RequireAuth>
     )
 }
-
-
