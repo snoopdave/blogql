@@ -88,22 +88,3 @@ services:
         sync: false
       - key: BLOGQL_BLOG_HANDLE
         value: testblog
-
-  # Workflows cannot schedule runs yet, so a cron job starts one. Cron jobs are paid (billed per second).
-  - name: blogql-agent-cron
-    type: cron
-    runtime: node
-    region: oregon
-    schedule: "0 16 * * 1" # Mondays 16:00 UTC
-    rootDir: agent
-    buildCommand: yarn install --frozen-lockfile --production=false && yarn build
-    startCommand: node dist/trigger.js
-    envVars:
-      - key: NODE_VERSION
-        value: "24"
-      - key: RENDER_API_KEY # Render API key (Account settings > API keys)
-        sync: false
-      - key: AUTOBLOG_WORKFLOW_SLUG # if Render adds a suffix to the workflow's name, use the actual slug
-        value: blogql-agent
-      - key: BLOGQL_BLOG_HANDLE
-        value: testblog
