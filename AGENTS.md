@@ -1,6 +1,6 @@
 # AGENTS.md
 
-BlogQL is a learning project: a blog app with an Apollo GraphQL server (`server/`) and a React client (`client/`). Each is a separate Yarn project with its own `package.json` and `yarn.lock`. There is no root workspace. Run commands from inside `server/` or `client/`. CI uses Node 18.
+BlogQL is a learning project: a blog app with an Apollo GraphQL server (`server/`) and a React client (`client/`), plus an autoblog agent (`agent/`). Each is a separate Yarn project with its own `package.json` and `yarn.lock`. There is no root workspace. Run commands from inside `server/`, `client/` or `agent/`. CI uses Node 18 (Node 24 for `agent/`).
 
 ## Commands
 
@@ -62,8 +62,17 @@ When `DATABASE_URL` is set, sessions are stored in Postgres (`connect-pg-simple`
 - GraphQL operations are in `src/graphql/queries.ts` and `src/graphql/mutations.ts`. Import types from the generated `src/gql/graphql`.
 - Tests and Storybook mock the API with MSW (`src/mocks/handlers.ts`, fixtures, and `TestDataGenerator`). Tests wrap components in `src/tests/TestHarness.tsx`.
 
+### Autoblog agent (`agent/`)
+
+- A third Yarn project. It is a Render Workflow service: `src/tasks.ts` defines tasks with `@renderinc/sdk/workflows`, and the root task `autoblog` runs the others with `ctx.run`. See `agent/README.md`.
+- It writes posts with Claude (`@anthropic-ai/sdk`, structured outputs) and saves them through the GraphQL API with an API key (`x-api-key`). It only creates drafts; it never publishes.
+- Task arguments and results must be JSON. Keep prompts and logic in `src/autoblog.ts`, and keep `src/tasks.ts` thin.
+- Always pass model HTML through `sanitizeContent()`: the client renders entry HTML with `dangerouslySetInnerHTML`.
+- `yarn test` builds and runs `node --test` with fakes; it needs no API keys. `render workflows dev -- node dist/index.js` runs the tasks locally.
+- Output goes to `dist/`, not next to the sources as in `server/`.
+
 ### CI/CD and deploy
 
 - `.github/workflows/`: pull requests build and test the server, then the client, then publish stories to Chromatic, check the schema with Rover, and build Docker images. A merge to `main` also publishes the schema and pushes `snoopdave/blogql-server` and `snoopdave/blogql-client` images.
-- `render.yaml` is the Render Blueprint: a free Postgres database, `blogql-server` (web service), and `blogql-client` (static site). The client's rewrite rules contain the server hostname written out in full. `onrender.com` is a public suffix, so the client must not call the server's hostname directly; the session cookie would be third-party.
+- `render.yaml` is the Render Blueprint: a free Postgres database, `blogql-server` (web service), `blogql-client` (static site), `blogql-agent` (workflow), and `blogql-agent-cron` (cron job). The client's rewrite rules contain the server hostname written out in full. `onrender.com` is a public suffix, so the client must not call the server's hostname directly; the session cookie would be third-party.
 - `deploy/blogql/` has a Helm chart (work in progress). `deploy/local/` has local Kubernetes setup scripts.
