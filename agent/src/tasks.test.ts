@@ -38,6 +38,7 @@ beforeEach(() => {
     drafts = [];
     Object.assign(process.env, {
         ANTHROPIC_API_KEY: 'test-key',
+        ANTHROPIC_WORKSPACE_ID: 'wrkspc_test',
         BLOGQL_URL: 'https://blogql.test/graphql',
         BLOGQL_API_KEY: 'blog-key',
         BLOGQL_BLOG_HANDLE: 'testblog',
@@ -91,6 +92,7 @@ test('autoblog writes, edits and saves a sanitized draft', async () => {
     const claude = calls.filter(c => c.url.startsWith('https://api.anthropic.com'));
     assert.equal(claude.length, 3);
     assert.equal(claude[0].body.model, 'claude-opus-5-5');
+    assert.equal(claude[0].headers['anthropic-workspace-id'], 'wrkspc_test');
     assert.match(claude[0].body.messages[0].content, /GraphQL[\s\S]*- Old post/);
 });
 

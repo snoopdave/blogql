@@ -16,9 +16,11 @@ export type ObjectSchema = { type: 'object' } & Record<string, unknown>;
 export class ClaudeLLM implements LLM {
     private readonly client: Anthropic;
 
-    constructor(private readonly model: string, apiKey?: string) {
+    constructor(private readonly model: string, apiKey?: string, workspaceId?: string) {
+        // A key that is not scoped to a workspace must name the workspace in a header.
+        const defaultHeaders = workspaceId ? { 'anthropic-workspace-id': workspaceId } : undefined;
         // The SDK retries rate limits and server errors; the workflow task retries the rest.
-        this.client = new Anthropic({ apiKey, maxRetries: 2 });
+        this.client = new Anthropic({ apiKey, maxRetries: 2, defaultHeaders });
     }
 
     async generate<T>(system: string, prompt: string, schema: ObjectSchema): Promise<T> {

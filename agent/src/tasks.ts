@@ -33,7 +33,7 @@ function env(name: string, fallback?: string): string {
     return value;
 }
 
-const llm = () => new ClaudeLLM(env('CLAUDE_MODEL', 'claude-opus-5-5'));
+const llm = () => new ClaudeLLM(env('CLAUDE_MODEL', 'claude-opus-5-5'), undefined, process.env.ANTHROPIC_WORKSPACE_ID);
 const blogql = () => new BlogQLClient({ url: env('BLOGQL_URL'), apiKey: process.env.BLOGQL_API_KEY });
 
 // Claude calls can fail on overload or time out; wait and try again.

@@ -78,6 +78,8 @@ services:
         value: "24"
       - key: ANTHROPIC_API_KEY
         sync: false
+      - key: ANTHROPIC_WORKSPACE_ID # only if the key is not scoped to a workspace
+        sync: false
       - key: CLAUDE_MODEL
         value: claude-opus-5-5
       - key: BLOGQL_URL # direct to the server: API-key requests need no cookie

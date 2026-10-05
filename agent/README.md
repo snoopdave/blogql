@@ -57,6 +57,7 @@ render workflows start autoblog --local --input='[{"hint": "Render Workflows"}]'
 Blueprint sync, set these in the Render dashboard:
 
 - `blogql-agent`: `ANTHROPIC_API_KEY`, and `BLOGQL_API_KEY` (BlogQL > blog settings > API key).
+  If the Anthropic key is not scoped to a workspace, also set `ANTHROPIC_WORKSPACE_ID`.
 - `blogql-agent-cron`: `RENDER_API_KEY`. If Render gave the workflow another slug, set
   `AUTOBLOG_WORKFLOW_SLUG` to it.
 
