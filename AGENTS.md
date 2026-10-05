@@ -74,5 +74,5 @@ When `DATABASE_URL` is set, sessions are stored in Postgres (`connect-pg-simple`
 ### CI/CD and deploy
 
 - `.github/workflows/`: pull requests build and test the server, then the client, then publish stories to Chromatic, check the schema with Rover, and build Docker images. A merge to `main` also publishes the schema and pushes `snoopdave/blogql-server` and `snoopdave/blogql-client` images.
-- `render.yaml` is the Render Blueprint: a free Postgres database, `blogql-server` (web service), `blogql-client` (static site), `blogql-agent` (workflow), and `blogql-agent-cron` (cron job). The client's rewrite rules contain the server hostname written out in full. `onrender.com` is a public suffix, so the client must not call the server's hostname directly; the session cookie would be third-party.
+- `render.yaml` is the Render Blueprint: a free Postgres database, `blogql-server` (web service), `blogql-client` (static site), and `blogql-agent` (workflow). The client's rewrite rules contain the server hostname written out in full. `onrender.com` is a public suffix, so the client must not call the server's hostname directly; the session cookie would be third-party.
 - `deploy/blogql/` has a Helm chart (work in progress). `deploy/local/` has local Kubernetes setup scripts.

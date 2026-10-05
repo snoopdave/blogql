@@ -19,8 +19,9 @@ autoblog(input)                      the root task
 - Claude returns JSON that matches a schema (structured outputs), so there is no text parsing.
 - BlogQL renders entry HTML as is, so `saveDraft` keeps only a small set of tags and `http(s)` links.
 - `saveDraft` first looks for a draft with the same title, so a retry does not save the post twice.
-- Workflows cannot schedule runs yet. A Render cron job runs `dist/trigger.js` every Monday.
-  It uses an idempotency key per day, so a retried cron job does not start a second run.
+- Workflows cannot schedule runs yet, and there is no scheduler here: start runs by hand (below).
+  `dist/trigger.js` starts one run with the Render SDK, so any scheduler can run it. Without a hint
+  it uses an idempotency key per day, so a retried trigger does not start a second run.
 
 ## Files
 
@@ -53,18 +54,19 @@ render workflows start autoblog --local --input='[{"hint": "Render Workflows"}]'
 
 ## Deploy
 
-`render.yaml` defines `blogql-agent` (workflow) and `blogql-agent-cron` (cron job). After the
-Blueprint sync, set these in the Render dashboard:
+`render.yaml` defines `blogql-agent` (workflow). After the Blueprint sync, set these in the
+Render dashboard:
 
 - `blogql-agent`: `ANTHROPIC_API_KEY`, and `BLOGQL_API_KEY` (BlogQL > blog settings > API key).
   If the Anthropic key is not scoped to a workspace, also set `ANTHROPIC_WORKSPACE_ID`.
-- `blogql-agent-cron`: `RENDER_API_KEY`. If Render gave the workflow another slug, set
-  `AUTOBLOG_WORKFLOW_SLUG` to it.
 
-Start a run without waiting for Monday:
+Start a run:
 
 ```sh
 render workflows start blogql-agent/autoblog --input='[{"hint": "GraphQL pagination"}]'
 ```
 
-Neither service has a free plan: Workflows and cron jobs bill per second of compute.
+Workflows have no free plan: they bill per second of task compute.
+
+`trigger.js` needs `RENDER_API_KEY`. If Render gave the workflow another slug, set
+`AUTOBLOG_WORKFLOW_SLUG` to it.
