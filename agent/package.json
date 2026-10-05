@@ -1,0 +1,31 @@
+{
+  "name": "blogql-agent",
+  "type": "module",
+  "version": "0.0.1",
+  "description": "Autoblog agent for BlogQL, built on Render Workflows",
+  "author": {
+    "name": "Dave Johnson",
+    "email": "snoopdave@gmail.com"
+  },
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "trigger": "node dist/trigger.js",
+    "test": "yarn build && node --test dist/*.test.js",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.131.0",
+    "@renderinc/sdk": "^1.2.0",
+    "sanitize-html": "^2.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24",
+    "@types/sanitize-html": "^2.16.2",
+    "typescript": "^5"
+  }
+}

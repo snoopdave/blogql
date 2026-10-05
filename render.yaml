@@ -63,3 +63,45 @@ services:
       - type: rewrite
         source: /*
         destination: /index.html
+
+  # Autoblog agent: Render Workflow tasks that write a post with Claude and save it as a draft.
+  # Workflows bill per second of task compute; there is no free plan. Plans are set per task in agent/src/tasks.ts.
+  - name: blogql-agent
+    type: workflow
+    runtime: node
+    region: oregon
+    rootDir: agent
+    buildCommand: yarn install --frozen-lockfile --production=false && yarn build
+    startCommand: node dist/index.js
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: CLAUDE_MODEL
+        value: claude-opus-5-5
+      - key: BLOGQL_URL # direct to the server: API-key requests need no cookie
+        value: https://blogql-server-cgpu.onrender.com/graphql
+      - key: BLOGQL_API_KEY # API key of the blog owner
+        sync: false
+      - key: BLOGQL_BLOG_HANDLE
+        value: testblog
+
+  # Workflows cannot schedule runs yet, so a cron job starts one. Cron jobs are paid (billed per second).
+  - name: blogql-agent-cron
+    type: cron
+    runtime: node
+    region: oregon
+    schedule: "0 16 * * 1" # Mondays 16:00 UTC
+    rootDir: agent
+    buildCommand: yarn install --frozen-lockfile --production=false && yarn build
+    startCommand: node dist/trigger.js
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: RENDER_API_KEY # Render API key (Account settings > API keys)
+        sync: false
+      - key: AUTOBLOG_WORKFLOW_SLUG # if Render adds a suffix to the workflow's name, use the actual slug
+        value: blogql-agent
+      - key: BLOGQL_BLOG_HANDLE
+        value: testblog
