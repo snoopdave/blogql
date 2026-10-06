@@ -23,6 +23,7 @@ import {EntryView} from './entries/EntryView';
 import 'antd/dist/reset.css';
 import './App.css';
 import {User} from "./gql/graphql";
+import {blogqlTheme} from './theme';
 
 export interface BlogRef {
     name: string,
@@ -59,23 +60,14 @@ function App() {
 
     const { Header, Footer, Content } = Layout;
     return (
-        <ConfigProvider theme={{ token: {
-            fontSize: 16,
-            lineHeight: 1.6,
-            controlHeight: 44,
-            colorPrimary: '#1763bd',
-            colorText: '#243247',
-            colorTextSecondary: '#59677a',
-            colorBorder: '#ccd5e0',
-            borderRadius: 8,
-        } }}>
+        <ConfigProvider theme={blogqlTheme}>
             <ProvideAuth onLogin={onLogin} onLogout={onLogout}>
                 <Router>
 
                     <Layout className="app-layout">
                         <Header className="app-header">
                             <div className="app-header-inner">
-                                <Link className="app-brand" to="/blogs">BlogQL</Link>
+                                <Link className="app-brand" to="/blogs"><span className="app-brand-prompt">&gt;_</span>BlogQL</Link>
                                 <BlogNav onBlogUpdated={onBlogUpdated} />
                             </div>
                         </Header>
@@ -113,7 +105,7 @@ function App() {
                             </Routes>
                         </Content>
                         <Footer className="app-footer">
-                            BlogQL · Copyright Dave Johnson 2026
+                            <span className="app-footer-prompt">$</span> BlogQL · Copyright Dave Johnson 2026<span className="cursor" aria-hidden="true"/>
                         </Footer>
                     </Layout>
 
